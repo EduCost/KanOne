@@ -2,7 +2,7 @@ package com.educost.kanone.data.local
 
 import androidx.room.Delete
 import androidx.room.Insert
-import com.educost.kanban2.data.model.entity.ColumnEntity
+import com.educost.kanone.data.model.entity.ColumnEntity
 
 interface ColumnDao {
 

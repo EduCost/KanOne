@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.educost.kanban2.ui.theme.Palette
+import com.educost.kanone.presentation.theme.Palette
 import java.time.LocalDateTime
 
 @Entity(

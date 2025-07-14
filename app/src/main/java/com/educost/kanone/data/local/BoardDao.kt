@@ -6,8 +6,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.educost.kanban2.data.model.entity.BoardEntity
-import com.educost.kanban2.data.model.relation.BoardWithColumns
+import com.educost.kanone.data.model.entity.BoardEntity
+import com.educost.kanone.data.model.relation.BoardWithColumns
 import kotlinx.coroutines.flow.Flow
 
 @Dao
