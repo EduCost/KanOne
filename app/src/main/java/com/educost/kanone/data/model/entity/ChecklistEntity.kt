@@ -20,7 +20,7 @@ import androidx.room.PrimaryKey
 data class ChecklistEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val description: String,
-    @ColumnInfo(name = "is_checked") val isChecked: Boolean,
     val position: Int,
+    @ColumnInfo(name = "is_checked") val isChecked: Boolean,
     @ColumnInfo(name = "card_id") val cardId: Long
 )
