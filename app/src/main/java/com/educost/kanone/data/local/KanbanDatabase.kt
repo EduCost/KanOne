@@ -1,7 +1,14 @@
 package com.educost.kanone.data.local
 
+import androidx.room.ColumnInfo
+import androidx.room.Dao
 import androidx.room.Database
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
+import androidx.room.Query
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.educost.kanone.data.model.entity.AttachmentEntity
 import com.educost.kanone.data.model.entity.BoardEntity
 import com.educost.kanone.data.model.entity.CardEntity
@@ -20,8 +27,10 @@ import com.educost.kanone.data.model.entity.LabelEntity
         LabelCardCrossRef::class,
         LabelEntity::class
     ],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
+@TypeConverters(Converters::class)
 abstract class KanbanDatabase : RoomDatabase() {
     abstract fun attachmentDao(): AttachmentDao
     abstract fun boardDao(): BoardDao

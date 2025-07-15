@@ -17,8 +17,11 @@ interface BoardDao {
     @Query("SELECT * FROM boards WHERE id = :boardId")
     fun observeCompleteBoard(boardId: Long): Flow<BoardWithColumns>
 
+    @Query("SELECT * FROM boards")
+    suspend fun getBoards(): List<BoardEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBoard(board: BoardEntity)
+    suspend fun insertBoard(board: BoardEntity): Long
 
     @Delete
     suspend fun deleteBoard(board: BoardEntity)

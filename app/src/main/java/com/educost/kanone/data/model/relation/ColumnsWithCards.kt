@@ -6,12 +6,12 @@ import com.educost.kanone.data.model.entity.CardEntity
 import com.educost.kanone.data.model.entity.ColumnEntity
 
 data class ColumnsWithCards(
-    @Embedded val columns: ColumnEntity,
+    @Embedded val column: ColumnEntity,
 
     @Relation(
         entity = CardEntity::class,
         parentColumn = "id",
-        entityColumn = "columnId"
+        entityColumn = "column_id"
     )
     val cards: List<CardWithRelations>
 )

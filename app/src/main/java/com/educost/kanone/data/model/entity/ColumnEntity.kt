@@ -11,7 +11,7 @@ import com.educost.kanone.presentation.theme.Palette
     foreignKeys = [
         ForeignKey(
             entity = BoardEntity::class,
-            parentColumns = ["uuid"],
+            parentColumns = ["id"],
             childColumns = ["board_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
@@ -21,7 +21,7 @@ import com.educost.kanone.presentation.theme.Palette
 data class ColumnEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
-    val color: Palette,
     val position: Int,
+    val color: Palette = Palette.NONE,
     @ColumnInfo(name = "board_id") val boardId: Long
 )

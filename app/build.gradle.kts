@@ -70,4 +70,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.truth)
+    testImplementation(libs.turbine)
+    androidTestImplementation(libs.truth)
+    androidTestImplementation(libs.turbine)
 }

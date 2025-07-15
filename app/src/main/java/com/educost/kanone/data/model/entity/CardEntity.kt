@@ -22,11 +22,11 @@ import java.time.LocalDateTime
 data class CardEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val title: String,
+    val position: Int,
     val description: String? = null,
     @ColumnInfo(name = "created_at") val createdAt: LocalDateTime = LocalDateTime.now(),
     @ColumnInfo(name = "due_date") val dueDate: LocalDateTime? = null,
+    val color: Palette = Palette.NONE,
     @ColumnInfo(name = "thumbnail_file_name") val thumbnailFileName: String? = null,
-    val position: Int,
-    val color: Palette,
     @ColumnInfo(name = "column_id") val columnId: Long
 )

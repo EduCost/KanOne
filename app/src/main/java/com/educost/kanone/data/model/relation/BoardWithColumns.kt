@@ -12,8 +12,8 @@ data class BoardWithColumns(
     @Relation(
         entity = ColumnEntity::class,
         parentColumn = "id",
-        entityColumn = "boardId"
+        entityColumn = "board_id"
     )
-    val columns: List<ColumnEntity>
+    val columns: List<ColumnsWithCards>
 )
 

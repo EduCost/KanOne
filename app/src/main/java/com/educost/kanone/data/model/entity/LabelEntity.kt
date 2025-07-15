@@ -21,6 +21,6 @@ import com.educost.kanone.presentation.theme.LabelPalette
 data class LabelEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
-    val color: LabelPalette,
+    val color: LabelPalette = LabelPalette.NONE,
     @ColumnInfo(name = "board_id") val boardId: Long
 )

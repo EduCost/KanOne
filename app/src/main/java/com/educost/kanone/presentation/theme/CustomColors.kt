@@ -8,24 +8,30 @@ data class ColorPalette(
 )
 
 object ColorPalettes {
-    val Blue = ColorPalette(
+
+    val default = ColorPalette(
+        base = Color(0x00000000),
+        onBase = Color(0xFFFFFFFF),
+    )
+
+    val blue = ColorPalette(
         base = Color(0xFFB3E5FC),
         onBase = Color(0xFF000000),
     )
 
-    val Pink = ColorPalette(
+    val pink = ColorPalette(
         base = Color(0xFFFFCDD2),
         onBase = Color(0xFF000000),
     )
 }
 
 enum class Palette {
-    Blue, Pink
+    NONE, BLUE, PINK
 }
 
 // TODO: Handle label palette
 enum class LabelPalette {
-    Blue, Pink
+    NONE, BLUE, PINK
 }
 
 
@@ -33,7 +39,8 @@ fun getPalette(
     palette: Palette,
 ): ColorPalette {
     return when(palette) {
-        Palette.Blue -> ColorPalettes.Blue
-        Palette.Pink -> ColorPalettes.Pink
+        Palette.NONE -> ColorPalettes.default
+        Palette.BLUE -> ColorPalettes.blue
+        Palette.PINK -> ColorPalettes.pink
     }
 }
