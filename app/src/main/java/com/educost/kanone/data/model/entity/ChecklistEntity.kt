@@ -21,6 +21,6 @@ data class ChecklistEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val description: String,
     val position: Int,
-    @ColumnInfo(name = "is_checked") val isChecked: Boolean,
+    @ColumnInfo(name = "is_checked") val isCompleted: Boolean,
     @ColumnInfo(name = "card_id") val cardId: Long
 )
