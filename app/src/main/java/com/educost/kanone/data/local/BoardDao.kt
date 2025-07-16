@@ -17,6 +17,9 @@ interface BoardDao {
     @Query("SELECT * FROM boards WHERE id = :boardId")
     fun observeCompleteBoard(boardId: Long): Flow<BoardWithColumns>
 
+    @Query("SELECT * FROM boards WHERE id = :boardId")
+    suspend fun getBoard(boardId: Long): BoardEntity
+
     @Query("SELECT * FROM boards")
     suspend fun getBoards(): List<BoardEntity>
 
