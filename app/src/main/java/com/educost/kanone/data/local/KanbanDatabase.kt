@@ -32,6 +32,11 @@ import com.educost.kanone.data.model.entity.LabelEntity
 )
 @TypeConverters(Converters::class)
 abstract class KanbanDatabase : RoomDatabase() {
+
+    companion object {
+        const val DATABASE_NAME = "kanban_db"
+    }
+
     abstract fun attachmentDao(): AttachmentDao
     abstract fun boardDao(): BoardDao
     abstract fun cardDao(): CardDao
