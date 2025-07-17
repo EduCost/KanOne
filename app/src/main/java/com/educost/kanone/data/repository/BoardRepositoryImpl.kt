@@ -14,25 +14,5 @@ import java.io.IOException
 
 class BoardRepositoryImpl @Inject constructor(val boardDao: BoardDao) : BoardRepository {
 
-    override fun observeCompleteBoard(boardId: Long): Flow<Result<Board, LocalDataError>> {
-        return boardDao.observeCompleteBoard(boardId).map {
-            Result.Success(it.toBoard())
-        }.catch { e ->
-            if (e is IOException) {
-                Result.Error(LocalDataError.IO_ERROR)
-            } else {
-                Result.Error(LocalDataError.UNKNOWN)
-            }
-        }
-    }
 
-    override suspend fun getBoard(boardId: Long): Result<Board, LocalDataError> {
-        return try {
-            Result.Success(boardDao.getBoard(boardId).toBoard())
-        } catch (e: IOException) {
-            Result.Error(LocalDataError.IO_ERROR)
-        } catch (e: Exception) {
-            Result.Error(LocalDataError.UNKNOWN)
-        }
-    }
 }

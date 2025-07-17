@@ -7,8 +7,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface BoardRepository {
 
-    fun observeCompleteBoard(boardId: Long): Flow<Result<Board, LocalDataError>>
-
-    suspend fun getBoard(boardId: Long): Result<Board, LocalDataError>
 
 }
