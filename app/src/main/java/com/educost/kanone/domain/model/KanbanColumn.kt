@@ -7,5 +7,5 @@ data class KanbanColumn(
     val name: String,
     val position: Int,
     val color: Palette,
-    val cards: List<CardItem>
+    val boardId: Long
 )
