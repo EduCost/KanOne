@@ -6,12 +6,13 @@ import com.educost.kanone.domain.model.Label
 fun LabelEntity.toLabel() = Label(
     id = this.id,
     name = this.name,
-    color = this.color
+    color = this.color,
+    boardId = this.boardId
 )
 
-fun Label.toLabelEntity(boardId: Long) = LabelEntity(
+fun Label.toLabelEntity() = LabelEntity(
     id = this.id,
     name = this.name,
     color = this.color,
-    boardId = boardId
+    boardId = this.boardId
 )
