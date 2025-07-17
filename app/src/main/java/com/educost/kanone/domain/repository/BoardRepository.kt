@@ -7,5 +7,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface BoardRepository {
 
+    suspend fun getBoard(id: Long): Result<Board, LocalDataError>
+
+    suspend fun getAllBoards(): Result<List<Board>, LocalDataError>
 
 }
