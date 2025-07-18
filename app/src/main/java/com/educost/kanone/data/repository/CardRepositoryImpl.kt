@@ -3,7 +3,7 @@ package com.educost.kanone.data.repository
 import android.util.Log
 import com.educost.kanone.data.local.CardDao
 import com.educost.kanone.data.mapper.toCardItem
-import com.educost.kanone.domain.error.LocalDataError
+import com.educost.kanone.domain.error.FetchDataError
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.repository.CardRepository
 import com.educost.kanone.utils.LogTags
@@ -15,16 +15,16 @@ import java.io.IOException
 
 class CardRepositoryImpl(val cardDao: CardDao) : CardRepository {
 
-    override fun observeCards(columnIds: List<Long>): Flow<Result<List<CardItem>, LocalDataError>> {
+    override fun observeCards(columnIds: List<Long>): Flow<Result<List<CardItem>, FetchDataError>> {
         return cardDao.observeCards(columnIds).map { cards ->
             Result.Success(cards.map { it.toCardItem() })
 
         }.catch { e ->
             when (e) {
-                is IOException -> Result.Error(LocalDataError.IO_ERROR)
+                is IOException -> Result.Error(FetchDataError.IO_ERROR)
                 else -> {
                     Log.e(LogTags.CARD_REPO, e.stackTraceToString())
-                    Result.Error(LocalDataError.UNKNOWN)
+                    Result.Error(FetchDataError.UNKNOWN)
                 }
             }
         }
