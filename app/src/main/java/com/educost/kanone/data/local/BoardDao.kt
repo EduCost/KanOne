@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.educost.kanone.data.model.entity.BoardEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BoardDao {
@@ -14,7 +15,7 @@ interface BoardDao {
     suspend fun getBoard(boardId: Long): BoardEntity
 
     @Query("SELECT * FROM boards")
-    suspend fun getBoards(): List<BoardEntity>
+    fun observeAllBoards(): Flow<List<BoardEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBoard(board: BoardEntity): Long

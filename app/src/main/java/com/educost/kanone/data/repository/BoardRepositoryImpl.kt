@@ -9,6 +9,9 @@ import com.educost.kanone.domain.repository.BoardRepository
 import com.educost.kanone.utils.LogTags
 import com.educost.kanone.utils.Result
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 class BoardRepositoryImpl @Inject constructor(val boardDao: BoardDao) : BoardRepository {
@@ -25,16 +28,17 @@ class BoardRepositoryImpl @Inject constructor(val boardDao: BoardDao) : BoardRep
         }
     }
 
-    override suspend fun getAllBoards(): Result<List<Board>, FetchDataError> {
-        return try {
-            val boards = boardDao.getAllBoards()
+    override fun observeAllBoards(): Flow<Result<List<Board>, FetchDataError>> {
+        return boardDao.observeAllBoards().map { boards ->
             Result.Success(boards.map { it.toBoard() })
-        } catch (e: IOException) {
-            Result.Error(FetchDataError.IO_ERROR)
-        } catch (e: Exception) {
-            Log.e(LogTags.BOARD_REPO, e.stackTraceToString())
-            Result.Error(FetchDataError.UNKNOWN)
+        }.catch { e ->
+            when (e) {
+                is IOException -> Result.Error(FetchDataError.IO_ERROR)
+                else -> {
+                    Log.e(LogTags.BOARD_REPO, e.stackTraceToString())
+                    Result.Error(FetchDataError.UNKNOWN)
+                }
+            }
         }
     }
-
 }
