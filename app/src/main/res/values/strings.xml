@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">KanOne</string>
+
+    <!--  ERROR MESSAGES  -->
+    <string name="fetch_io_error">An error occurred while fetching data.</string>
+    <string name="unknown_error">An unknown error occurred.</string>
+    <string name="no_boards_found">No boards found</string>
+    <string name="insert_io_error">An error occurred while inserting data.</string>
+
+
+    <string name="create_board">Create Board</string>
+    <string name="board_name">Board Name</string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
 </resources>

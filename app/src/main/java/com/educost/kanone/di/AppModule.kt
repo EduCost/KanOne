@@ -2,7 +2,12 @@ package com.educost.kanone.di
 
 import android.content.Context
 import androidx.room.Room
+import com.educost.kanone.data.local.BoardDao
 import com.educost.kanone.data.local.KanbanDatabase
+import com.educost.kanone.data.repository.BoardRepositoryImpl
+import com.educost.kanone.domain.repository.BoardRepository
+import com.educost.kanone.domain.usecase.CreateBoardUseCase
+import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,5 +52,24 @@ object AppModule {
     @Provides
     @Singleton
     fun provideLabelDao(database: KanbanDatabase) = database.labelDao()
+
+    @Provides
+    @Singleton
+    fun provideBoardRepository(boardDao: BoardDao): BoardRepository = BoardRepositoryImpl(boardDao)
+
+    @Provides
+    @Singleton
+    fun provideObserveAllBoardsUseCase(boardRepository: BoardRepository): ObserveAllBoardsUseCase {
+        return ObserveAllBoardsUseCase(boardRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCreateBoardUseCase(boardRepository: BoardRepository): CreateBoardUseCase {
+        return CreateBoardUseCase(boardRepository)
+    }
+
+
+
 
 }
