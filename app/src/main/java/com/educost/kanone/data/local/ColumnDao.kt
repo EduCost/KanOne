@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ColumnDao {
 
-    @Query("SELECT * FROM columns WHERE board_id IN (:boardIds)")
-    fun observeColumns(boardIds: List<Long>): Flow<List<ColumnEntity>>
+    @Query("SELECT * FROM columns WHERE board_id = :boardId")
+    fun observeColumns(boardId: Long): Flow<List<ColumnEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertColumn(column: ColumnEntity): Long

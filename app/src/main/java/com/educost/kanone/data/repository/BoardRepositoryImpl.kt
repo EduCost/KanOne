@@ -3,7 +3,9 @@ package com.educost.kanone.data.repository
 import android.util.Log
 import com.educost.kanone.data.local.BoardDao
 import com.educost.kanone.data.mapper.toBoard
+import com.educost.kanone.data.mapper.toBoardEntity
 import com.educost.kanone.domain.error.FetchDataError
+import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.repository.BoardRepository
 import com.educost.kanone.utils.LogTags
@@ -39,6 +41,18 @@ class BoardRepositoryImpl @Inject constructor(val boardDao: BoardDao) : BoardRep
                     Result.Error(FetchDataError.UNKNOWN)
                 }
             }
+        }
+    }
+
+    override suspend fun createBoard(board: Board): Result<Long, InsertDataError> {
+        return try {
+            val boardId = boardDao.createBoard(board.toBoardEntity())
+            Result.Success(boardId)
+        } catch (e: IOException) {
+            Result.Error(InsertDataError.IO_ERROR)
+        } catch (e: Exception) {
+            Log.e(LogTags.BOARD_REPO, e.stackTraceToString())
+            Result.Error(InsertDataError.UNKNOWN)
         }
     }
 }

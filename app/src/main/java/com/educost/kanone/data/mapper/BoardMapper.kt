@@ -6,12 +6,10 @@ import com.educost.kanone.domain.model.Board
 fun BoardEntity.toBoard(): Board = Board(
     id = this.id,
     name = this.name,
-    position = this.position,
 )
 
 fun Board.toBoardEntity(): BoardEntity = BoardEntity(
     id = this.id,
     name = this.name,
-    position = this.position
 )
 

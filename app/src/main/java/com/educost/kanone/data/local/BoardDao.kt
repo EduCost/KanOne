@@ -18,7 +18,7 @@ interface BoardDao {
     fun observeAllBoards(): Flow<List<BoardEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBoard(board: BoardEntity): Long
+    suspend fun createBoard(board: BoardEntity): Long
 
     @Delete
     suspend fun deleteBoard(board: BoardEntity)
