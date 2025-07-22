@@ -12,4 +12,5 @@
     <string name="board_name">Board Name</string>
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
+    <string name="error_creating_board">Error creating board</string>
 </resources>

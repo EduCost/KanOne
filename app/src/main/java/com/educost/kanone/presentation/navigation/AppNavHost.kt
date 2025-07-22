@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.educost.kanone.presentation.screens.board.BoardScreen
 import com.educost.kanone.presentation.screens.home.HomeScreen
 
 @Composable
@@ -18,7 +19,9 @@ fun AppNavHost(
         startDestination = HomeDestination
     ) {
         composable<HomeDestination> {
-            HomeScreen()
+            HomeScreen(
+                onNavigateToBoard = { }
+            )
         }
     }
 }

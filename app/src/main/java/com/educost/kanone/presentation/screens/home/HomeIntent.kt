@@ -7,5 +7,6 @@ sealed interface HomeIntent {
     data object ShowCreateBoardDialog : HomeIntent
     data object DismissCreateBoardDialog : HomeIntent
     data class OnNewBoardNameChange(val newBoardName: String) : HomeIntent
+    data class NavigateToBoardScreen(val boardId: Long) : HomeIntent
 
 }

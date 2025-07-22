@@ -8,12 +8,15 @@ import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.usecase.CreateBoardUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
+import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText
 import com.educost.kanone.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -26,6 +29,9 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
+    private val _sideEffectChannel = Channel<HomeSideEffect>(Channel.BUFFERED)
+    val sideEffectFlow = _sideEffectChannel.receiveAsFlow()
+
     init {
         observeAllBoards()
     }
@@ -36,6 +42,7 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.ShowCreateBoardDialog -> showCreateBoardDialog()
             is HomeIntent.DismissCreateBoardDialog -> dismissCreateBoardDialog()
             is HomeIntent.OnNewBoardNameChange -> onNewBoardNameChange(intent.newBoardName)
+            is HomeIntent.NavigateToBoardScreen -> navigateToBoardScreen(intent.boardId)
         }
     }
 
@@ -50,7 +57,6 @@ class HomeViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 boards = boardsResult.data,
-                                errorMessage = null,
                                 isLoading = false
                             )
                         }
@@ -60,23 +66,27 @@ class HomeViewModel @Inject constructor(
 
                         when (boardsResult.error) {
                             FetchDataError.IO_ERROR -> {
-                                _uiState.update {
-                                    it.copy(
-                                        errorMessage = UiText.StringResource(R.string.fetch_io_error),
-                                        isLoading = false
+                                _sideEffectChannel.send(
+                                    HomeSideEffect.ShowSnackBar(
+                                        SnackbarEvent(
+                                            message = UiText.StringResource(R.string.fetch_io_error)
+                                        )
                                     )
-                                }
+                                )
                             }
 
                             FetchDataError.UNKNOWN -> {
-                                _uiState.update {
-                                    it.copy(
-                                        errorMessage = UiText.StringResource(R.string.unknown_error),
-                                        isLoading = false
+                                _sideEffectChannel.send(
+                                    HomeSideEffect.ShowSnackBar(
+                                        SnackbarEvent(
+                                            message = UiText.StringResource(R.string.unknown_error)
+                                        )
                                     )
-                                }
+                                )
                             }
                         }
+
+                        _uiState.update { it.copy(isLoading = false) }
                     }
                 }
             }
@@ -88,23 +98,15 @@ class HomeViewModel @Inject constructor(
             val result = createBoardUseCase(board)
             when (result) {
                 is Result.Error -> {
-                    when (result.error) {
-                        InsertDataError.IO_ERROR -> {
-                            _uiState.update {
-                                it.copy(
-                                    errorMessage = UiText.StringResource(R.string.insert_io_error),
-                                )
-                            }
-                        }
 
-                        InsertDataError.UNKNOWN -> {
-                            _uiState.update {
-                                it.copy(
-                                    errorMessage = UiText.StringResource(R.string.unknown_error)
-                                )
-                            }
-                        }
-                    }
+                    _sideEffectChannel.send(
+                        HomeSideEffect.ShowSnackBar(
+                            SnackbarEvent(
+                                message = UiText.StringResource(R.string.error_creating_board)
+                            )
+                        )
+                    )
+
                 }
 
                 is Result.Success -> Unit
@@ -128,5 +130,11 @@ class HomeViewModel @Inject constructor(
 
     private fun onNewBoardNameChange(newBoardName: String) {
         _uiState.update { it.copy(newBoardName = newBoardName) }
+    }
+
+    private fun navigateToBoardScreen(boardId: Long) {
+        viewModelScope.launch {
+            _sideEffectChannel.send(HomeSideEffect.NavigateToBoardScreen(boardId))
+        }
     }
 }

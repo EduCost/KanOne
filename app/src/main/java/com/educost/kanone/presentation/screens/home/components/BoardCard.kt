@@ -17,9 +17,10 @@ import com.educost.kanone.domain.model.Board
 import com.educost.kanone.presentation.theme.KanOneTheme
 
 @Composable
-fun BoardCard(modifier: Modifier = Modifier, board: Board) {
+fun BoardCard(modifier: Modifier = Modifier, board: Board, onNavigateToBoard: (Long) -> Unit) {
     Card(
-        modifier = modifier
+        modifier = modifier,
+        onClick = { onNavigateToBoard(board.id) }
     ) {
         Box(
             modifier = Modifier
@@ -48,7 +49,8 @@ private fun BoardCardPreview() {
         Box(modifier = Modifier.fillMaxSize()) {
             BoardCard(
                 modifier = Modifier.fillMaxWidth(0.5f),
-                board = Board(0, "Test")
+                board = Board(0, "Test"),
+                onNavigateToBoard = {}
             )
         }
     }
