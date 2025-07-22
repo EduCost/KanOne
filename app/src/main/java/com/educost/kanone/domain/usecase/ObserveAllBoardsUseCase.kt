@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 class ObserveAllBoardsUseCase(val boardRepository: BoardRepository) {
 
-    suspend operator fun invoke(): Flow<Result<List<Board>, FetchDataError>>  {
+    operator fun invoke(): Flow<Result<List<Board>, FetchDataError>>  {
         return boardRepository.observeAllBoards()
     }
 
