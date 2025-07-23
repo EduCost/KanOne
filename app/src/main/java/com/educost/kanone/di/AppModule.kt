@@ -15,6 +15,8 @@ import com.educost.kanone.data.repository.CardRepositoryImpl
 import com.educost.kanone.data.repository.ChecklistRepositoryImpl
 import com.educost.kanone.data.repository.ColumnRepositoryImpl
 import com.educost.kanone.data.repository.LabelRepositoryImpl
+import com.educost.kanone.dispatchers.DefaultDispatcherProvider
+import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.domain.repository.AttachmentRepository
 import com.educost.kanone.domain.repository.BoardRepository
 import com.educost.kanone.domain.repository.CardRepository
@@ -34,6 +36,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideDispatcherProvider(): DispatcherProvider {
+        return DefaultDispatcherProvider()
+    }
 
     // Database
     @Provides
