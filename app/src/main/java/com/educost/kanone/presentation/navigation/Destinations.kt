@@ -4,3 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data object HomeDestination
+
+@Serializable
+data class BoardDestination(val boardId: Long)

@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.educost.kanone.presentation.screens.board.BoardScreen
 import com.educost.kanone.presentation.screens.home.HomeScreen
 
@@ -20,8 +21,14 @@ fun AppNavHost(
     ) {
         composable<HomeDestination> {
             HomeScreen(
-                onNavigateToBoard = { }
+                onNavigateToBoard = { boardId ->
+                    navController.navigate(BoardDestination(boardId))
+                }
             )
+        }
+        composable<BoardDestination> { backStackEntry ->
+            val boardId = backStackEntry.toRoute<BoardDestination>().boardId
+            BoardScreen(boardId = boardId)
         }
     }
 }
