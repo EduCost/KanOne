@@ -13,4 +13,5 @@
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
     <string name="error_creating_board">Error creating board</string>
+    <string name="menu_button">Menu Button</string>
 </resources>

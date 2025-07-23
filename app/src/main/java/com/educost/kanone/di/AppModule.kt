@@ -23,6 +23,7 @@ import com.educost.kanone.domain.repository.ColumnRepository
 import com.educost.kanone.domain.repository.LabelRepository
 import com.educost.kanone.domain.usecase.CreateBoardUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
+import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -87,5 +88,11 @@ object AppModule {
     @Singleton
     fun provideCreateBoardUseCase(boardRepository: BoardRepository): CreateBoardUseCase {
         return CreateBoardUseCase(boardRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideObserveCompleteBoardUseCase(boardRepository: BoardRepository): ObserveCompleteBoardUseCase {
+        return ObserveCompleteBoardUseCase(boardRepository)
     }
 }

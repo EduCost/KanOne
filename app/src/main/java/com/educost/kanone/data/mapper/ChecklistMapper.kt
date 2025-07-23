@@ -7,14 +7,13 @@ fun ChecklistEntity.toChecklist() = Checklist(
     id = this.id,
     description = this.description,
     isCompleted = this.isCompleted,
-    position = this.position,
-    cardId = this.cardId
+    position = this.position
 )
 
-fun Checklist.toChecklistEntity() = ChecklistEntity(
+fun Checklist.toChecklistEntity(cardId: Long) = ChecklistEntity(
     id = this.id,
     description = this.description,
     position = this.position,
     isCompleted = this.isCompleted,
-    cardId = this.cardId
+    cardId = cardId
 )

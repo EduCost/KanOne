@@ -5,6 +5,5 @@ import com.educost.kanone.presentation.theme.LabelPalette
 data class Label(
     val id: Long,
     val name: String,
-    val color: LabelPalette,
-    val boardId: Long
+    val color: LabelPalette
 )

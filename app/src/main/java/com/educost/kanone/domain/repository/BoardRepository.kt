@@ -12,6 +12,8 @@ interface BoardRepository {
 
     fun observeAllBoards(): Flow<Result<List<Board>, FetchDataError>>
 
+    fun observeCompleteBoard(boardId: Long): Flow<Result<Board, FetchDataError>>
+
     suspend fun createBoard(board: Board): Result<Long, InsertDataError>
 
 }

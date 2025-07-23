@@ -36,7 +36,8 @@ fun CreateBoardDialog(
                         HomeIntent.CreateBoard(
                             Board(
                                 id = 0,
-                                name = state.newBoardName
+                                name = state.newBoardName,
+                                emptyList()
                             )
                         )
                     )

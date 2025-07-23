@@ -49,7 +49,7 @@ private fun BoardCardPreview() {
         Box(modifier = Modifier.fillMaxSize()) {
             BoardCard(
                 modifier = Modifier.fillMaxWidth(0.5f),
-                board = Board(0, "Test"),
+                board = Board(0, "Test", emptyList()),
                 onNavigateToBoard = {}
             )
         }

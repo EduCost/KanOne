@@ -1,6 +1,7 @@
 package com.educost.kanone.data.mapper
 
 import com.educost.kanone.data.model.entity.ColumnEntity
+import com.educost.kanone.data.model.relation.ColumnsWithCards
 import com.educost.kanone.domain.model.KanbanColumn
 
 fun ColumnEntity.toKanbanColumn(): KanbanColumn = KanbanColumn(
@@ -8,13 +9,21 @@ fun ColumnEntity.toKanbanColumn(): KanbanColumn = KanbanColumn(
     name = this.name,
     position = this.position,
     color = this.color,
-    boardId = this.boardId
+    cards = emptyList()
 )
 
-fun KanbanColumn.toColumnEntity(): ColumnEntity = ColumnEntity(
+fun KanbanColumn.toColumnEntity(boardId: Long): ColumnEntity = ColumnEntity(
     id = this.id,
     name = this.name,
     position = this.position,
     color = this.color,
-    boardId = this.boardId
+    boardId = boardId
+)
+
+fun ColumnsWithCards.toKanbanColumn(): KanbanColumn = KanbanColumn(
+    id = this.column.id,
+    name = this.column.name,
+    position = this.column.position,
+    color = this.column.color,
+    cards = this.cards.map { it.toCardItem() }
 )

@@ -55,4 +55,16 @@ class BoardRepositoryImpl @Inject constructor(val boardDao: BoardDao) : BoardRep
             Result.Error(InsertDataError.UNKNOWN)
         }
     }
+
+    override fun observeCompleteBoard(boardId: Long): Flow<Result<Board, FetchDataError>> {
+        return boardDao.observeCompleteBoard(boardId).map {
+            Result.Success(it.toBoard())
+        }.catch { e ->
+            if (e is IOException) {
+                Result.Error(FetchDataError.IO_ERROR)
+            } else {
+                Result.Error(FetchDataError.UNKNOWN)
+            }
+        }
+    }
 }
