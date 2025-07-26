@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.educost.kanone.domain.model.Board
+import com.educost.kanone.presentation.model.BoardUi
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
@@ -102,7 +103,7 @@ private fun BoardScreenPreview() {
     KanOneTheme {
         BoardScreen(
             state = BoardState(
-                board = Board(
+                board = BoardUi(
                     id = 0,
                     name = "Dummy",
                     emptyList()

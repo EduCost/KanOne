@@ -15,6 +15,8 @@ data class CardUi(
     val createdAt: LocalDateTime,
     val dueDate: LocalDateTime?,
     val thumbnailFileName: String?,
-    val columnId: Long,
+    val checklists: List<Checklist>,
+    val attachments: List<Attachment>,
+    val labels: List<Label>,
     val coordinates: Coordinates
 )

@@ -12,7 +12,7 @@ data class CardItem(
     val createdAt: LocalDateTime,
     val dueDate: LocalDateTime?,
     val thumbnailFileName: String?,
-    val checkLists: List<Checklist>,
+    val checklists: List<Checklist>,
     val attachments: List<Attachment>,
     val labels: List<Label>,
 )

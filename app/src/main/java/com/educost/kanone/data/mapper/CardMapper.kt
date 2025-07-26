@@ -13,7 +13,7 @@ fun CardEntity.toCardItem() = CardItem(
     createdAt = this.createdAt,
     dueDate = this.dueDate,
     thumbnailFileName = this.thumbnailFileName,
-    checkLists = emptyList(),
+    checklists = emptyList(),
     attachments = emptyList(),
     labels = emptyList()
 )
@@ -39,7 +39,7 @@ fun CardWithRelations.toCardItem() = CardItem(
     createdAt = this.card.createdAt,
     dueDate = this.card.dueDate,
     thumbnailFileName = this.card.thumbnailFileName,
-    checkLists = this.checklists.map { it.toChecklist() },
+    checklists = this.checklists.map { it.toChecklist() },
     attachments = this.attachments.map { it.toAttachment() },
     labels = this.labels.map { it.toLabel() }
 )
