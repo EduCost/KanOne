@@ -3,19 +3,18 @@
 package com.educost.kanone.presentation.screens.board.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.board.BoardIntent
 
@@ -44,6 +43,39 @@ fun BoardAppBar(
                     }
                 }
             )
+        }
+
+        BoardAppBarType.ADD_COLUMN -> {
+            CenterAlignedTopAppBar(
+                modifier = modifier,
+                title = {
+                    Text(
+                        text = stringResource(R.string.create_column),
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { onIntent(BoardIntent.CancelColumnCreation) }
+                    ) {
+                        Icon(
+                            Icons.Filled.Clear,
+                            contentDescription = stringResource(R.string.cancel_column_creation)
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = { onIntent(BoardIntent.ConfirmColumnCreation) }
+                    ) {
+                        Icon(
+                            Icons.Filled.Check,
+                            contentDescription = stringResource(R.string.confirm_column_creation)
+                        )
+                    }
+                },
+
+
+                )
         }
     }
 }

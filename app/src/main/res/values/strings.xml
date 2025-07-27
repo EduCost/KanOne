@@ -15,4 +15,11 @@
     <string name="cancel">Cancel</string>
     <string name="menu_button">Menu Button</string>
     <string name="add_column">Add Column</string>
+    <string name="create_column">Create Column</string>
+    <string name="cancel_column_creation">Cancel column creation</string>
+    <string name="confirm_column_creation">Confirm column creation</string>
+    <string name="board_textfield_label_column_name">Column Name</string>
+    <string name="board_snackbar_column_creation_error">Error creating column</string>
+
+
 </resources>

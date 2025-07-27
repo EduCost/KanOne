@@ -8,6 +8,8 @@ import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.repository.BoardRepository
+import com.educost.kanone.domain.repository.ColumnRepository
+import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.presentation.model.Coordinates
 import com.educost.kanone.presentation.theme.Palette
@@ -29,13 +31,18 @@ import java.time.LocalDateTime
 @OptIn(ExperimentalCoroutinesApi::class)
 class BoardViewModelTest {
 
-    private lateinit var repository: BoardRepository
+    private lateinit var boardRepository: BoardRepository
+    private lateinit var columnRepository: ColumnRepository
     private lateinit var observeCompleteBoardUseCase: ObserveCompleteBoardUseCase
+    private lateinit var createColumnUseCase: CreateColumnUseCase
 
     @Before
     fun setUp() {
-        repository = mockk()
-        observeCompleteBoardUseCase = ObserveCompleteBoardUseCase(repository)
+        boardRepository = mockk()
+        observeCompleteBoardUseCase = ObserveCompleteBoardUseCase(boardRepository)
+
+        columnRepository = mockk()
+        createColumnUseCase = CreateColumnUseCase(columnRepository)
     }
 
     @Test
@@ -43,13 +50,14 @@ class BoardViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher()
         val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
-        coEvery { repository.observeCompleteBoard(any()) } returns flowOf(
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
         )
 
         val viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase
+            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
+            createColumnUseCase = createColumnUseCase
         )
 
         runTest(testDispatcher) {
@@ -59,7 +67,7 @@ class BoardViewModelTest {
                 assertThat(awaitItem().isLoading).isTrue()
                 assertThat(awaitItem().isLoading).isFalse()
                 cancelAndConsumeRemainingEvents()
-                coVerify { repository.observeCompleteBoard(any()) }
+                coVerify { boardRepository.observeCompleteBoard(any()) }
             }
         }
     }
@@ -69,13 +77,14 @@ class BoardViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher()
         val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
-        coEvery { repository.observeCompleteBoard(any()) } returns flowOf(
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Error(FetchDataError.UNKNOWN)
         )
 
         val viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase
+            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
+            createColumnUseCase = createColumnUseCase
         )
 
         runTest(testDispatcher) {
@@ -85,7 +94,7 @@ class BoardViewModelTest {
                 assertThat(awaitItem().isLoading).isTrue()
                 assertThat(awaitItem().isLoading).isFalse()
                 cancelAndConsumeRemainingEvents()
-                coVerify { repository.observeCompleteBoard(any()) }
+                coVerify { boardRepository.observeCompleteBoard(any()) }
             }
         }
     }
@@ -95,13 +104,14 @@ class BoardViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher()
         val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
-        coEvery { repository.observeCompleteBoard(any()) } returns flowOf(
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
         )
 
         val viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase
+            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
+            createColumnUseCase = createColumnUseCase
         )
 
         runTest(testDispatcher) {
@@ -116,7 +126,7 @@ class BoardViewModelTest {
                 assertThat(newBoard?.name).isEqualTo("test")
                 assertThat(newBoard?.coordinates).isEqualTo(Coordinates())
                 cancelAndConsumeRemainingEvents()
-                coVerify { repository.observeCompleteBoard(any()) }
+                coVerify { boardRepository.observeCompleteBoard(any()) }
             }
         }
     }
@@ -147,11 +157,12 @@ class BoardViewModelTest {
             )
         )
 
-        coEvery { repository.observeCompleteBoard(any()) } returns flowOf(Result.Success(newBoard))
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(Result.Success(newBoard))
 
         val viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase
+            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
+            createColumnUseCase = createColumnUseCase
         )
 
         runTest(testDispatcher) {
@@ -171,7 +182,7 @@ class BoardViewModelTest {
                 assertThat(updatedBoard?.columns[1]?.bodyCoordinates).isEqualTo(Coordinates())
 
                 cancelAndConsumeRemainingEvents()
-                coVerify { repository.observeCompleteBoard(any()) }
+                coVerify { boardRepository.observeCompleteBoard(any()) }
             }
         }
     }
@@ -216,11 +227,12 @@ class BoardViewModelTest {
             )
         )
 
-        coEvery { repository.observeCompleteBoard(any()) } returns flowOf(Result.Success(newBoard))
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(Result.Success(newBoard))
 
         val viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase
+            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
+            createColumnUseCase = createColumnUseCase
         )
 
         runTest(testDispatcher) {
@@ -240,7 +252,7 @@ class BoardViewModelTest {
                 assertThat(updatedBoard?.columns[1]?.cards).isEmpty()
 
                 cancelAndConsumeRemainingEvents()
-                coVerify { repository.observeCompleteBoard(any()) }
+                coVerify { boardRepository.observeCompleteBoard(any()) }
             }
         }
     }
@@ -251,11 +263,12 @@ class BoardViewModelTest {
         val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         val boardFlow = MutableSharedFlow<Result<Board, FetchDataError>>()
-        coEvery { repository.observeCompleteBoard(any()) } returns boardFlow.asSharedFlow()
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns boardFlow.asSharedFlow()
 
         val viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase
+            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
+            createColumnUseCase = createColumnUseCase
         )
 
         runTest(testDispatcher) {
@@ -284,7 +297,7 @@ class BoardViewModelTest {
 
 
                 cancelAndConsumeRemainingEvents()
-                coVerify { repository.observeCompleteBoard(any()) }
+                coVerify { boardRepository.observeCompleteBoard(any()) }
             }
         }
     }
@@ -295,11 +308,12 @@ class BoardViewModelTest {
         val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         val boardFlow = MutableSharedFlow<Result<Board, FetchDataError>>()
-        coEvery { repository.observeCompleteBoard(any()) } returns boardFlow.asSharedFlow()
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns boardFlow.asSharedFlow()
 
         val viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase
+            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
+            createColumnUseCase = createColumnUseCase
         )
 
         val firstEmission = Result.Success(
@@ -395,7 +409,7 @@ class BoardViewModelTest {
 
 
                 cancelAndConsumeRemainingEvents()
-                coVerify { repository.observeCompleteBoard(any()) }
+                coVerify { boardRepository.observeCompleteBoard(any()) }
             }
         }
     }
@@ -406,11 +420,12 @@ class BoardViewModelTest {
         val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         val boardFlow = MutableSharedFlow<Result<Board, FetchDataError>>()
-        coEvery { repository.observeCompleteBoard(any()) } returns boardFlow.asSharedFlow()
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns boardFlow.asSharedFlow()
 
         val viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase
+            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
+            createColumnUseCase = createColumnUseCase
         )
 
         val firstEmission = Result.Success(
@@ -608,7 +623,7 @@ class BoardViewModelTest {
 
 
                 cancelAndConsumeRemainingEvents()
-                coVerify { repository.observeCompleteBoard(any()) }
+                coVerify { boardRepository.observeCompleteBoard(any()) }
             }
         }
     }
@@ -618,13 +633,14 @@ class BoardViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher()
         val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
-        coEvery { repository.observeCompleteBoard(any()) } returns flowOf(
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
         )
 
         val viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase
+            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
+            createColumnUseCase = createColumnUseCase
         )
 
         runTest(testDispatcher) {
@@ -638,7 +654,7 @@ class BoardViewModelTest {
                 viewModel.onIntent(BoardIntent.SetBoardCoordinates(newCoordinates))
                 assertThat(awaitItem().board?.coordinates).isEqualTo(newCoordinates)
                 cancelAndConsumeRemainingEvents()
-                coVerify { repository.observeCompleteBoard(any()) }
+                coVerify { boardRepository.observeCompleteBoard(any()) }
             }
         }
     }
@@ -669,13 +685,14 @@ class BoardViewModelTest {
             )
         )
 
-        coEvery { repository.observeCompleteBoard(any()) } returns flowOf(
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Success(newBoard)
         )
 
         val viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase
+            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
+            createColumnUseCase = createColumnUseCase
         )
 
 
@@ -707,7 +724,7 @@ class BoardViewModelTest {
 
 
                 cancelAndConsumeRemainingEvents()
-                coVerify { repository.observeCompleteBoard(any()) }
+                coVerify { boardRepository.observeCompleteBoard(any()) }
             }
         }
     }
@@ -738,13 +755,14 @@ class BoardViewModelTest {
             )
         )
 
-        coEvery { repository.observeCompleteBoard(any()) } returns flowOf(
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Success(newBoard)
         )
 
         val viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase
+            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
+            createColumnUseCase = createColumnUseCase
         )
 
 
@@ -776,7 +794,7 @@ class BoardViewModelTest {
 
 
                 cancelAndConsumeRemainingEvents()
-                coVerify { repository.observeCompleteBoard(any()) }
+                coVerify { boardRepository.observeCompleteBoard(any()) }
             }
         }
     }
@@ -827,13 +845,14 @@ class BoardViewModelTest {
             )
         )
 
-        coEvery { repository.observeCompleteBoard(any()) } returns flowOf(
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Success(newBoard)
         )
 
         val viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase
+            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
+            createColumnUseCase = createColumnUseCase
         )
 
 
@@ -865,7 +884,7 @@ class BoardViewModelTest {
 
 
                 cancelAndConsumeRemainingEvents()
-                coVerify { repository.observeCompleteBoard(any()) }
+                coVerify { boardRepository.observeCompleteBoard(any()) }
             }
         }
     }

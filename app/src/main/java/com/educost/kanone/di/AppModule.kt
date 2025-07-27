@@ -24,6 +24,7 @@ import com.educost.kanone.domain.repository.ChecklistRepository
 import com.educost.kanone.domain.repository.ColumnRepository
 import com.educost.kanone.domain.repository.LabelRepository
 import com.educost.kanone.domain.usecase.CreateBoardUseCase
+import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import dagger.Module
@@ -84,6 +85,10 @@ object AppModule {
     @Singleton
     fun provideBoardRepository(boardDao: BoardDao): BoardRepository = BoardRepositoryImpl(boardDao)
 
+    @Provides
+    @Singleton
+    fun provideColumnRepository(columnDao: ColumnDao): ColumnRepository = ColumnRepositoryImpl(columnDao)
+
 
     // Use cases
     @Provides
@@ -102,5 +107,11 @@ object AppModule {
     @Singleton
     fun provideObserveCompleteBoardUseCase(boardRepository: BoardRepository): ObserveCompleteBoardUseCase {
         return ObserveCompleteBoardUseCase(boardRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCreateColumnUseCase(columnRepository: ColumnRepository): CreateColumnUseCase {
+        return CreateColumnUseCase(columnRepository)
     }
 }

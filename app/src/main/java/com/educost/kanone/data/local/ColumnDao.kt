@@ -15,7 +15,7 @@ interface ColumnDao {
     fun observeColumns(boardId: Long): Flow<List<ColumnEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertColumn(column: ColumnEntity): Long
+    suspend fun createColumn(column: ColumnEntity): Long
 
     @Delete
     suspend fun deleteColumn(column: ColumnEntity)

@@ -1,5 +1,6 @@
 package com.educost.kanone.presentation.screens.board.components
 
 enum class BoardAppBarType {
-    DEFAULT
+    DEFAULT,
+    ADD_COLUMN
 }

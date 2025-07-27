@@ -65,7 +65,7 @@ class BoardDaoTest {
             assertThat(boardWithoutColumns.columns).isEmpty()
 
             val columnToInsert = getTestColumn(insertedBoardId)
-            val insertedColumnId = columnDao.insertColumn(columnToInsert)
+            val insertedColumnId = columnDao.createColumn(columnToInsert)
             val expectedColumn = columnToInsert.copy(id = insertedColumnId)
 
             val expected = BoardWithColumns(
@@ -96,7 +96,7 @@ class BoardDaoTest {
             assertThat(boardWithoutColumns.columns).isEmpty()
 
             val columnToInsert = getTestColumn(insertedBoardId)
-            val insertedColumnId = columnDao.insertColumn(columnToInsert)
+            val insertedColumnId = columnDao.createColumn(columnToInsert)
             val expectedColumn = columnToInsert.copy(id = insertedColumnId)
             assertThat(awaitItem().columns[0].column).isEqualTo(expectedColumn)
 
@@ -126,7 +126,7 @@ class BoardDaoTest {
             assertThat(boardWithoutColumns.columns).isEmpty()
 
             val columnToInsert = getTestColumn(insertedBoardId)
-            val insertedColumnId = columnDao.insertColumn(columnToInsert)
+            val insertedColumnId = columnDao.createColumn(columnToInsert)
             val expectedColumn = columnToInsert.copy(id = insertedColumnId)
             assertThat(awaitItem().columns[0].column).isEqualTo(expectedColumn)
 
@@ -170,7 +170,7 @@ class BoardDaoTest {
             assertThat(boardWithoutColumns.columns).isEmpty()
 
             val columnToInsert = getTestColumn(insertedBoardId)
-            val insertedColumnId = columnDao.insertColumn(columnToInsert)
+            val insertedColumnId = columnDao.createColumn(columnToInsert)
             val expectedColumn = columnToInsert.copy(id = insertedColumnId)
             assertThat(awaitItem().columns[0].column).isEqualTo(expectedColumn)
 

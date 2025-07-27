@@ -5,11 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.educost.kanone.R
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.domain.error.FetchDataError
+import com.educost.kanone.domain.model.KanbanColumn
+import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.presentation.mapper.toBoardUi
 import com.educost.kanone.presentation.mapper.toCardUi
 import com.educost.kanone.presentation.mapper.toColumnUi
 import com.educost.kanone.presentation.model.Coordinates
+import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
+import com.educost.kanone.presentation.theme.Palette
 import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText
 import com.educost.kanone.utils.Result
@@ -25,7 +29,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BoardViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
-    private val observeCompleteBoardUseCase: ObserveCompleteBoardUseCase
+    private val observeCompleteBoardUseCase: ObserveCompleteBoardUseCase,
+    private val createColumnUseCase: CreateColumnUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BoardState())
@@ -38,6 +43,12 @@ class BoardViewModel @Inject constructor(
     fun onIntent(intent: BoardIntent) {
         when (intent) {
             is BoardIntent.ObserveBoard -> observeBoard(intent.boardId)
+
+            // Create column
+            is BoardIntent.StartCreatingColumn -> startCreatingColumn()
+            is BoardIntent.OnColumnNameChanged -> onColumnNameChanged(intent.name)
+            is BoardIntent.CancelColumnCreation -> cancelColumnCreation()
+            is BoardIntent.ConfirmColumnCreation -> confirmColumnCreation()
 
             // Set coordinates
             is BoardIntent.SetBoardCoordinates -> setBoardCoordinates(intent.coordinates)
@@ -157,6 +168,61 @@ class BoardViewModel @Inject constructor(
         }
     }
 
+    // Create column
+    private fun startCreatingColumn() {
+        _uiState.update { it.copy(topBarType = BoardAppBarType.ADD_COLUMN) }
+    }
+
+    private fun onColumnNameChanged(name: String) {
+        _uiState.update { it.copy(creatingColumnName = name) }
+    }
+
+    private fun cancelColumnCreation() {
+        _uiState.update { it.copy(topBarType = BoardAppBarType.DEFAULT, creatingColumnName = null) }
+    }
+
+    private fun confirmColumnCreation() {
+        uiState.value.board?.let { board ->
+            val column = KanbanColumn(
+                id = 0,
+                name = uiState.value.creatingColumnName ?: "",
+                position = board.columns.size,
+                color = Palette.NONE,
+                cards = emptyList()
+            )
+            viewModelScope.launch(dispatcherProvider.main) {
+                when (createColumnUseCase(column = column, boardId = board.id)) {
+                    is Result.Error -> {
+                        _sideEffectChannel.send(
+                            BoardSideEffect.ShowSnackBar(
+                                SnackbarEvent(
+                                    message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
+                                    withDismissAction = true
+                                )
+                            )
+                        )
+                    }
+
+                    is Result.Success -> Unit
+                }
+            }
+
+        } ?: viewModelScope.launch(dispatcherProvider.main) {
+            _sideEffectChannel.send(
+                BoardSideEffect.ShowSnackBar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
+                        withDismissAction = true
+                    )
+                )
+            )
+        }
+
+        cancelColumnCreation()
+    }
+
+
+    // Set coordinates
     private fun setBoardCoordinates(coordinates: Coordinates) {
         _uiState.update { currentState ->
             currentState.copy(board = currentState.board?.copy(coordinates = coordinates))
