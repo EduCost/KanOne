@@ -1,8 +1,15 @@
 package com.educost.kanone.presentation.screens.board
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -16,10 +23,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewDynamicColors
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.presentation.model.BoardUi
+import com.educost.kanone.presentation.screens.board.components.AddColumnButton
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
@@ -79,25 +90,39 @@ fun BoardScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
-            BoardAppBar(
-                boardName = state.board?.name,
-                type = state.topBarType,
-                onIntent = onIntent
-            )
+            state.board?.let { board ->
+                BoardAppBar(
+                    boardName = board.name,
+                    type = state.topBarType,
+                    onIntent = onIntent
+                )
+            }
         },
         snackbarHost = { SnackbarHost(snackBarHostState) }
     ) { innerPadding ->
 
-        LazyRow(
-            modifier = Modifier.padding(innerPadding)
-        ) {
+        state.board?.let { board ->
+            LazyRow(
+                modifier = Modifier.padding(innerPadding),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(board.columns) { column ->
 
+                }
+
+                item {
+                    AddColumnButton(
+                        onClick = { /*TODO*/ }
+                    )
+                }
+            }
         }
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark()
 @Composable
 private fun BoardScreenPreview() {
     KanOneTheme {

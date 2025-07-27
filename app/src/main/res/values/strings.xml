@@ -14,4 +14,5 @@
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
     <string name="menu_button">Menu Button</string>
+    <string name="add_column">Add Column</string>
 </resources>
