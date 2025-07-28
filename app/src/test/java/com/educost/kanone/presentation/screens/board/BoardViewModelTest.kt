@@ -2,6 +2,7 @@ package com.educost.kanone.presentation.screens.board
 
 import androidx.compose.ui.geometry.Offset
 import app.cash.turbine.test
+import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.dispatchers.TestDispatcherProvider
 import com.educost.kanone.domain.error.FetchDataError
 import com.educost.kanone.domain.model.Board
@@ -18,10 +19,13 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -31,6 +35,9 @@ import java.time.LocalDateTime
 @OptIn(ExperimentalCoroutinesApi::class)
 class BoardViewModelTest {
 
+    private lateinit var testDispatcher: CoroutineDispatcher
+    private lateinit var dispatcherProvider: DispatcherProvider
+    private lateinit var viewModel: BoardViewModel
     private lateinit var boardRepository: BoardRepository
     private lateinit var columnRepository: ColumnRepository
     private lateinit var observeCompleteBoardUseCase: ObserveCompleteBoardUseCase
@@ -43,21 +50,22 @@ class BoardViewModelTest {
 
         columnRepository = mockk()
         createColumnUseCase = CreateColumnUseCase(columnRepository)
+
+        testDispatcher = UnconfinedTestDispatcher()
+        dispatcherProvider = TestDispatcherProvider(testDispatcher)
+
+        viewModel = BoardViewModel(
+            dispatcherProvider = dispatcherProvider,
+            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
+            createColumnUseCase = createColumnUseCase
+        )
     }
 
     @Test
     fun `GIVEN result success, WHEN board is observed, THEN loading state updates to true then false`() {
-        val testDispatcher = UnconfinedTestDispatcher()
-        val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
-        )
-
-        val viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = createColumnUseCase
         )
 
         runTest(testDispatcher) {
@@ -74,17 +82,9 @@ class BoardViewModelTest {
 
     @Test
     fun `GIVEN result error, WHEN board is observed, THEN loading state updates to true then false`() {
-        val testDispatcher = UnconfinedTestDispatcher()
-        val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Error(FetchDataError.UNKNOWN)
-        )
-
-        val viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = createColumnUseCase
         )
 
         runTest(testDispatcher) {
@@ -101,17 +101,9 @@ class BoardViewModelTest {
 
     @Test
     fun `GIVEN null board, WHEN new board is observed, THEN new board is mapped to BoardUi`() {
-        val testDispatcher = UnconfinedTestDispatcher()
-        val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
-        )
-
-        val viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = createColumnUseCase
         )
 
         runTest(testDispatcher) {
@@ -133,8 +125,6 @@ class BoardViewModelTest {
 
     @Test
     fun `GIVEN empty columns, WHEN new columns is collected, THEN new columns are mapped to ColumnUi`() {
-        val testDispatcher = UnconfinedTestDispatcher()
-        val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         val newBoard = Board(
             id = 1,
@@ -158,12 +148,6 @@ class BoardViewModelTest {
         )
 
         coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(Result.Success(newBoard))
-
-        val viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = createColumnUseCase
-        )
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
@@ -189,8 +173,6 @@ class BoardViewModelTest {
 
     @Test
     fun `GIVEN empty cards, WHEN new cards is collected, THEN new cards are mapped to CardUi`() {
-        val testDispatcher = UnconfinedTestDispatcher()
-        val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         val newBoard = Board(
             id = 1,
@@ -229,12 +211,6 @@ class BoardViewModelTest {
 
         coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(Result.Success(newBoard))
 
-        val viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = createColumnUseCase
-        )
-
         runTest(testDispatcher) {
             viewModel.uiState.test {
                 assertThat(awaitItem().board).isNull()
@@ -259,17 +235,9 @@ class BoardViewModelTest {
 
     @Test
     fun `GIVEN existing board, WHEN new board is observed, THEN previous board is updated without changing Ui properties`() {
-        val testDispatcher = UnconfinedTestDispatcher()
-        val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         val boardFlow = MutableSharedFlow<Result<Board, FetchDataError>>()
         coEvery { boardRepository.observeCompleteBoard(any()) } returns boardFlow.asSharedFlow()
-
-        val viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = createColumnUseCase
-        )
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
@@ -304,17 +272,9 @@ class BoardViewModelTest {
 
     @Test
     fun `GIVEN existing columns, WHEN existing column is updated, THEN column is updated without changing Ui properties`() {
-        val testDispatcher = UnconfinedTestDispatcher()
-        val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         val boardFlow = MutableSharedFlow<Result<Board, FetchDataError>>()
         coEvery { boardRepository.observeCompleteBoard(any()) } returns boardFlow.asSharedFlow()
-
-        val viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = createColumnUseCase
-        )
 
         val firstEmission = Result.Success(
             Board(
@@ -416,17 +376,9 @@ class BoardViewModelTest {
 
     @Test
     fun `GIVEN existing cards, WHEN existing card is updated, THEN card is updated without changing Ui properties`() {
-        val testDispatcher = UnconfinedTestDispatcher()
-        val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         val boardFlow = MutableSharedFlow<Result<Board, FetchDataError>>()
         coEvery { boardRepository.observeCompleteBoard(any()) } returns boardFlow.asSharedFlow()
-
-        val viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = createColumnUseCase
-        )
 
         val firstEmission = Result.Success(
             Board(
@@ -630,17 +582,9 @@ class BoardViewModelTest {
 
     @Test
     fun `GIVEN new board coordinates, WHEN SetBoardCoordinates intent is processed , THEN coordinates are updated`() {
-        val testDispatcher = UnconfinedTestDispatcher()
-        val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
-        )
-
-        val viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = createColumnUseCase
         )
 
         runTest(testDispatcher) {
@@ -661,8 +605,6 @@ class BoardViewModelTest {
 
     @Test
     fun `GIVEN new column header coordinates, WHEN SetColumnHeaderCoordinates intent is processed , THEN coordinates are updated`() {
-        val testDispatcher = UnconfinedTestDispatcher()
-        val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         val newBoard = Board(
             id = 1,
@@ -688,14 +630,6 @@ class BoardViewModelTest {
         coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Success(newBoard)
         )
-
-        val viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = createColumnUseCase
-        )
-
-
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
@@ -731,8 +665,6 @@ class BoardViewModelTest {
 
     @Test
     fun `GIVEN new column body coordinates, WHEN SetColumnBodyCoordinates intent is processed , THEN coordinates are updated`() {
-        val testDispatcher = UnconfinedTestDispatcher()
-        val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         val newBoard = Board(
             id = 1,
@@ -758,13 +690,6 @@ class BoardViewModelTest {
         coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Success(newBoard)
         )
-
-        val viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = createColumnUseCase
-        )
-
 
 
         runTest(testDispatcher) {
@@ -801,8 +726,6 @@ class BoardViewModelTest {
 
     @Test
     fun `GIVEN new card coordinates, WHEN SetCardCoordinates intent is processed , THEN coordinates are updated`() {
-        val testDispatcher = UnconfinedTestDispatcher()
-        val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         val newBoard = Board(
             id = 1,
@@ -848,14 +771,6 @@ class BoardViewModelTest {
         coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
             Result.Success(newBoard)
         )
-
-        val viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = createColumnUseCase
-        )
-
-
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
