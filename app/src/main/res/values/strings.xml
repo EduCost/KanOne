@@ -1,25 +1,31 @@
 <resources>
     <string name="app_name">KanOne</string>
 
-    <!--  ERROR MESSAGES  -->
-    <string name="fetch_io_error">An error occurred while fetching data.</string>
-    <string name="unknown_error">An unknown error occurred.</string>
-    <string name="no_boards_found">No boards found</string>
-    <string name="insert_io_error">An error occurred while inserting data.</string>
-    <string name="error_creating_board">Error creating board</string>
+    <!--  COMMON  -->
+    <string name="menu_icon_content_description">Menu Button</string>
+    <!--  COMMON  -->
 
+    <!--  HOME SCREEN  -->
+    <string name="home_screen_no_boards_found">No boards found</string>
+    <string name="home_dialog_title_create_board">Create Board</string>
+    <string name="home_dialog_textfield_label_board_name">Board Name</string>
+    <string name="home_dialog_button_create">Create</string>
+    <string name="home_dialog_button_cancel">Cancel</string>
+    <string name="home_snackbar_fetch_io_error">An error occurred while fetching data.</string>
+    <string name="home_snackbar_unknown_error">An unknown error occurred.</string>
+    <string name="home_snackbar_creating_board_error">Error while creating board</string>
+    <!--  HOME SCREEN  -->
 
-    <string name="create_board">Create Board</string>
-    <string name="board_name">Board Name</string>
-    <string name="create">Create</string>
-    <string name="cancel">Cancel</string>
-    <string name="menu_button">Menu Button</string>
-    <string name="add_column">Add Column</string>
-    <string name="create_column">Create Column</string>
-    <string name="cancel_column_creation">Cancel column creation</string>
-    <string name="confirm_column_creation">Confirm column creation</string>
+    <!--  BOARD SCREEN  -->
+    <string name="board_appbar_create_column">Create Column</string>
+    <string name="board_appbar_content_description_cancel_column_creation">Cancel column creation</string>
+    <string name="board_appbar_content_description_confirm_column_creation">Confirm column creation</string>
+    <string name="board_button_add_column">Add Column</string>
     <string name="board_textfield_label_column_name">Column Name</string>
     <string name="board_snackbar_column_creation_error">Error creating column</string>
+    <string name="board_snackbar_fetch_board_error">Error fetching board data</string>
+    <!--  BOARD SCREEN  -->
+
 
 
 </resources>

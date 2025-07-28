@@ -21,12 +21,12 @@ fun CreateBoardDialog(
 ) {
     AlertDialog(
         onDismissRequest = { onIntent(HomeIntent.DismissCreateBoardDialog) },
-        title = { Text(text = stringResource(R.string.create_board)) },
+        title = { Text(text = stringResource(R.string.home_dialog_title_create_board)) },
         text = {
             OutlinedTextField(
                 value = state.newBoardName,
                 onValueChange = { onIntent(HomeIntent.OnNewBoardNameChange(it)) },
-                label = { Text(text = stringResource(R.string.board_name)) }
+                label = { Text(text = stringResource(R.string.home_dialog_textfield_label_board_name)) }
             )
         },
         confirmButton = {
@@ -44,7 +44,7 @@ fun CreateBoardDialog(
                 },
                 enabled = if (state.newBoardName.isEmpty()) false else true
             ) {
-                Text(text = stringResource(R.string.create))
+                Text(text = stringResource(R.string.home_dialog_button_create))
             }
         },
         dismissButton = {
@@ -53,7 +53,7 @@ fun CreateBoardDialog(
                     onIntent(HomeIntent.DismissCreateBoardDialog)
                 }
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(R.string.home_dialog_button_cancel))
             }
         }
     )

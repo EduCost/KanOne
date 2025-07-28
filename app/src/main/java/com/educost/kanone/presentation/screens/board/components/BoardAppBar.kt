@@ -38,7 +38,7 @@ fun BoardAppBar(
                     ) {
                         Icon(
                             Icons.Filled.Menu,
-                            contentDescription = stringResource(R.string.menu_button)
+                            contentDescription = stringResource(R.string.menu_icon_content_description)
                         )
                     }
                 }
@@ -50,7 +50,7 @@ fun BoardAppBar(
                 modifier = modifier,
                 title = {
                     Text(
-                        text = stringResource(R.string.create_column),
+                        text = stringResource(R.string.board_appbar_create_column),
                     )
                 },
                 navigationIcon = {
@@ -59,7 +59,7 @@ fun BoardAppBar(
                     ) {
                         Icon(
                             Icons.Filled.Clear,
-                            contentDescription = stringResource(R.string.cancel_column_creation)
+                            contentDescription = stringResource(R.string.board_appbar_content_description_cancel_column_creation)
                         )
                     }
                 },
@@ -69,13 +69,11 @@ fun BoardAppBar(
                     ) {
                         Icon(
                             Icons.Filled.Check,
-                            contentDescription = stringResource(R.string.confirm_column_creation)
+                            contentDescription = stringResource(R.string.board_appbar_content_description_confirm_column_creation)
                         )
                     }
                 },
-
-
-                )
+            )
         }
     }
 }

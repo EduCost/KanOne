@@ -119,7 +119,7 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(text = stringResource(R.string.no_boards_found))
+                        Text(text = stringResource(R.string.home_screen_no_boards_found))
                     }
                 }
                 LazyVerticalGrid(

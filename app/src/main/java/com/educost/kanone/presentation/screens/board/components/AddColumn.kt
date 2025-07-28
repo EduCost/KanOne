@@ -77,7 +77,7 @@ fun AddColumn(
             )
             Spacer(Modifier.padding(8.dp))
             Text(
-                text = stringResource(R.string.add_column),
+                text = stringResource(R.string.board_button_add_column),
                 color = contentColor
             )
         }

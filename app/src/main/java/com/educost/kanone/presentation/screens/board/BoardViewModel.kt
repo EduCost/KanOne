@@ -138,29 +138,13 @@ class BoardViewModel @Inject constructor(
                     }
 
                     is Result.Error -> {
-
-                        when (result.error) {
-                            FetchDataError.IO_ERROR -> {
-                                _sideEffectChannel.send(
-                                    BoardSideEffect.ShowSnackBar(
-                                        SnackbarEvent(
-                                            message = UiText.StringResource(R.string.fetch_io_error)
-                                        )
-                                    )
+                        _sideEffectChannel.send(
+                            BoardSideEffect.ShowSnackBar(
+                                SnackbarEvent(
+                                    message = UiText.StringResource(R.string.board_snackbar_fetch_board_error)
                                 )
-                            }
-
-                            FetchDataError.UNKNOWN -> {
-                                _sideEffectChannel.send(
-                                    BoardSideEffect.ShowSnackBar(
-                                        SnackbarEvent(
-                                            message = UiText.StringResource(R.string.unknown_error)
-                                        )
-                                    )
-                                )
-                            }
-                        }
-
+                            )
+                        )
                         _uiState.update { it.copy(isLoading = false) }
                     }
                 }

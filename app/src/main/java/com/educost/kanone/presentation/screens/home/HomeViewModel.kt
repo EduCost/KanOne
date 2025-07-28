@@ -69,7 +69,7 @@ class HomeViewModel @Inject constructor(
                                 _sideEffectChannel.send(
                                     HomeSideEffect.ShowSnackBar(
                                         SnackbarEvent(
-                                            message = UiText.StringResource(R.string.fetch_io_error)
+                                            message = UiText.StringResource(R.string.home_snackbar_fetch_io_error)
                                         )
                                     )
                                 )
@@ -79,7 +79,7 @@ class HomeViewModel @Inject constructor(
                                 _sideEffectChannel.send(
                                     HomeSideEffect.ShowSnackBar(
                                         SnackbarEvent(
-                                            message = UiText.StringResource(R.string.unknown_error)
+                                            message = UiText.StringResource(R.string.home_snackbar_unknown_error)
                                         )
                                     )
                                 )
@@ -102,7 +102,7 @@ class HomeViewModel @Inject constructor(
                     _sideEffectChannel.send(
                         HomeSideEffect.ShowSnackBar(
                             SnackbarEvent(
-                                message = UiText.StringResource(R.string.error_creating_board)
+                                message = UiText.StringResource(R.string.home_snackbar_creating_board_error)
                             )
                         )
                     )
