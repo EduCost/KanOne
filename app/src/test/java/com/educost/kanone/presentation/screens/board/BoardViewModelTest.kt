@@ -5,6 +5,7 @@ import app.cash.turbine.test
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.dispatchers.TestDispatcherProvider
 import com.educost.kanone.domain.error.FetchDataError
+import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn
@@ -13,6 +14,7 @@ import com.educost.kanone.domain.repository.ColumnRepository
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.presentation.model.Coordinates
+import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
 import com.educost.kanone.presentation.theme.Palette
 import com.educost.kanone.utils.Result
 import com.google.common.truth.Truth.assertThat
@@ -147,7 +149,11 @@ class BoardViewModelTest {
             )
         )
 
-        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(Result.Success(newBoard))
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
+            Result.Success(
+                newBoard
+            )
+        )
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
@@ -209,7 +215,11 @@ class BoardViewModelTest {
             )
         )
 
-        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(Result.Success(newBoard))
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
+            Result.Success(
+                newBoard
+            )
+        )
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
@@ -787,7 +797,7 @@ class BoardViewModelTest {
                 )
 
                 val newCoordinates = Coordinates(10, 20, Offset(x = 100f, y = 200f))
-                viewModel.onIntent(BoardIntent.SetCardCoordinates(1,1, newCoordinates))
+                viewModel.onIntent(BoardIntent.SetCardCoordinates(1, 1, newCoordinates))
 
                 val updatedCards = awaitItem().board?.columns?.get(0)?.cards
                 assertThat(updatedCards?.get(0)?.coordinates).isEqualTo(
@@ -800,6 +810,166 @@ class BoardViewModelTest {
 
                 cancelAndConsumeRemainingEvents()
                 coVerify { boardRepository.observeCompleteBoard(any()) }
+            }
+        }
+    }
+
+    @Test
+    fun `GIVEN default UI state, WHEN startCreatingColumn intent is processed, THEN topBarType is ADD_COLUMN`() {
+
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
+            Result.Success(Board(id = 1, name = "test", emptyList()))
+        )
+
+        runTest(testDispatcher) {
+            viewModel.uiState.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(1))
+
+                repeat(3) { // initial value -> loading state -> board received
+                    awaitItem()
+                }
+
+                viewModel.onIntent(BoardIntent.StartCreatingColumn)
+                assertThat(awaitItem().topBarType).isEqualTo(BoardAppBarType.ADD_COLUMN)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify { boardRepository.observeCompleteBoard(any()) }
+            }
+        }
+    }
+
+    @Test
+    fun `GIVEN new column name, WHEN OnColumnNameChanged intent is processed, THEN column name state is updated`() {
+
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
+            Result.Success(Board(id = 1, name = "test", emptyList()))
+        )
+
+        runTest(testDispatcher) {
+            viewModel.uiState.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(1))
+
+                repeat(3) { // initial value -> loading state -> board received
+                    awaitItem()
+                }
+
+                viewModel.onIntent(BoardIntent.OnColumnNameChanged("new name"))
+                assertThat(awaitItem().creatingColumnName).isEqualTo("new name")
+
+                cancelAndConsumeRemainingEvents()
+                coVerify { boardRepository.observeCompleteBoard(any()) }
+            }
+        }
+    }
+
+    @Test
+    fun `GIVEN creating column, WHEN CancelColumnCreation intent is processed, THEN state is reset`() {
+
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
+            Result.Success(Board(id = 1, name = "test", emptyList()))
+        )
+
+        runTest(testDispatcher) {
+            viewModel.uiState.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(1))
+                viewModel.onIntent(BoardIntent.StartCreatingColumn)
+                viewModel.onIntent(BoardIntent.OnColumnNameChanged("new name"))
+
+                repeat(3) { // initial value -> loading state -> board received
+                    awaitItem()
+                }
+
+                assertThat(awaitItem().topBarType).isEqualTo(BoardAppBarType.ADD_COLUMN)
+                assertThat(awaitItem().creatingColumnName).isEqualTo("new name")
+
+                viewModel.onIntent(BoardIntent.CancelColumnCreation)
+                val updatedState = awaitItem()
+                assertThat(updatedState.creatingColumnName).isEqualTo(null)
+                assertThat(updatedState.topBarType).isEqualTo(BoardAppBarType.DEFAULT)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify { boardRepository.observeCompleteBoard(any()) }
+            }
+        }
+    }
+
+    @Test
+    fun `GIVEN creating column, WHEN creation is successful, THEN state is reset`() {
+
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
+            Result.Success(Board(id = 1, name = "test", emptyList()))
+        )
+        coEvery { columnRepository.createColumn(any(), any()) } returns Result.Success(1)
+
+        runTest(testDispatcher) {
+            viewModel.uiState.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(1))
+                viewModel.onIntent(BoardIntent.StartCreatingColumn)
+                viewModel.onIntent(BoardIntent.OnColumnNameChanged("new name"))
+
+                repeat(5) {
+                    awaitItem()
+                }
+
+                viewModel.onIntent(BoardIntent.ConfirmColumnCreation)
+                val updatedState = awaitItem()
+                assertThat(updatedState.creatingColumnName).isEqualTo(null)
+                assertThat(updatedState.topBarType).isEqualTo(BoardAppBarType.DEFAULT)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify {
+                    columnRepository.createColumn(any(), any())
+                    boardRepository.observeCompleteBoard(any())
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `GIVEN creating column, WHEN creation is failure, THEN snackbar is sent`() {
+
+        coEvery { boardRepository.observeCompleteBoard(any()) } returns flowOf(
+            Result.Success(Board(id = 1, name = "test", emptyList()))
+        )
+        coEvery {
+            columnRepository.createColumn(any(), any())
+        } returns Result.Error(InsertDataError.UNKNOWN)
+
+        runTest(testDispatcher) {
+            viewModel.onIntent(BoardIntent.ObserveBoard(1))
+            viewModel.onIntent(BoardIntent.StartCreatingColumn)
+            viewModel.onIntent(BoardIntent.OnColumnNameChanged("new name"))
+
+            viewModel.sideEffectFlow.test {
+                viewModel.onIntent(BoardIntent.ConfirmColumnCreation)
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
+            }
+            coVerify {
+                columnRepository.createColumn(any(), any())
+                boardRepository.observeCompleteBoard(any())
+            }
+        }
+    }
+
+    @Test
+    fun `GIVEN null board, WHEN create column is processed, THEN snackbar is sent`() {
+
+        coEvery {
+            columnRepository.createColumn(any(), any())
+        } returns Result.Success(1)
+
+        runTest(testDispatcher) {
+
+            viewModel.sideEffectFlow.test {
+                viewModel.onIntent(BoardIntent.ConfirmColumnCreation)
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
+            }
+            coVerify(exactly = 0) {
+                columnRepository.createColumn(any(), any())
             }
         }
     }
