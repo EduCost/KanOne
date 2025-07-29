@@ -19,12 +19,12 @@ val notoSansFontFamily = FontFamily(
     Font(R.font.noto_sans_medium, FontWeight.Medium)
 )
 val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = notoSansFontFamily,
+    headlineSmall = TextStyle(
+        fontFamily = exoFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
+        letterSpacing = 0.sp
     ),
     titleLarge = TextStyle(
         fontFamily = exoFontFamily,
@@ -39,6 +39,13 @@ val Typography = Typography(
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.sp
+    ),
+    bodyLarge = TextStyle(
+        fontFamily = notoSansFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
     ),
     labelSmall = TextStyle(
         fontFamily = notoSansFontFamily,

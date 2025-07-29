@@ -85,11 +85,10 @@ class HomeViewModel @Inject constructor(
                                 )
                             }
                         }
-
-                        _uiState.update { it.copy(isLoading = false) }
                     }
                 }
             }
+            _uiState.update { it.copy(isLoading = false) }
         }
     }
 

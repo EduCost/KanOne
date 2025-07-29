@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.PreviewDynamicColors
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,9 +26,14 @@ import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.components.AddColumn
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
+import com.educost.kanone.presentation.screens.board.components.BoardColumn
+import com.educost.kanone.presentation.screens.board.model.CardUi
+import com.educost.kanone.presentation.screens.board.model.ColumnUi
+import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 @Composable
 fun BoardScreen(
@@ -83,7 +89,7 @@ fun BoardScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             state.board?.let { board ->
                 BoardAppBar(
@@ -98,15 +104,23 @@ fun BoardScreen(
 
         state.board?.let { board ->
             LazyRow(
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
                 contentPadding = PaddingValues(16.dp)
             ) {
                 items(board.columns) { column ->
-
+                    BoardColumn(
+                        column = column,
+                        columnIndex = board.columns.indexOf(column),
+                        state = state,
+                        onIntent = onIntent
+                    )
                 }
 
                 item {
                     AddColumn(
+                        modifier = Modifier.padding(16.dp),
                         state = state,
                         onIntent = onIntent
                     )
@@ -125,7 +139,30 @@ private fun BoardScreenPreview() {
                 board = BoardUi(
                     id = 0,
                     name = "Board name",
-                    emptyList()
+                    columns = listOf(
+                        ColumnUi(
+                            id = 0,
+                            name = "Backlog",
+                            position = 0,
+                            color = null,
+                            cards = listOf(
+                                CardUi(
+                                    id = 0,
+                                    title = "Card title",
+                                    position = 0,
+                                    color = null,
+                                    description = null,
+                                    dueDate = null,
+                                    createdAt = LocalDateTime.now(),
+                                    thumbnailFileName = null,
+                                    checklists = emptyList(),
+                                    attachments = emptyList(),
+                                    labels = emptyList(),
+                                    coordinates = Coordinates()
+                                )
+                            )
+                        )
+                    )
                 ),
                 topBarType = BoardAppBarType.DEFAULT
             ),
