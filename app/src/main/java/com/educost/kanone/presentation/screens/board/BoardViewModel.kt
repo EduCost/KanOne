@@ -7,10 +7,10 @@ import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
-import com.educost.kanone.presentation.mapper.toBoardUi
-import com.educost.kanone.presentation.mapper.toCardUi
-import com.educost.kanone.presentation.mapper.toColumnUi
-import com.educost.kanone.presentation.model.Coordinates
+import com.educost.kanone.presentation.screens.board.mapper.toBoardUi
+import com.educost.kanone.presentation.screens.board.mapper.toCardUi
+import com.educost.kanone.presentation.screens.board.mapper.toColumnUi
+import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
 import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText

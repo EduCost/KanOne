@@ -1,6 +1,6 @@
 package com.educost.kanone.presentation.screens.board
 
-import com.educost.kanone.presentation.model.Coordinates
+import com.educost.kanone.presentation.screens.board.model.Coordinates
 
 sealed interface BoardIntent {
     data class ObserveBoard(val boardId: Long) : BoardIntent

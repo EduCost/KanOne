@@ -1,8 +1,8 @@
-package com.educost.kanone.presentation.mapper
+package com.educost.kanone.presentation.screens.board.mapper
 
 import com.educost.kanone.domain.model.CardItem
-import com.educost.kanone.presentation.model.CardUi
-import com.educost.kanone.presentation.model.Coordinates
+import com.educost.kanone.presentation.screens.board.model.CardUi
+import com.educost.kanone.presentation.screens.board.model.Coordinates
 
 fun CardUi.toCardItem() = CardItem(
     id = this.id,

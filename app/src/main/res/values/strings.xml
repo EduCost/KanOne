@@ -3,6 +3,9 @@
 
     <!--  COMMON  -->
     <string name="menu_icon_content_description">Menu Button</string>
+    <string name="pick_color_dialog_cancel_button">Cancel</string>
+    <string name="pick_color_dialog_confirm_button">Confirm</string>
+
     <!--  COMMON  -->
 
     <!--  HOME SCREEN  -->

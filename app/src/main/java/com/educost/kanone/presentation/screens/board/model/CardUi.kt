@@ -1,4 +1,4 @@
-package com.educost.kanone.presentation.model
+package com.educost.kanone.presentation.screens.board.model
 
 import com.educost.kanone.domain.model.Attachment
 import com.educost.kanone.domain.model.Checklist

@@ -1,4 +1,4 @@
-package com.educost.kanone.presentation.model
+package com.educost.kanone.presentation.screens.board.model
 
 import androidx.compose.foundation.lazy.LazyListState
 

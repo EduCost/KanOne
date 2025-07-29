@@ -13,7 +13,7 @@ import com.educost.kanone.domain.repository.BoardRepository
 import com.educost.kanone.domain.repository.ColumnRepository
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
-import com.educost.kanone.presentation.model.Coordinates
+import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
 import com.educost.kanone.utils.Result
 import com.google.common.truth.Truth.assertThat

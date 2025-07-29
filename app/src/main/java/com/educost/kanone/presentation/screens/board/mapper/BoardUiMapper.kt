@@ -1,9 +1,7 @@
-package com.educost.kanone.presentation.mapper
+package com.educost.kanone.presentation.screens.board.mapper
 
 import com.educost.kanone.domain.model.Board
-import com.educost.kanone.domain.model.KanbanColumn
-import com.educost.kanone.presentation.model.BoardUi
-import kotlin.Long
+import com.educost.kanone.presentation.screens.board.model.BoardUi
 
 fun BoardUi.toBoard() = Board(
     id = this.id,

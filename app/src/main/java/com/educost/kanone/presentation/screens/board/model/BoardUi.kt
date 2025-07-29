@@ -1,7 +1,6 @@
-package com.educost.kanone.presentation.model
+package com.educost.kanone.presentation.screens.board.model
 
 import androidx.compose.foundation.lazy.LazyListState
-import com.educost.kanone.domain.model.KanbanColumn
 
 data class BoardUi(
     val id: Long,
