@@ -71,6 +71,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.compose.colorpicker)
 
     testImplementation(libs.truth)
     testImplementation(libs.turbine)
