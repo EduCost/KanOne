@@ -27,12 +27,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.BoardState
+import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.theme.KanOneTheme
 
 @Composable
@@ -52,7 +55,19 @@ fun ColumnHeader(
     }
 
     Card(
-        modifier = modifier,
+        modifier = modifier
+            .onGloballyPositioned { layoutCoordinates ->
+                onIntent(
+                    BoardIntent.SetColumnHeaderCoordinates(
+                        columnId = column.id,
+                        coordinates = Coordinates(
+                            position = layoutCoordinates.positionInRoot(),
+                            width = layoutCoordinates.size.width,
+                            height = layoutCoordinates.size.height
+                        )
+                    )
+                )
+            }
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

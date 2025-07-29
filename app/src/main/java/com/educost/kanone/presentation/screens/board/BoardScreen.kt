@@ -16,6 +16,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewDynamicColors
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -105,6 +107,17 @@ fun BoardScreen(
         state.board?.let { board ->
             LazyRow(
                 modifier = Modifier
+                    .onGloballyPositioned { layoutCoordinates ->
+                        onIntent(
+                            BoardIntent.SetBoardCoordinates(
+                                coordinates = Coordinates(
+                                    position = layoutCoordinates.positionInRoot(),
+                                    width = layoutCoordinates.size.width,
+                                    height = layoutCoordinates.size.height
+                                )
+                            )
+                        )
+                    }
                     .padding(innerPadding)
                     .fillMaxSize(),
                 contentPadding = PaddingValues(16.dp)

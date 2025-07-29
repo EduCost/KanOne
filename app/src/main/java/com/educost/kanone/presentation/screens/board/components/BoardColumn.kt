@@ -24,6 +24,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
@@ -57,6 +59,19 @@ fun BoardColumn(
         )
 
         LazyColumn(
+            modifier = Modifier
+                .onGloballyPositioned { layoutCoordinates ->
+                    onIntent(
+                        BoardIntent.SetColumnBodyCoordinates(
+                            columnId = column.id,
+                            coordinates = Coordinates(
+                                position = layoutCoordinates.positionInRoot(),
+                                width = layoutCoordinates.size.width,
+                                height = layoutCoordinates.size.height
+                            )
+                        )
+                    )
+                },
             contentPadding = PaddingValues()
         ) {
 
@@ -66,6 +81,19 @@ fun BoardColumn(
             ) { index, card ->
                 ColumnCard(
                     modifier = Modifier
+                        .onGloballyPositioned { layoutCoordinates ->
+                            onIntent(
+                                BoardIntent.SetCardCoordinates(
+                                    cardId = card.id,
+                                    columnId = column.id,
+                                    coordinates = Coordinates(
+                                        position = layoutCoordinates.positionInRoot(),
+                                        width = layoutCoordinates.size.width,
+                                        height = layoutCoordinates.size.height
+                                    )
+                                )
+                            )
+                        }
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp),
                     card = card,
