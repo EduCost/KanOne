@@ -15,19 +15,16 @@ import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.presentation.model.Coordinates
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
-import com.educost.kanone.presentation.theme.Palette
 import com.educost.kanone.utils.Result
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -136,14 +133,14 @@ class BoardViewModelTest {
                     id = 1,
                     name = "column test 1",
                     position = 1,
-                    color = Palette.NONE,
+                    color = null,
                     cards = emptyList()
                 ),
                 KanbanColumn(
                     id = 2,
                     name = "column test 2",
                     position = 2,
-                    color = Palette.NONE,
+                    color = null,
                     cards = emptyList()
                 )
             )
@@ -188,14 +185,14 @@ class BoardViewModelTest {
                     id = 1,
                     name = "column test 1",
                     position = 1,
-                    color = Palette.NONE,
+                    color = null,
                     cards = listOf(
                         CardItem(
                             id = 1,
                             title = "card test",
                             description = "card description",
                             position = 1,
-                            color = Palette.NONE,
+                            color = null,
                             createdAt = LocalDateTime.now(),
                             dueDate = null,
                             thumbnailFileName = "thumbnail.png",
@@ -209,7 +206,7 @@ class BoardViewModelTest {
                     id = 2,
                     name = "column test 2",
                     position = 2,
-                    color = Palette.NONE,
+                    color = null,
                     cards = emptyList()
                 )
             )
@@ -295,14 +292,14 @@ class BoardViewModelTest {
                         id = 1,
                         name = "column test 1",
                         position = 1,
-                        color = Palette.NONE,
+                        color = null,
                         cards = emptyList()
                     ),
                     KanbanColumn(
                         id = 2,
                         name = "column test 2",
                         position = 2,
-                        color = Palette.NONE,
+                        color = null,
                         cards = emptyList()
                     )
                 )
@@ -317,14 +314,14 @@ class BoardViewModelTest {
                         id = 1,
                         name = "column test 1",
                         position = 1,
-                        color = Palette.NONE,
+                        color = null,
                         cards = emptyList()
                     ),
                     KanbanColumn(
                         id = 2,
                         name = "column updated 2",
                         position = 2,
-                        color = Palette.NONE,
+                        color = null,
                         cards = emptyList()
                     )
                 )
@@ -399,14 +396,14 @@ class BoardViewModelTest {
                         id = 1,
                         name = "column test 1",
                         position = 1,
-                        color = Palette.NONE,
+                        color = null,
                         cards = listOf(
                             CardItem(
                                 id = 1,
                                 title = "card test 1",
                                 description = null,
                                 position = 1,
-                                color = Palette.NONE,
+                                color = null,
                                 createdAt = LocalDateTime.now(),
                                 dueDate = null,
                                 thumbnailFileName = null,
@@ -419,7 +416,7 @@ class BoardViewModelTest {
                                 title = "card test 2",
                                 description = null,
                                 position = 1,
-                                color = Palette.NONE,
+                                color = null,
                                 createdAt = LocalDateTime.now(),
                                 dueDate = null,
                                 thumbnailFileName = null,
@@ -433,14 +430,14 @@ class BoardViewModelTest {
                         id = 2,
                         name = "column test 2",
                         position = 2,
-                        color = Palette.NONE,
+                        color = null,
                         cards = listOf(
                             CardItem(
                                 id = 3,
                                 title = "card test 3",
                                 description = null,
                                 position = 1,
-                                color = Palette.NONE,
+                                color = null,
                                 createdAt = LocalDateTime.now(),
                                 dueDate = null,
                                 thumbnailFileName = null,
@@ -462,14 +459,14 @@ class BoardViewModelTest {
                         id = 1,
                         name = "column test 1",
                         position = 1,
-                        color = Palette.NONE,
+                        color = null,
                         cards = listOf(
                             CardItem(
                                 id = 1,
                                 title = "card test 1",
                                 description = "updated card",
                                 position = 1,
-                                color = Palette.NONE,
+                                color = null,
                                 createdAt = LocalDateTime.now(),
                                 dueDate = null,
                                 thumbnailFileName = null,
@@ -482,7 +479,7 @@ class BoardViewModelTest {
                                 title = "card test 2",
                                 description = null,
                                 position = 1,
-                                color = Palette.NONE,
+                                color = null,
                                 createdAt = LocalDateTime.now(),
                                 dueDate = null,
                                 thumbnailFileName = null,
@@ -496,14 +493,14 @@ class BoardViewModelTest {
                         id = 2,
                         name = "column updated 2",
                         position = 2,
-                        color = Palette.NONE,
+                        color = null,
                         cards = listOf(
                             CardItem(
                                 id = 3,
                                 title = "card test 3",
                                 description = null,
                                 position = 1,
-                                color = Palette.NONE,
+                                color = null,
                                 createdAt = LocalDateTime.now(),
                                 dueDate = null,
                                 thumbnailFileName = null,
@@ -624,14 +621,14 @@ class BoardViewModelTest {
                     id = 1,
                     name = "column test 1",
                     position = 1,
-                    color = Palette.NONE,
+                    color = null,
                     cards = emptyList()
                 ),
                 KanbanColumn(
                     id = 2,
                     name = "column test 2",
                     position = 2,
-                    color = Palette.NONE,
+                    color = null,
                     cards = emptyList()
                 )
             )
@@ -684,14 +681,14 @@ class BoardViewModelTest {
                     id = 1,
                     name = "column test 1",
                     position = 1,
-                    color = Palette.NONE,
+                    color = null,
                     cards = emptyList()
                 ),
                 KanbanColumn(
                     id = 2,
                     name = "column test 2",
                     position = 2,
-                    color = Palette.NONE,
+                    color = null,
                     cards = emptyList()
                 )
             )
@@ -745,14 +742,14 @@ class BoardViewModelTest {
                     id = 1,
                     name = "column test 1",
                     position = 1,
-                    color = Palette.NONE,
+                    color = null,
                     cards = listOf(
                         CardItem(
                             id = 1,
                             title = "card test 1",
                             description = null,
                             position = 1,
-                            color = Palette.NONE,
+                            color = null,
                             createdAt = LocalDateTime.now(),
                             dueDate = null,
                             thumbnailFileName = null,
@@ -765,7 +762,7 @@ class BoardViewModelTest {
                             title = "card test 2",
                             description = null,
                             position = 1,
-                            color = Palette.NONE,
+                            color = null,
                             createdAt = LocalDateTime.now(),
                             dueDate = null,
                             thumbnailFileName = null,

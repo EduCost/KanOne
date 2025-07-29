@@ -3,7 +3,6 @@ package com.educost.kanone.presentation.model
 import com.educost.kanone.domain.model.Attachment
 import com.educost.kanone.domain.model.Checklist
 import com.educost.kanone.domain.model.Label
-import com.educost.kanone.presentation.theme.Palette
 import java.time.LocalDateTime
 
 data class CardUi(
@@ -11,7 +10,7 @@ data class CardUi(
     val title: String,
     val description: String?,
     val position: Int,
-    val color: Palette,
+    val color: Int?,
     val createdAt: LocalDateTime,
     val dueDate: LocalDateTime?,
     val thumbnailFileName: String?,

@@ -104,7 +104,9 @@ fun BoardScreen(
                 modifier = Modifier.padding(innerPadding),
                 contentPadding = PaddingValues(16.dp)
             ) {
-                items(board.columns) { column -> }
+                items(board.columns) { column ->
+
+                }
 
                 item {
                     AddColumn(

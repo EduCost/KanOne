@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.educost.kanone.presentation.theme.Palette
 import java.time.LocalDateTime
 
 @Entity(
@@ -26,7 +25,7 @@ data class CardEntity(
     val description: String? = null,
     @ColumnInfo(name = "created_at") val createdAt: LocalDateTime = LocalDateTime.now(),
     @ColumnInfo(name = "due_date") val dueDate: LocalDateTime? = null,
-    val color: Palette = Palette.NONE,
+    val color: Int? = null,
     @ColumnInfo(name = "thumbnail_file_name") val thumbnailFileName: String? = null,
     @ColumnInfo(name = "column_id") val columnId: Long
 )

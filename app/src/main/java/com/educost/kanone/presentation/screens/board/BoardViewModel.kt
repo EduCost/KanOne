@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.educost.kanone.R
 import com.educost.kanone.dispatchers.DispatcherProvider
-import com.educost.kanone.domain.error.FetchDataError
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
@@ -13,7 +12,6 @@ import com.educost.kanone.presentation.mapper.toCardUi
 import com.educost.kanone.presentation.mapper.toColumnUi
 import com.educost.kanone.presentation.model.Coordinates
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
-import com.educost.kanone.presentation.theme.Palette
 import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText
 import com.educost.kanone.utils.Result
@@ -152,6 +150,7 @@ class BoardViewModel @Inject constructor(
         }
     }
 
+
     // Create column
     private fun startCreatingColumn() {
         _uiState.update { it.copy(topBarType = BoardAppBarType.ADD_COLUMN) }
@@ -171,7 +170,7 @@ class BoardViewModel @Inject constructor(
                 id = 0,
                 name = uiState.value.creatingColumnName ?: "",
                 position = board.columns.size,
-                color = Palette.NONE,
+                color = null,
                 cards = emptyList()
             )
             viewModelScope.launch(dispatcherProvider.main) {
