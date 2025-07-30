@@ -182,12 +182,12 @@ class BoardViewModel @Inject constructor(
 
             if (it.title == null || it.columnId == null || position == null) {
                 viewModelScope.launch(dispatcherProvider.main) {
-                    Log.e(
-                        LogTags.BOARD_VIEW_MODEL, "Error creating card with null values\n" +
-                                "title: ${it.title}\n" +
-                                "columnId: ${it.columnId}\n" +
-                                "position: $position"
-                    )
+//                    Log.e(
+//                        LogTags.BOARD_VIEW_MODEL, "Error creating card with null values\n" +
+//                                "title: ${it.title}\n" +
+//                                "columnId: ${it.columnId}\n" +
+//                                "position: $position"
+//                    )
                     _sideEffectChannel.send(
                         BoardSideEffect.ShowSnackBar(
                             SnackbarEvent(
