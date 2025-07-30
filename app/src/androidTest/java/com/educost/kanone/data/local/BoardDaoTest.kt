@@ -131,7 +131,7 @@ class BoardDaoTest {
             assertThat(awaitItem().columns[0].column).isEqualTo(expectedColumn)
 
             val cardToInsert = getTestCard(insertedColumnId)
-            val insertedCardId = cardDao.insertCard(cardToInsert)
+            val insertedCardId = cardDao.createCard(cardToInsert)
             val expectedCard = cardToInsert.copy(id = insertedCardId)
 
             val expected = BoardWithColumns(
@@ -175,7 +175,7 @@ class BoardDaoTest {
             assertThat(awaitItem().columns[0].column).isEqualTo(expectedColumn)
 
             val cardToInsert = getTestCard(insertedColumnId)
-            val insertedCardId = cardDao.insertCard(cardToInsert)
+            val insertedCardId = cardDao.createCard(cardToInsert)
             val expectedCard = cardToInsert.copy(id = insertedCardId)
             assertThat(awaitItem().columns[0].cards[0].card).isEqualTo(expectedCard)
 

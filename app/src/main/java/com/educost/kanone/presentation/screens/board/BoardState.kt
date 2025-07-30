@@ -8,5 +8,12 @@ data class BoardState(
     val isLoading: Boolean = false,
     val topBarType: BoardAppBarType = BoardAppBarType.DEFAULT,
 
-    val creatingColumnName: String? = null
+    val creatingColumnName: String? = null,
+
+    val cardCreationState: CardCreationState = CardCreationState()
+)
+
+data class CardCreationState(
+    val title: String? = null,
+    val columnId: Long? = null,
 )

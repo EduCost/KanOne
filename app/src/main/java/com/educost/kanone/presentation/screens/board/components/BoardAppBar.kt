@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.board.BoardIntent
@@ -54,38 +55,65 @@ fun BoardAppBar(
             )
         }
 
-        BoardAppBarType.ADD_COLUMN -> {
-            CenterAlignedTopAppBar(
-                modifier = modifier,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                ),
-                title = {
-                    Text(
-                        text = stringResource(R.string.board_appbar_create_column),
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { onIntent(BoardIntent.CancelColumnCreation) }
-                    ) {
-                        Icon(
-                            Icons.Filled.Clear,
-                            contentDescription = stringResource(R.string.board_appbar_content_description_cancel_column_creation)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = { onIntent(BoardIntent.ConfirmColumnCreation) }
-                    ) {
-                        Icon(
-                            Icons.Filled.Check,
-                            contentDescription = stringResource(R.string.board_appbar_content_description_confirm_column_creation)
-                        )
-                    }
-                },
-            )
-        }
+        BoardAppBarType.ADD_COLUMN -> ActionTopBar(
+            title = stringResource(R.string.board_appbar_create_column),
+            leftIconContentDescription = stringResource(R.string.board_appbar_content_description_cancel_column_creation),
+            onLeftIconClick = { onIntent(BoardIntent.CancelColumnCreation) },
+            rightIconContentDescription = stringResource(R.string.board_appbar_content_description_confirm_column_creation),
+            onRightIconClick = { onIntent(BoardIntent.ConfirmColumnCreation) }
+        )
+
+        BoardAppBarType.ADD_CARD -> ActionTopBar(
+            title = stringResource(R.string.board_appbar_create_card),
+            leftIconContentDescription = stringResource(R.string.board_appbar_content_description_cancel_card_creation),
+            onLeftIconClick = { onIntent(BoardIntent.CancelCardCreation) },
+            rightIconContentDescription = stringResource(R.string.board_appbar_content_description_confirm_card_creation),
+            onRightIconClick = { onIntent(BoardIntent.ConfirmCardCreation) }
+        )
     }
+}
+
+@Composable
+fun ActionTopBar(
+    modifier: Modifier = Modifier,
+    title: String,
+    leftIcon: ImageVector = Icons.Filled.Clear,
+    leftIconContentDescription: String,
+    onLeftIconClick: () -> Unit,
+    rightIcon: ImageVector = Icons.Filled.Check,
+    rightIconContentDescription: String,
+    onRightIconClick: () -> Unit
+
+) {
+    CenterAlignedTopAppBar(
+        modifier = modifier,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
+        title = {
+            Text(
+                text = title,
+            )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = onLeftIconClick
+            ) {
+                Icon(
+                    imageVector = leftIcon,
+                    contentDescription = leftIconContentDescription
+                )
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = onRightIconClick
+            ) {
+                Icon(
+                    imageVector = rightIcon,
+                    contentDescription = rightIconContentDescription
+                )
+            }
+        },
+    )
 }

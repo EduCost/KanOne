@@ -23,10 +23,14 @@
     <string name="board_appbar_create_column">Create Column</string>
     <string name="board_appbar_content_description_cancel_column_creation">Cancel column creation</string>
     <string name="board_appbar_content_description_confirm_column_creation">Confirm column creation</string>
+    <string name="board_appbar_create_card">Create Card</string>
+    <string name="board_appbar_content_description_cancel_card_creation">Cancel card creation</string>
+    <string name="board_appbar_content_description_confirm_card_creation">Confirm card creation</string>
     <string name="board_button_add_column">Add Column</string>
     <string name="board_textfield_label_column_name">Column Name</string>
     <string name="board_snackbar_column_creation_error">Error creating column</string>
     <string name="board_snackbar_fetch_board_error">Error fetching board data</string>
+    <string name="board_snackbar_card_creation_error">Error creating card</string>
     <!--  BOARD SCREEN  -->
 
 

@@ -2,8 +2,10 @@ package com.educost.kanone.data.repository
 
 import android.util.Log
 import com.educost.kanone.data.local.CardDao
+import com.educost.kanone.data.mapper.toCardEntity
 import com.educost.kanone.data.mapper.toCardItem
 import com.educost.kanone.domain.error.FetchDataError
+import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.repository.CardRepository
 import com.educost.kanone.utils.LogTags
@@ -25,6 +27,24 @@ class CardRepositoryImpl(val cardDao: CardDao) : CardRepository {
                 else -> {
                     Log.e(LogTags.CARD_REPO, e.stackTraceToString())
                     Result.Error(FetchDataError.UNKNOWN)
+                }
+            }
+        }
+    }
+
+    override suspend fun createCard(
+        card: CardItem,
+        columnId: Long
+    ): Result<Long, InsertDataError> {
+        return try {
+            val cardId = cardDao.createCard(card.toCardEntity(columnId))
+            Result.Success(cardId)
+        } catch (e: Exception) {
+            when (e) {
+                is IOException -> Result.Error(InsertDataError.IO_ERROR)
+                else -> {
+                    Log.e(LogTags.CARD_REPO, e.stackTraceToString())
+                    Result.Error(InsertDataError.UNKNOWN)
                 }
             }
         }

@@ -1,24 +1,17 @@
 package com.educost.kanone.presentation.screens.board.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,10 +21,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.BoardState
 import com.educost.kanone.presentation.screens.board.model.CardUi
+import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.theme.KanOneTheme
 import java.time.LocalDateTime
@@ -52,7 +45,8 @@ fun BoardColumn(
     ) {
         ColumnHeader(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp)
                 .fillMaxWidth(),
             column = column,
             onIntent = onIntent
@@ -72,12 +66,13 @@ fun BoardColumn(
                         )
                     )
                 },
-            contentPadding = PaddingValues()
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
             itemsIndexed(
                 items = column.cards,
-                key = { _, card -> card.id },
+                key = { _, card -> card.id }
             ) { index, card ->
                 ColumnCard(
                     modifier = Modifier
@@ -94,34 +89,28 @@ fun BoardColumn(
                                 )
                             )
                         }
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp),
+                        .fillMaxWidth(),
                     card = card,
                     onIntent = onIntent
                 )
             }
 
             item {
-                Box(
-                    modifier = Modifier
-                        .padding(vertical = 16.dp)
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row(
+                if (state.cardCreationState.columnId == column.id) {
+                    AddCardTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        newCardTitle = state.cardCreationState.title ?: "",
+                        onTitleChange = { onIntent(BoardIntent.OnCardTitleChange(it)) },
+                        onConfirmCreateCard = { onIntent(BoardIntent.ConfirmCardCreation) }
+                    )
+                } else {
+                    Box(
                         modifier = Modifier
-                            .clickable { /*TODO*/ },
-                        horizontalArrangement = Arrangement.Center
+                            .padding(top = 8.dp)
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            Icons.Filled.Add,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Add Card",
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        AddCardButton { onIntent(BoardIntent.StartCreatingCard(column.id)) }
                     }
                 }
             }

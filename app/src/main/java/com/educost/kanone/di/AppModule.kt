@@ -24,6 +24,7 @@ import com.educost.kanone.domain.repository.ChecklistRepository
 import com.educost.kanone.domain.repository.ColumnRepository
 import com.educost.kanone.domain.repository.LabelRepository
 import com.educost.kanone.domain.usecase.CreateBoardUseCase
+import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
@@ -89,6 +90,10 @@ object AppModule {
     @Singleton
     fun provideColumnRepository(columnDao: ColumnDao): ColumnRepository = ColumnRepositoryImpl(columnDao)
 
+    @Provides
+    @Singleton
+    fun provideCardRepository(cardDao: CardDao): CardRepository = CardRepositoryImpl(cardDao)
+
 
     // Use cases
     @Provides
@@ -113,5 +118,12 @@ object AppModule {
     @Singleton
     fun provideCreateColumnUseCase(columnRepository: ColumnRepository): CreateColumnUseCase {
         return CreateColumnUseCase(columnRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCreateCardUseCase(cardRepository: CardRepository): CreateCardUseCase {
+        return CreateCardUseCase(cardRepository)
+
     }
 }

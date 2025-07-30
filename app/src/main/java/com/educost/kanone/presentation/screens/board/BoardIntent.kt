@@ -5,6 +5,12 @@ import com.educost.kanone.presentation.screens.board.model.Coordinates
 sealed interface BoardIntent {
     data class ObserveBoard(val boardId: Long) : BoardIntent
 
+    // Create Card
+    data class StartCreatingCard(val columnId: Long) : BoardIntent
+    data class OnCardTitleChange(val title: String) : BoardIntent
+    data object ConfirmCardCreation : BoardIntent
+    data object CancelCardCreation : BoardIntent
+
     // Create column
     data object StartCreatingColumn : BoardIntent
     data class OnColumnNameChanged(val name: String) : BoardIntent

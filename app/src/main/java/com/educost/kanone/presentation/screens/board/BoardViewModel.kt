@@ -1,10 +1,14 @@
 package com.educost.kanone.presentation.screens.board
 
+import android.util.Log
+import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.educost.kanone.R
 import com.educost.kanone.dispatchers.DispatcherProvider
+import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn
+import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.presentation.screens.board.mapper.toBoardUi
@@ -14,6 +18,7 @@ import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
 import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText
+import com.educost.kanone.utils.LogTags
 import com.educost.kanone.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -22,13 +27,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
 class BoardViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
     private val observeCompleteBoardUseCase: ObserveCompleteBoardUseCase,
-    private val createColumnUseCase: CreateColumnUseCase
+    private val createColumnUseCase: CreateColumnUseCase,
+    private val createCardUseCase: CreateCardUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BoardState())
@@ -41,6 +48,12 @@ class BoardViewModel @Inject constructor(
     fun onIntent(intent: BoardIntent) {
         when (intent) {
             is BoardIntent.ObserveBoard -> observeBoard(intent.boardId)
+
+            // Create card
+            is BoardIntent.CancelCardCreation -> cancelCardCreation()
+            is BoardIntent.ConfirmCardCreation -> confirmCardCreation()
+            is BoardIntent.OnCardTitleChange -> onCardTitleChange(intent.title)
+            is BoardIntent.StartCreatingCard -> startCreatingCard(intent.columnId)
 
             // Create column
             is BoardIntent.StartCreatingColumn -> startCreatingColumn()
@@ -150,6 +163,89 @@ class BoardViewModel @Inject constructor(
         }
     }
 
+    // Create card
+    private fun cancelCardCreation() {
+        _uiState.update {
+            it.copy(
+                cardCreationState = CardCreationState(),
+                topBarType = BoardAppBarType.DEFAULT
+            )
+        }
+    }
+
+    private fun confirmCardCreation() {
+        uiState.value.cardCreationState.let {
+
+            val position = uiState.value.board?.columns?.find { column ->
+                column.id == it.columnId
+            }?.cards?.size
+
+            if (it.title == null || it.columnId == null || position == null) {
+                viewModelScope.launch(dispatcherProvider.main) {
+                    Log.e(
+                        LogTags.BOARD_VIEW_MODEL, "Error creating card with null values\n" +
+                                "title: ${it.title}\n" +
+                                "columnId: ${it.columnId}\n" +
+                                "position: $position"
+                    )
+                    _sideEffectChannel.send(
+                        BoardSideEffect.ShowSnackBar(
+                            SnackbarEvent(
+                                message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
+                                duration = SnackbarDuration.Long,
+                                withDismissAction = true
+                            )
+                        )
+                    )
+                }
+            } else {
+                val card = CardItem(
+                    id = 0,
+                    title = it.title,
+                    description = null,
+                    position = position,
+                    color = null,
+                    createdAt = LocalDateTime.now(),
+                    dueDate = null,
+                    thumbnailFileName = null,
+                    checklists = emptyList(),
+                    attachments = emptyList(),
+                    labels = emptyList()
+                )
+                viewModelScope.launch(dispatcherProvider.main) {
+                    val result = createCardUseCase(card = card, columnId = it.columnId)
+
+                    when (result) {
+                        is Result.Error -> _sideEffectChannel.send(
+                            BoardSideEffect.ShowSnackBar(
+                                SnackbarEvent(
+                                    message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
+                                    duration = SnackbarDuration.Long,
+                                    withDismissAction = true
+                                )
+                            )
+                        )
+
+                        is Result.Success -> Unit
+                    }
+                }
+            }
+            cancelCardCreation()
+        }
+    }
+
+    private fun onCardTitleChange(newTitle: String) {
+        _uiState.update { it.copy(cardCreationState = it.cardCreationState.copy(title = newTitle)) }
+    }
+
+    private fun startCreatingCard(columnId: Long) {
+        _uiState.update {
+            it.copy(
+                cardCreationState = CardCreationState(columnId = columnId),
+                topBarType = BoardAppBarType.ADD_CARD
+            )
+        }
+    }
 
     // Create column
     private fun startCreatingColumn() {

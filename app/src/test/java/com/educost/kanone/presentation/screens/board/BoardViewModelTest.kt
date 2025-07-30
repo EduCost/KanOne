@@ -10,11 +10,13 @@ import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.repository.BoardRepository
+import com.educost.kanone.domain.repository.CardRepository
 import com.educost.kanone.domain.repository.ColumnRepository
+import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
-import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
+import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.utils.Result
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
@@ -39,8 +41,10 @@ class BoardViewModelTest {
     private lateinit var viewModel: BoardViewModel
     private lateinit var boardRepository: BoardRepository
     private lateinit var columnRepository: ColumnRepository
+    private lateinit var cardRepository: CardRepository
     private lateinit var observeCompleteBoardUseCase: ObserveCompleteBoardUseCase
     private lateinit var createColumnUseCase: CreateColumnUseCase
+    private lateinit var createCardUseCase: CreateCardUseCase
 
     @Before
     fun setUp() {
@@ -50,15 +54,21 @@ class BoardViewModelTest {
         columnRepository = mockk()
         createColumnUseCase = CreateColumnUseCase(columnRepository)
 
+        cardRepository = mockk()
+        createCardUseCase = CreateCardUseCase(cardRepository)
+
         testDispatcher = UnconfinedTestDispatcher()
         dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
         viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
             observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = createColumnUseCase
+            createColumnUseCase = createColumnUseCase,
+            createCardUseCase = createCardUseCase
         )
     }
+
+
 
     @Test
     fun `GIVEN result success, WHEN board is observed, THEN loading state updates to true then false`() {

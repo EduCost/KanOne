@@ -15,7 +15,7 @@ interface CardDao {
     fun observeCards(columnIds: List<Long>): Flow<List<CardEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCard(card: CardEntity): Long
+    suspend fun createCard(card: CardEntity): Long
 
     @Delete
     suspend fun deleteCard(card: CardEntity)
