@@ -1,24 +1,24 @@
 package com.educost.kanone.presentation.screens.board
 
-import android.util.Log
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.educost.kanone.R
 import com.educost.kanone.dispatchers.DispatcherProvider
+import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
+import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.mapper.toBoardUi
 import com.educost.kanone.presentation.screens.board.mapper.toCardUi
 import com.educost.kanone.presentation.screens.board.mapper.toColumnUi
+import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
-import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
 import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText
-import com.educost.kanone.utils.LogTags
 import com.educost.kanone.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -91,69 +91,19 @@ class BoardViewModel @Inject constructor(
                     is Result.Success -> {
                         _uiState.update { currentState ->
 
-                            val newBoard = result.data
+                            val newBoard = mapToUiState(
+                                newBoard = result.data,
+                                oldBoard = currentState.board
+                            )
 
-                            if (currentState.board == null) {
-
-                                currentState.copy(
-                                    board = newBoard.toBoardUi(),
-                                    isLoading = false
-
-                                )
-
-                            } else {
-
-                                val board = currentState.board.copy(
-                                    id = newBoard.id,
-                                    name = newBoard.name,
-                                    columns = newBoard.columns.map { column ->
-
-                                        val isNewColumn = currentState.board.columns.find {
-                                            it.id == column.id
-                                        }
-
-                                        isNewColumn?.copy(
-                                            id = column.id,
-                                            name = column.name,
-                                            position = column.position,
-                                            color = column.color,
-                                            cards = column.cards.map { cards ->
-
-                                                val isNewCard = isNewColumn.cards.find {
-                                                    it.id == cards.id
-                                                }
-
-                                                isNewCard?.copy(
-                                                    id = cards.id,
-                                                    title = cards.title,
-                                                    description = cards.description,
-                                                    position = cards.position,
-                                                    color = cards.color,
-                                                    createdAt = cards.createdAt,
-                                                    dueDate = cards.dueDate,
-                                                    thumbnailFileName = cards.thumbnailFileName,
-                                                    checklists = cards.checklists,
-                                                    attachments = cards.attachments,
-                                                    labels = cards.labels
-                                                )
-                                                    ?: cards.toCardUi()
-                                            }
-                                        )
-                                            ?: column.toColumnUi()
-                                    }
-                                )
-
-                                currentState.copy(board = board, isLoading = false)
-                            }
+                            currentState.copy(board = newBoard, isLoading = false)
                         }
                     }
 
                     is Result.Error -> {
-                        _sideEffectChannel.send(
-                            BoardSideEffect.ShowSnackBar(
-                                SnackbarEvent(
-                                    message = UiText.StringResource(R.string.board_snackbar_fetch_board_error)
-                                )
+                        sendSnackbar(
+                            SnackbarEvent(
+                                message = UiText.StringResource(R.string.board_snackbar_fetch_board_error)
                             )
                         )
                         _uiState.update { it.copy(isLoading = false) }
@@ -182,19 +132,11 @@ class BoardViewModel @Inject constructor(
 
             if (it.title == null || it.columnId == null || position == null) {
                 viewModelScope.launch(dispatcherProvider.main) {
-//                    Log.e(
-//                        LogTags.BOARD_VIEW_MODEL, "Error creating card with null values\n" +
-//                                "title: ${it.title}\n" +
-//                                "columnId: ${it.columnId}\n" +
-//                                "position: $position"
-//                    )
-                    _sideEffectChannel.send(
-                        BoardSideEffect.ShowSnackBar(
-                            SnackbarEvent(
-                                message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
-                                duration = SnackbarDuration.Long,
-                                withDismissAction = true
-                            )
+                    sendSnackbar(
+                        SnackbarEvent(
+                            message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
+                            duration = SnackbarDuration.Long,
+                            withDismissAction = true
                         )
                     )
                 }
@@ -216,13 +158,11 @@ class BoardViewModel @Inject constructor(
                     val result = createCardUseCase(card = card, columnId = it.columnId)
 
                     when (result) {
-                        is Result.Error -> _sideEffectChannel.send(
-                            BoardSideEffect.ShowSnackBar(
-                                SnackbarEvent(
-                                    message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
-                                    duration = SnackbarDuration.Long,
-                                    withDismissAction = true
-                                )
+                        is Result.Error -> sendSnackbar(
+                            SnackbarEvent(
+                                message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
+                                duration = SnackbarDuration.Long,
+                                withDismissAction = true
                             )
                         )
 
@@ -257,7 +197,12 @@ class BoardViewModel @Inject constructor(
     }
 
     private fun cancelColumnCreation() {
-        _uiState.update { it.copy(topBarType = BoardAppBarType.DEFAULT, creatingColumnName = null) }
+        _uiState.update {
+            it.copy(
+                topBarType = BoardAppBarType.DEFAULT,
+                creatingColumnName = null
+            )
+        }
     }
 
     private fun confirmColumnCreation() {
@@ -271,28 +216,22 @@ class BoardViewModel @Inject constructor(
             )
             viewModelScope.launch(dispatcherProvider.main) {
                 when (createColumnUseCase(column = column, boardId = board.id)) {
-                    is Result.Error -> {
-                        _sideEffectChannel.send(
-                            BoardSideEffect.ShowSnackBar(
-                                SnackbarEvent(
-                                    message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
-                                    withDismissAction = true
-                                )
-                            )
+                    is Result.Error -> sendSnackbar(
+                        SnackbarEvent(
+                            message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
+                            withDismissAction = true
                         )
-                    }
+                    )
 
                     is Result.Success -> Unit
                 }
             }
 
         } ?: viewModelScope.launch(dispatcherProvider.main) {
-            _sideEffectChannel.send(
-                BoardSideEffect.ShowSnackBar(
-                    SnackbarEvent(
-                        message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
-                        withDismissAction = true
-                    )
+            sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
+                    withDismissAction = true
                 )
             )
         }
@@ -359,6 +298,67 @@ class BoardViewModel @Inject constructor(
             )
 
             currentState.copy(board = updatedBoard)
+        }
+    }
+
+    private fun mapToUiState(newBoard: Board, oldBoard: BoardUi?): BoardUi {
+
+        if (oldBoard == null) {
+            return newBoard.toBoardUi()
+        } else {
+
+            val mappedBoard = oldBoard.copy(
+                id = newBoard.id,
+                name = newBoard.name,
+                columns = newBoard.columns.map { column ->
+
+                    val isNewColumn = oldBoard.columns.find {
+                        it.id == column.id
+                    }
+
+                    isNewColumn?.copy(
+                        id = column.id,
+                        name = column.name,
+                        position = column.position,
+                        color = column.color,
+                        cards = column.cards.map { cards ->
+
+                            val isNewCard = isNewColumn.cards.find {
+                                it.id == cards.id
+                            }
+
+                            isNewCard?.copy(
+                                id = cards.id,
+                                title = cards.title,
+                                description = cards.description,
+                                position = cards.position,
+                                color = cards.color,
+                                createdAt = cards.createdAt,
+                                dueDate = cards.dueDate,
+                                thumbnailFileName = cards.thumbnailFileName,
+                                checklists = cards.checklists,
+                                attachments = cards.attachments,
+                                labels = cards.labels
+                            )
+                                ?: cards.toCardUi()
+                        }
+                    )
+                        ?: column.toColumnUi()
+                }
+            )
+
+            return mappedBoard
+
+        }
+    }
+
+    private fun sendSnackbar(snackbarEvent: SnackbarEvent) {
+        viewModelScope.launch(dispatcherProvider.main) {
+            _sideEffectChannel.send(
+                BoardSideEffect.ShowSnackBar(
+                    snackbarEvent
+                )
+            )
         }
     }
 }
