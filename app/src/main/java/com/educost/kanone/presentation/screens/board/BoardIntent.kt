@@ -22,6 +22,7 @@ sealed interface BoardIntent {
     data class SetBoardCoordinates(val coordinates: Coordinates) : BoardIntent
     data class SetColumnHeaderCoordinates(val columnId: Long, val coordinates: Coordinates) : BoardIntent
     data class SetColumnBodyCoordinates(val columnId: Long, val coordinates: Coordinates) : BoardIntent
+    data class SetColumnCoordinates(val columnId: Long, val coordinates: Coordinates) : BoardIntent
     data class SetCardCoordinates(val cardId: Long, val columnId: Long, val coordinates: Coordinates) : BoardIntent
 
 }

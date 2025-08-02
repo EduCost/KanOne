@@ -73,6 +73,11 @@ class BoardViewModel @Inject constructor(
                 coordinates = intent.coordinates
             )
 
+            is BoardIntent.SetColumnCoordinates -> setColumnCoordinates(
+                columnId = intent.columnId,
+                coordinates = intent.coordinates
+            )
+
             is BoardIntent.SetCardCoordinates -> setCardCoordinates(
                 cardId = intent.cardId,
                 columnId = intent.columnId,
@@ -269,6 +274,22 @@ class BoardViewModel @Inject constructor(
                 columns = currentState.board.columns.map { column ->
                     if (column.id == columnId) {
                         column.copy(bodyCoordinates = coordinates)
+                    } else {
+                        column
+                    }
+                }
+            )
+
+            currentState.copy(board = updatedBoard)
+        }
+    }
+
+    private fun setColumnCoordinates(columnId: Long, coordinates: Coordinates) {
+        _uiState.update { currentState ->
+            val updatedBoard = currentState.board?.copy(
+                columns = currentState.board.columns.map { column ->
+                    if (column.id == columnId) {
+                        column.copy(coordinates = coordinates)
                     } else {
                         column
                     }

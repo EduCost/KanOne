@@ -1,7 +1,7 @@
 package com.educost.kanone.presentation.screens.board
 
-import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
+import com.educost.kanone.presentation.screens.board.model.BoardUi
 
 data class BoardState(
     val board: BoardUi? = null,

@@ -38,6 +38,18 @@ fun BoardColumn(
 ) {
     Column(
         modifier = modifier
+            .onGloballyPositioned { layoutCoordinates ->
+                onIntent(
+                    BoardIntent.SetColumnCoordinates(
+                        columnId = column.id,
+                        coordinates = Coordinates(
+                            position = layoutCoordinates.positionInRoot(),
+                            width = layoutCoordinates.size.width,
+                            height = layoutCoordinates.size.height
+                        )
+                    )
+                )
+            }
             .width(300.dp)
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))

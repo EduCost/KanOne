@@ -190,6 +190,66 @@ class BoardViewModelSetCoordinatesTest {
     }
 
     @Test
+    fun `GIVEN new column body coordinates, WHEN SetColumnCoordinates intent is processed , THEN coordinates are updated`() {
+
+        val newBoard = Board(
+            id = 1,
+            name = "board test",
+            columns = listOf(
+                KanbanColumn(
+                    id = 1,
+                    name = "column test 1",
+                    position = 1,
+                    color = null,
+                    cards = emptyList()
+                ),
+                KanbanColumn(
+                    id = 2,
+                    name = "column test 2",
+                    position = 2,
+                    color = null,
+                    cards = emptyList()
+                )
+            )
+        )
+
+        coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
+            Result.Success(newBoard)
+        )
+
+
+        runTest(testDispatcher) {
+            viewModel.uiState.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(1))
+                skipItems(2)
+
+                val firstColumns = awaitItem().board?.columns
+                assertThat(firstColumns?.get(0)?.coordinates).isEqualTo(
+                    Coordinates()
+                )
+                assertThat(firstColumns?.get(1)?.coordinates).isEqualTo(
+                    Coordinates()
+                )
+
+                val newCoordinates = Coordinates(10, 20, Offset(x = 100f, y = 200f))
+                viewModel.onIntent(BoardIntent.SetColumnCoordinates(1, newCoordinates))
+
+                val updatedColumns = awaitItem().board?.columns
+                assertThat(updatedColumns?.get(0)?.coordinates).isEqualTo(
+                    newCoordinates
+                )
+                assertThat(updatedColumns?.get(1)?.coordinates).isEqualTo(
+                    Coordinates()
+                )
+
+
+                cancelAndConsumeRemainingEvents()
+                coVerify { observeCompleteBoardUseCase(any()) }
+            }
+        }
+    }
+
+    @Test
     fun `GIVEN new card coordinates, WHEN SetCardCoordinates intent is processed , THEN coordinates are updated`() {
 
         val newBoard = Board(
