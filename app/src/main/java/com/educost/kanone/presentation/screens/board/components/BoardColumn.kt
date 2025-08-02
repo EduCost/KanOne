@@ -33,7 +33,6 @@ import java.time.LocalDateTime
 fun BoardColumn(
     modifier: Modifier = Modifier,
     column: ColumnUi,
-    columnIndex: Int,
     state: BoardState,
     onIntent: (BoardIntent) -> Unit
 ) {
@@ -45,8 +44,7 @@ fun BoardColumn(
     ) {
         ColumnHeader(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
+                .padding(16.dp)
                 .fillMaxWidth(),
             column = column,
             onIntent = onIntent
@@ -66,7 +64,7 @@ fun BoardColumn(
                         )
                     )
                 },
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 16.dp),
+            contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
@@ -147,7 +145,6 @@ private fun BoardColumnPreview() {
                         )
                     )
                 ),
-                columnIndex = 0,
                 state = BoardState(),
                 onIntent = {}
             )

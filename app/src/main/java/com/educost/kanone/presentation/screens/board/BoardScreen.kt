@@ -126,7 +126,6 @@ fun BoardScreen(
                 items(board.columns) { column ->
                     BoardColumn(
                         column = column,
-                        columnIndex = board.columns.indexOf(column),
                         state = state,
                         onIntent = onIntent
                     )
