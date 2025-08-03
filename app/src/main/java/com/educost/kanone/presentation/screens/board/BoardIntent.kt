@@ -1,9 +1,15 @@
 package com.educost.kanone.presentation.screens.board
 
+import androidx.compose.ui.geometry.Offset
 import com.educost.kanone.presentation.screens.board.model.Coordinates
 
 sealed interface BoardIntent {
     data class ObserveBoard(val boardId: Long) : BoardIntent
+
+    // Drag and drop
+    data class OnDragStart(val offset: Offset) : BoardIntent
+    data class OnDrag(val position: Offset) : BoardIntent
+    data object OnDragStop : BoardIntent
 
     // Create Card
     data class StartCreatingCard(val columnId: Long) : BoardIntent

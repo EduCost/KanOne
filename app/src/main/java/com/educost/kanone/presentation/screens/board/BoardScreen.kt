@@ -1,11 +1,14 @@
 package com.educost.kanone.presentation.screens.board
 
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -17,9 +20,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,6 +34,7 @@ import com.educost.kanone.presentation.screens.board.components.AddColumn
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.components.BoardColumn
+import com.educost.kanone.presentation.screens.board.components.ColumnCard
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
@@ -88,9 +95,25 @@ fun BoardScreen(
     onIntent: (BoardIntent) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
-
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectDragGesturesAfterLongPress(
+                    onDrag = { change, _ ->
+                        onIntent(BoardIntent.OnDrag(change.position))
+                    },
+                    onDragStart = { offset ->
+                        onIntent(BoardIntent.OnDragStart(offset))
+                    },
+                    onDragEnd = {
+                        onIntent(BoardIntent.OnDragStop)
+                    },
+                    onDragCancel = {
+                        onIntent(BoardIntent.OnDragStop)
+                    }
+                )
+            },
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             state.board?.let { board ->
@@ -121,11 +144,26 @@ fun BoardScreen(
                     .padding(innerPadding)
                     .fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                state = state.board.listState
             ) {
-                items(board.columns) { column ->
+                itemsIndexed(board.columns) { index, column ->
                     BoardColumn(
+                        modifier = Modifier
+                            .onGloballyPositioned { layoutCoordinates ->
+                                onIntent(
+                                    BoardIntent.SetColumnCoordinates(
+                                        columnId = column.id,
+                                        coordinates = Coordinates(
+                                            position = layoutCoordinates.positionInRoot(),
+                                            width = layoutCoordinates.size.width,
+                                            height = layoutCoordinates.size.height
+                                        )
+                                    )
+                                )
+                            },
                         column = column,
+                        columnIndex = index,
                         state = state,
                         onIntent = onIntent
                     )
@@ -140,6 +178,22 @@ fun BoardScreen(
                 }
             }
         }
+    }
+
+    val localDensity = LocalDensity.current
+    state.dragState.draggingCard?.let { card ->
+        ColumnCard(
+            modifier = Modifier
+                .graphicsLayer {
+                    translationY = state.dragState.itemOffset.y
+                    translationX = state.dragState.itemOffset.x
+                    rotationZ = 2f
+                }
+                .width(with(localDensity) { card.coordinates.width.toDp() })
+                .height(with(localDensity) { card.coordinates.height.toDp() }),
+            card = card,
+            onIntent = {}
+        )
     }
 }
 
