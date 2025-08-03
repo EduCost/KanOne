@@ -14,9 +14,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -33,23 +37,12 @@ import java.time.LocalDateTime
 fun BoardColumn(
     modifier: Modifier = Modifier,
     column: ColumnUi,
+    columnIndex: Int,
     state: BoardState,
     onIntent: (BoardIntent) -> Unit
 ) {
     Column(
         modifier = modifier
-            .onGloballyPositioned { layoutCoordinates ->
-                onIntent(
-                    BoardIntent.SetColumnCoordinates(
-                        columnId = column.id,
-                        coordinates = Coordinates(
-                            position = layoutCoordinates.positionInRoot(),
-                            width = layoutCoordinates.size.width,
-                            height = layoutCoordinates.size.height
-                        )
-                    )
-                )
-            }
             .width(300.dp)
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))
@@ -77,13 +70,17 @@ fun BoardColumn(
                     )
                 },
             contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            state = column.listState
         ) {
 
             itemsIndexed(
                 items = column.cards,
-                key = { _, card -> card.id }
             ) { index, card ->
+
+                val isDraggingCard = state.dragState.draggingCardIndex == index &&
+                        state.dragState.selectedColumnIndex == columnIndex
+
                 ColumnCard(
                     modifier = Modifier
                         .onGloballyPositioned { layoutCoordinates ->
@@ -99,6 +96,16 @@ fun BoardColumn(
                                 )
                             )
                         }
+                        .then(
+                            if (isDraggingCard) {
+                                Modifier
+                                    .graphicsLayer {
+                                        alpha = 0f
+                                    }
+                            } else {
+                                Modifier
+                            }
+                        )
                         .fillMaxWidth(),
                     card = card,
                     onIntent = onIntent
@@ -158,6 +165,7 @@ private fun BoardColumnPreview() {
                     )
                 ),
                 state = BoardState(),
+                columnIndex = 0,
                 onIntent = {}
             )
         }
