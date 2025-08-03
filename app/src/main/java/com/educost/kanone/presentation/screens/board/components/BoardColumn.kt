@@ -14,6 +14,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +41,13 @@ fun BoardColumn(
     state: BoardState,
     onIntent: (BoardIntent) -> Unit
 ) {
+
+    val cards by remember {
+        derivedStateOf {
+            column.cards
+        }
+    }
+
     Column(
         modifier = modifier
             .width(300.dp)
@@ -72,7 +82,7 @@ fun BoardColumn(
         ) {
 
             itemsIndexed(
-                items = column.cards,
+                items = cards,
                 key = { _, card -> card.id }
             ) { index, card ->
 

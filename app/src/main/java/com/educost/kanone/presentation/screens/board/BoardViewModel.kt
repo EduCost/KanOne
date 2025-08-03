@@ -163,65 +163,104 @@ class BoardViewModel @Inject constructor(
     }
 
     fun onDrag(position: Offset) {
-        val board = uiState.value.board ?: return
+        _uiState.update { state ->
+            if (state.board == null) return@update state
 
-        val currentCard = uiState.value.dragState.draggingCard ?: return
-        val currentCardIndex = uiState.value.dragState.draggingCardIndex ?: return
-        val currentColumn = uiState.value.dragState.selectedColumn ?: return
-        val currentColumnIndex = uiState.value.dragState.selectedColumnIndex ?: return
+            val currentCard = state.dragState.draggingCard ?: return
+            val currentCardIndex = state.dragState.draggingCardIndex ?: return
+            val currentColumn = state.dragState.selectedColumn ?: return
+            val currentColumnIndex = state.dragState.selectedColumnIndex ?: return
 
-        val newPosition = Offset(
-            x = position.x - currentCard.coordinates.width / 2,
-            y = position.y - currentCard.coordinates.height / 2
-        )
-        _uiState.update { it.copy(dragState = it.dragState.copy(itemOffset = newPosition)) }
+            val newPosition = Offset(
+                x = position.x - currentCard.coordinates.width / 2,
+                y = position.y - currentCard.coordinates.height / 2
+            )
 
-
-        val cardCenterX = newPosition.x + currentCard.coordinates.width / 2
-        val cardCenterY = newPosition.y + currentCard.coordinates.height / 2
-
-
-        val targetColumn = findColumnWithIndex(
-            offsetX = cardCenterX,
-            columns = board.columns,
-            lazyRowState = board.listState
-        ) ?: return
+            val cardCenterX = newPosition.x + currentCard.coordinates.width / 2
+            val cardCenterY = newPosition.y + currentCard.coordinates.height / 2
 
 
-        val targetCard = findCardWithIndex(
-            column = targetColumn.second,
-            offsetY = cardCenterY
-        ) ?: return
+            val targetColumn = findColumnWithIndex(
+                offsetX = cardCenterX,
+                columns = state.board.columns,
+                lazyRowState = state.board.listState
+            ) ?: return
 
 
-        // Move card to target board
-        if (currentColumnIndex != targetColumn.first) {
-            println("transferring card to different column")
-        }
+            val targetCard = findCardWithIndex(
+                column = targetColumn.second,
+                offsetY = cardCenterY
+            ) ?: return
 
-        val targetCardCenterY =
-            targetCard.second.coordinates.position.y + targetCard.second.coordinates.height / 2
 
-        // Move task to target position
-        if (
-            (currentCardIndex < targetCard.first && cardCenterY > targetCardCenterY) ||
-            (currentCardIndex > targetCard.first && cardCenterY < targetCardCenterY)
-        ) {
-            println("currentIndex: $currentCardIndex, targetIndex: ${targetCard.first}")
-            val newColumns = uiState.value.board?.columns?.toMutableList() ?: return
-            val newCards = newColumns[currentColumnIndex].cards.toMutableList().apply {
-                add(
-                    index = targetCard.first,
-                    element = removeAt(currentCardIndex)
+            // Move card to target board
+            if (currentColumnIndex != targetColumn.first) {
+                println("Transferring card")
+
+
+                val newCardIndex = determineDropIndexInColumn(
+                    cardOffsetY = cardCenterY,
+                    targetColumn = targetColumn.second
                 )
-            }.toList()
-            newColumns[currentColumnIndex] = newColumns[currentColumnIndex].copy(cards = newCards)
-            _uiState.update {
-                it.copy(
-                    board = it.board?.copy(columns = newColumns),
-                    dragState = it.dragState.copy(draggingCardIndex = targetCard.first)
+
+                val sourceColumnCards = currentColumn.cards.toMutableList().apply {
+                    remove(currentCard)
+                }
+                val targetColumnCards = targetColumn.second.cards.toMutableList().apply {
+                    add(newCardIndex, currentCard)
+                }
+
+                val newColumns = state.board.columns.toMutableList().apply {
+                    set(currentColumnIndex, currentColumn.copy(cards = sourceColumnCards))
+                    set(targetColumn.first, targetColumn.second.copy(cards = targetColumnCards))
+                }
+
+
+                return@update state.copy(
+                    board = state.board.copy(columns = newColumns),
+                    dragState = state.dragState.copy(
+                        itemOffset = newPosition,
+                        selectedColumn = targetColumn.second,
+                        draggingCardIndex = newCardIndex,
+                        selectedColumnIndex = targetColumn.first
+                    )
                 )
             }
+
+            val targetCardCenterY =
+                targetCard.second.coordinates.position.y + targetCard.second.coordinates.height / 2
+
+            // Move task to target position
+            if (
+                (currentCardIndex < targetCard.first && cardCenterY > targetCardCenterY) ||
+                (currentCardIndex > targetCard.first && cardCenterY < targetCardCenterY)
+            ) {
+                println("currentIndex: $currentCardIndex, targetIndex: ${targetCard.first}")
+
+                val newColumns = state.board.columns.toMutableList()
+
+                val newCards = newColumns[currentColumnIndex].cards.toMutableList().apply {
+                    add(
+                        index = targetCard.first,
+                        element = removeAt(currentCardIndex)
+                    )
+                }.toList()
+                newColumns[currentColumnIndex] =
+                    newColumns[currentColumnIndex].copy(cards = newCards)
+
+
+                return@update state.copy(
+                    board = state.board.copy(columns = newColumns),
+                    dragState = state.dragState.copy(
+                        itemOffset = newPosition,
+                        draggingCardIndex = targetCard.first
+                    )
+                )
+            }
+
+
+
+            state.copy(dragState = state.dragState.copy(itemOffset = newPosition))
         }
     }
 
