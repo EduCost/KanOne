@@ -41,13 +41,6 @@ fun BoardColumn(
     state: BoardState,
     onIntent: (BoardIntent) -> Unit
 ) {
-
-    val cards by remember {
-        derivedStateOf {
-            column.cards
-        }
-    }
-
     Column(
         modifier = modifier
             .width(300.dp)
@@ -82,8 +75,8 @@ fun BoardColumn(
         ) {
 
             itemsIndexed(
-                items = cards,
-                key = { _, card -> card.id }
+                items = column.cards,
+                key = { index, card -> "${index}_${card.id}" }
             ) { index, card ->
 
                 val isDraggingCard = state.dragState.draggingCardIndex == index &&

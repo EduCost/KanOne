@@ -175,6 +175,7 @@ class BoardViewModel @Inject constructor(
                 x = position.x - currentCard.coordinates.width / 2,
                 y = position.y - currentCard.coordinates.height / 2
             )
+            val newState = state.copy(dragState = state.dragState.copy(itemOffset = newPosition))
 
             val cardCenterX = newPosition.x + currentCard.coordinates.width / 2
             val cardCenterY = newPosition.y + currentCard.coordinates.height / 2
@@ -184,13 +185,13 @@ class BoardViewModel @Inject constructor(
                 offsetX = cardCenterX,
                 columns = state.board.columns,
                 lazyRowState = state.board.listState
-            ) ?: return
+            ) ?: return@update newState
 
 
             val targetCard = findCardWithIndex(
                 column = targetColumn.second,
                 offsetY = cardCenterY
-            ) ?: return
+            ) ?: return@update newState
 
 
             // Move card to target board
