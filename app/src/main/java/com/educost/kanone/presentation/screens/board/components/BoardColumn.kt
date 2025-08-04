@@ -69,14 +69,13 @@ fun BoardColumn(
                         )
                     )
                 },
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 16.dp),
+            contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             state = column.listState
         ) {
 
             itemsIndexed(
                 items = column.cards,
-                key = { index, card -> "${index}_${card.id}" }
             ) { index, card ->
 
                 val isDraggingCard = state.dragState.draggingCardIndex == index &&

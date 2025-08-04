@@ -27,4 +27,5 @@ data class DragState(
     val draggingCardIndex: Int? = null,
     val selectedColumn: ColumnUi? = null,
     val selectedColumnIndex: Int? = null,
+    val draggingColumn: ColumnUi? = null,
 )

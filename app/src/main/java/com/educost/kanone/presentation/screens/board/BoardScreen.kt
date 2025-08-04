@@ -148,6 +148,7 @@ fun BoardScreen(
                 state = state.board.listState
             ) {
                 itemsIndexed(board.columns) { index, column ->
+                    val isDraggingColumn = state.dragState.draggingColumn?.id == column.id
                     BoardColumn(
                         modifier = Modifier
                             .onGloballyPositioned { layoutCoordinates ->
@@ -161,7 +162,17 @@ fun BoardScreen(
                                         )
                                     )
                                 )
-                            },
+                            }
+                            .then(
+                                if (isDraggingColumn) {
+                                    Modifier
+                                        .graphicsLayer {
+                                            alpha = 0f
+                                        }
+                                } else {
+                                    Modifier
+                                }
+                            ),
                         column = column,
                         columnIndex = index,
                         state = state,
@@ -195,7 +206,24 @@ fun BoardScreen(
             onIntent = {}
         )
     }
+    state.dragState.draggingColumn?.let { column ->
+        BoardColumn(
+            modifier = Modifier
+                .graphicsLayer {
+                    translationY = state.dragState.itemOffset.y
+                    translationX = state.dragState.itemOffset.x
+                    rotationZ = 2f
+                }
+                .width(with(localDensity) { column.coordinates.width.toDp() })
+                .height(with(localDensity) { column.coordinates.height.toDp() }),
+            column = column,
+            state = BoardState(),
+            columnIndex = -1,
+            onIntent = { },
+        )
+    }
 }
+
 
 @PreviewLightDark
 @Composable
