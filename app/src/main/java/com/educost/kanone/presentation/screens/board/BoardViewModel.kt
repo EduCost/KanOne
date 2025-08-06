@@ -1,5 +1,6 @@
 package com.educost.kanone.presentation.screens.board
 
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.geometry.Offset
@@ -21,11 +22,17 @@ import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
+import com.educost.kanone.presentation.screens.board.state.BoardState
+import com.educost.kanone.presentation.screens.board.state.CardCreationState
+import com.educost.kanone.presentation.screens.board.state.DragState
+import com.educost.kanone.presentation.screens.board.state.ScrollState
 import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText
 import com.educost.kanone.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -48,6 +55,9 @@ class BoardViewModel @Inject constructor(
     private val _sideEffectChannel = Channel<BoardSideEffect>(Channel.BUFFERED)
     val sideEffectFlow = _sideEffectChannel.receiveAsFlow()
 
+    private val scrollState = ScrollState()
+
+    private var verticalOverScrollJob: Job? = null
 
     fun onIntent(intent: BoardIntent) {
         when (intent) {
@@ -173,7 +183,7 @@ class BoardViewModel @Inject constructor(
         }
     }
 
-    fun onDrag(position: Offset) {
+    fun onDrag(position: Offset?) {
         _uiState.update { state ->
             if (state.board == null) return@update state
 
@@ -184,10 +194,12 @@ class BoardViewModel @Inject constructor(
                 val column = state.dragState.draggingColumn
                 val columns = state.board.columns
 
-                val newPosition = Offset(
-                    x = position.x - column.coordinates.width / 2,
-                    y = position.y - column.headerCoordinates.height / 2
-                )
+                val newPosition = if (position != null) {
+                    Offset(
+                        x = position.x - column.coordinates.width / 2,
+                        y = position.y - column.headerCoordinates.height / 2
+                    )
+                } else state.dragState.itemOffset
                 val newState =
                     state.copy(dragState = state.dragState.copy(itemOffset = newPosition))
 
@@ -228,10 +240,18 @@ class BoardViewModel @Inject constructor(
             val currentColumn = state.dragState.selectedColumn ?: return
             val currentColumnIndex = state.dragState.selectedColumnIndex ?: return
 
-            val newPosition = Offset(
-                x = position.x - currentCard.coordinates.width / 2,
-                y = position.y - currentCard.coordinates.height / 2
+            handleVerticalScroll(
+                selectedCard = currentCard,
+                selectedColumn = currentColumn,
+                selectedColumnIndex = currentColumnIndex
             )
+
+            val newPosition = if (position != null) {
+                Offset(
+                    x = position.x - currentCard.coordinates.width / 2,
+                    y = position.y - currentCard.coordinates.height / 2
+                )
+            } else state.dragState.itemOffset
             val newState = state.copy(dragState = state.dragState.copy(itemOffset = newPosition))
 
             val cardCenterX = newPosition.x + currentCard.coordinates.width / 2
@@ -318,9 +338,9 @@ class BoardViewModel @Inject constructor(
         }
     }
 
-
     fun onDragStop() {
         _uiState.update { it.copy(dragState = DragState()) }
+        cancelVerticalScroll()
     }
 
     private fun isHeaderPressed(
@@ -387,7 +407,6 @@ class BoardViewModel @Inject constructor(
     private fun findCardWithIndex(column: ColumnUi, offsetY: Float): Pair<Int, CardUi>? {
         val cardsOnScreen = column.listState.layoutInfo.visibleItemsInfo.map { it.index }
 
-        println("finding")
         val targetCard = column.cards.filterIndexed { index, card ->
             val cardStart = card.coordinates.position.y
             val cardEnd = card.coordinates.position.y + card.coordinates.height
@@ -401,8 +420,113 @@ class BoardViewModel @Inject constructor(
             .takeIf { it != -1 }
             ?: return null
 
-        println("found")
         return targetCardIndex to targetCard
+    }
+
+    // Auto scroll
+
+    private fun handleVerticalScroll(
+        selectedCard: CardUi,
+        selectedColumn: ColumnUi,
+        selectedColumnIndex: Int
+    ) {
+        if (scrollState.scrollingColumnIndex != selectedColumnIndex) {
+            cancelVerticalScroll()
+            scrollState.scrollingColumnIndex = selectedColumnIndex
+        }
+
+        val dragState = uiState.value.dragState
+
+        val cardTop = dragState.itemOffset.y
+        val cardBottom = cardTop + selectedCard.coordinates.height
+        val columnTop = selectedColumn.bodyCoordinates.position.y
+        val columnBottom = columnTop + selectedColumn.bodyCoordinates.height
+
+        val canScrollUp = selectedColumn.listState.canScrollBackward
+        val canScrollDown = selectedColumn.listState.canScrollForward
+        val isCardAboveColumn = cardTop < columnTop
+        val isCardBelowColumn = cardBottom > columnBottom
+
+        val shouldScrollUp = canScrollUp && isCardAboveColumn
+        val shouldScrollDown = canScrollDown && isCardBelowColumn
+
+        scrollState.verticalSpeed = if (shouldScrollUp) {
+            (cardTop - columnTop) / 3
+        } else if (shouldScrollDown) {
+            (cardBottom - columnBottom) / 3
+        } else {
+            0f
+        }
+
+        if ((shouldScrollUp || shouldScrollDown)) {
+            if (!scrollState.isVerticalScrolling) {
+
+                scrollState.isVerticalScrolling = true
+
+                verticalOverScrollJob = viewModelScope.launch {
+                    while (scrollState.isVerticalScrolling) {
+                        try {
+                            delay(16)
+                            val speed = scrollState.verticalSpeed
+                            selectedColumn.listState.scrollBy(speed)
+                            onDrag(null)
+
+                        } catch (e: Exception) {
+                            scrollState.isVerticalScrolling = false
+                            break
+                        }
+                    }
+                }
+            }
+        } else {
+            cancelVerticalScroll()
+        }
+        /*val speed = if (shouldScrollUp) {
+            (cardTop - columnTop) / 3
+        } else if (shouldScrollDown) {
+            (cardBottom - columnBottom) / 3
+        } else {
+            0f
+        }
+        _uiState.update { it.copy(scrollState = it.scrollState.copy(verticalSpeed = speed)) }
+
+        if ((shouldScrollUp || shouldScrollDown)) {
+            if (!uiState.value.scrollState.isVerticalScrolling) {
+
+                _uiState.update { it.copy(scrollState = it.scrollState.copy(isVerticalScrolling = true)) }
+
+                verticalOverScrollJob = viewModelScope.launch {
+                    while (_uiState.value.scrollState.isVerticalScrolling) {
+                        try {
+                            delay(16)
+                            val speed = uiState.value.scrollState.verticalSpeed
+                            selectedColumn.listState.scrollBy(speed)
+                            onDrag(null)
+
+                        } catch (e: Exception) {
+                            _uiState.update {
+                                it.copy(
+                                    scrollState = it.scrollState.copy(
+                                        isVerticalScrolling = false
+                                    )
+                                )
+                            }
+                            break
+                        }
+                    }
+                }
+            }
+        } else {
+            cancelVerticalScroll()
+        }*/
+    }
+
+    private fun cancelVerticalScroll() {
+        scrollState.isVerticalScrolling = false
+        scrollState.verticalSpeed = 0f
+        scrollState.scrollingColumnIndex = null
+        verticalOverScrollJob?.cancel()
+        verticalOverScrollJob = null
     }
 
     // Create card
