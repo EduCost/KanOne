@@ -137,6 +137,276 @@ class BoardViewModel @Inject constructor(
         }
     }
 
+
+    // Create card
+    private fun cancelCardCreation() {
+        _uiState.update {
+            it.copy(
+                cardCreationState = CardCreationState(),
+                topBarType = BoardAppBarType.DEFAULT
+            )
+        }
+    }
+
+    private fun confirmCardCreation() {
+        uiState.value.cardCreationState.let {
+
+            val position = uiState.value.board?.columns?.find { column ->
+                column.id == it.columnId
+            }?.cards?.size
+
+            if (it.title == null || it.columnId == null || position == null) {
+                viewModelScope.launch(dispatcherProvider.main) {
+                    sendSnackbar(
+                        SnackbarEvent(
+                            message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
+                            duration = SnackbarDuration.Long,
+                            withDismissAction = true
+                        )
+                    )
+                }
+            } else {
+                val card = CardItem(
+                    id = 0,
+                    title = it.title,
+                    description = null,
+                    position = position,
+                    color = null,
+                    createdAt = LocalDateTime.now(),
+                    dueDate = null,
+                    thumbnailFileName = null,
+                    checklists = emptyList(),
+                    attachments = emptyList(),
+                    labels = emptyList()
+                )
+                viewModelScope.launch(dispatcherProvider.main) {
+                    val result = createCardUseCase(card = card, columnId = it.columnId)
+
+                    when (result) {
+                        is Result.Error -> sendSnackbar(
+                            SnackbarEvent(
+                                message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
+                                duration = SnackbarDuration.Long,
+                                withDismissAction = true
+                            )
+                        )
+
+                        is Result.Success -> Unit
+                    }
+                }
+            }
+            cancelCardCreation()
+        }
+    }
+
+    private fun onCardTitleChange(newTitle: String) {
+        _uiState.update { it.copy(cardCreationState = it.cardCreationState.copy(title = newTitle)) }
+    }
+
+    private fun startCreatingCard(columnId: Long) {
+        _uiState.update {
+            it.copy(
+                cardCreationState = CardCreationState(columnId = columnId),
+                topBarType = BoardAppBarType.ADD_CARD
+            )
+        }
+    }
+
+
+    // Create column
+    private fun startCreatingColumn() {
+        _uiState.update { it.copy(topBarType = BoardAppBarType.ADD_COLUMN) }
+    }
+
+    private fun onColumnNameChanged(name: String) {
+        _uiState.update { it.copy(creatingColumnName = name) }
+    }
+
+    private fun cancelColumnCreation() {
+        _uiState.update {
+            it.copy(
+                topBarType = BoardAppBarType.DEFAULT,
+                creatingColumnName = null
+            )
+        }
+    }
+
+    private fun confirmColumnCreation() {
+        uiState.value.board?.let { board ->
+            val column = KanbanColumn(
+                id = 0,
+                name = uiState.value.creatingColumnName ?: "",
+                position = board.columns.size,
+                color = null,
+                cards = emptyList()
+            )
+            viewModelScope.launch(dispatcherProvider.main) {
+                when (createColumnUseCase(column = column, boardId = board.id)) {
+                    is Result.Error -> sendSnackbar(
+                        SnackbarEvent(
+                            message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
+                            withDismissAction = true
+                        )
+                    )
+
+                    is Result.Success -> Unit
+                }
+            }
+
+        } ?: viewModelScope.launch(dispatcherProvider.main) {
+            sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
+                    withDismissAction = true
+                )
+            )
+        }
+
+        cancelColumnCreation()
+    }
+
+
+    // Set coordinates
+    private fun setBoardCoordinates(coordinates: Coordinates) {
+        _uiState.update { currentState ->
+            currentState.copy(board = currentState.board?.copy(coordinates = coordinates))
+        }
+    }
+
+    private fun setColumnHeaderCoordinates(columnId: Long, coordinates: Coordinates) {
+        _uiState.update { currentState ->
+            val updatedBoard = currentState.board?.copy(
+                columns = currentState.board.columns.map { column ->
+                    if (column.id == columnId) {
+                        column.copy(headerCoordinates = coordinates)
+                    } else {
+                        column
+                    }
+                }
+            )
+
+            currentState.copy(board = updatedBoard)
+        }
+    }
+
+    private fun setColumnBodyCoordinates(columnId: Long, coordinates: Coordinates) {
+        _uiState.update { currentState ->
+            val updatedBoard = currentState.board?.copy(
+                columns = currentState.board.columns.map { column ->
+                    if (column.id == columnId) {
+                        column.copy(bodyCoordinates = coordinates)
+                    } else {
+                        column
+                    }
+                }
+            )
+
+            currentState.copy(board = updatedBoard)
+        }
+    }
+
+    private fun setColumnCoordinates(columnId: Long, coordinates: Coordinates) {
+        _uiState.update { currentState ->
+            val updatedBoard = currentState.board?.copy(
+                columns = currentState.board.columns.map { column ->
+                    if (column.id == columnId) {
+                        column.copy(coordinates = coordinates)
+                    } else {
+                        column
+                    }
+                }
+            )
+
+            currentState.copy(board = updatedBoard)
+        }
+    }
+
+    private fun setCardCoordinates(cardId: Long, columnId: Long, coordinates: Coordinates) {
+        _uiState.update { currentState ->
+            val updatedBoard = currentState.board?.copy(
+                columns = currentState.board.columns.map { column ->
+                    if (column.id == columnId) {
+                        column.copy(cards = column.cards.map { card ->
+                            if (card.id == cardId) {
+                                card.copy(coordinates = coordinates)
+                            } else {
+                                card
+                            }
+                        })
+                    } else {
+                        column
+                    }
+                }
+            )
+
+            currentState.copy(board = updatedBoard)
+        }
+    }
+
+
+    // Helper functions
+    private fun mapToUiState(newBoard: Board, oldBoard: BoardUi?): BoardUi {
+
+        if (oldBoard == null) {
+            return newBoard.toBoardUi()
+        } else {
+
+            val mappedBoard = oldBoard.copy(
+                id = newBoard.id,
+                name = newBoard.name,
+                columns = newBoard.columns.map { column ->
+
+                    val isNewColumn = oldBoard.columns.find {
+                        it.id == column.id
+                    }
+
+                    isNewColumn?.copy(
+                        id = column.id,
+                        name = column.name,
+                        position = column.position,
+                        color = column.color,
+                        cards = column.cards.map { cards ->
+
+                            val isNewCard = isNewColumn.cards.find {
+                                it.id == cards.id
+                            }
+
+                            isNewCard?.copy(
+                                id = cards.id,
+                                title = cards.title,
+                                description = cards.description,
+                                position = cards.position,
+                                color = cards.color,
+                                createdAt = cards.createdAt,
+                                dueDate = cards.dueDate,
+                                thumbnailFileName = cards.thumbnailFileName,
+                                checklists = cards.checklists,
+                                attachments = cards.attachments,
+                                labels = cards.labels
+                            )
+                                ?: cards.toCardUi()
+                        }
+                    )
+                        ?: column.toColumnUi()
+                }
+            )
+
+            return mappedBoard
+
+        }
+    }
+
+    private fun sendSnackbar(snackbarEvent: SnackbarEvent) {
+        viewModelScope.launch(dispatcherProvider.main) {
+            _sideEffectChannel.send(
+                BoardSideEffect.ShowSnackBar(
+                    snackbarEvent
+                )
+            )
+        }
+    }
+
+
     // Drag and drop
     fun onDragStart(offset: Offset) {
 
@@ -427,6 +697,7 @@ class BoardViewModel @Inject constructor(
         return targetCardIndex to targetCard
     }
 
+
     // Auto scroll
 
     private fun handleVerticalScroll(
@@ -475,7 +746,7 @@ class BoardViewModel @Inject constructor(
                             selectedColumn.listState.scrollBy(speed)
                             onDrag(null)
 
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             scrollState.isVerticalScrolling = false
                             break
                         }
@@ -523,7 +794,7 @@ class BoardViewModel @Inject constructor(
                             val speed = scrollState.horizontalSpeed
                             board.listState.scrollBy(speed)
                             onDrag(null)
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             scrollState.isHorizontalScrolling = false
                             break
                         }
@@ -550,275 +821,9 @@ class BoardViewModel @Inject constructor(
         horizontalOverScrollJob = null
     }
 
-    private fun cancelAutoScroll(){
+    private fun cancelAutoScroll() {
         cancelVerticalScroll()
         cancelHorizontalScroll()
-    }
-
-    // Create card
-    private fun cancelCardCreation() {
-        _uiState.update {
-            it.copy(
-                cardCreationState = CardCreationState(),
-                topBarType = BoardAppBarType.DEFAULT
-            )
-        }
-    }
-
-    private fun confirmCardCreation() {
-        uiState.value.cardCreationState.let {
-
-            val position = uiState.value.board?.columns?.find { column ->
-                column.id == it.columnId
-            }?.cards?.size
-
-            if (it.title == null || it.columnId == null || position == null) {
-                viewModelScope.launch(dispatcherProvider.main) {
-                    sendSnackbar(
-                        SnackbarEvent(
-                            message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
-                            duration = SnackbarDuration.Long,
-                            withDismissAction = true
-                        )
-                    )
-                }
-            } else {
-                val card = CardItem(
-                    id = 0,
-                    title = it.title,
-                    description = null,
-                    position = position,
-                    color = null,
-                    createdAt = LocalDateTime.now(),
-                    dueDate = null,
-                    thumbnailFileName = null,
-                    checklists = emptyList(),
-                    attachments = emptyList(),
-                    labels = emptyList()
-                )
-                viewModelScope.launch(dispatcherProvider.main) {
-                    val result = createCardUseCase(card = card, columnId = it.columnId)
-
-                    when (result) {
-                        is Result.Error -> sendSnackbar(
-                            SnackbarEvent(
-                                message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
-                                duration = SnackbarDuration.Long,
-                                withDismissAction = true
-                            )
-                        )
-
-                        is Result.Success -> Unit
-                    }
-                }
-            }
-            cancelCardCreation()
-        }
-    }
-
-    private fun onCardTitleChange(newTitle: String) {
-        _uiState.update { it.copy(cardCreationState = it.cardCreationState.copy(title = newTitle)) }
-    }
-
-    private fun startCreatingCard(columnId: Long) {
-        _uiState.update {
-            it.copy(
-                cardCreationState = CardCreationState(columnId = columnId),
-                topBarType = BoardAppBarType.ADD_CARD
-            )
-        }
-    }
-
-    // Create column
-    private fun startCreatingColumn() {
-        _uiState.update { it.copy(topBarType = BoardAppBarType.ADD_COLUMN) }
-    }
-
-    private fun onColumnNameChanged(name: String) {
-        _uiState.update { it.copy(creatingColumnName = name) }
-    }
-
-    private fun cancelColumnCreation() {
-        _uiState.update {
-            it.copy(
-                topBarType = BoardAppBarType.DEFAULT,
-                creatingColumnName = null
-            )
-        }
-    }
-
-    private fun confirmColumnCreation() {
-        uiState.value.board?.let { board ->
-            val column = KanbanColumn(
-                id = 0,
-                name = uiState.value.creatingColumnName ?: "",
-                position = board.columns.size,
-                color = null,
-                cards = emptyList()
-            )
-            viewModelScope.launch(dispatcherProvider.main) {
-                when (createColumnUseCase(column = column, boardId = board.id)) {
-                    is Result.Error -> sendSnackbar(
-                        SnackbarEvent(
-                            message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
-                            withDismissAction = true
-                        )
-                    )
-
-                    is Result.Success -> Unit
-                }
-            }
-
-        } ?: viewModelScope.launch(dispatcherProvider.main) {
-            sendSnackbar(
-                SnackbarEvent(
-                    message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
-                    withDismissAction = true
-                )
-            )
-        }
-
-        cancelColumnCreation()
-    }
-
-
-    // Set coordinates
-    private fun setBoardCoordinates(coordinates: Coordinates) {
-        _uiState.update { currentState ->
-            currentState.copy(board = currentState.board?.copy(coordinates = coordinates))
-        }
-    }
-
-    private fun setColumnHeaderCoordinates(columnId: Long, coordinates: Coordinates) {
-        _uiState.update { currentState ->
-            val updatedBoard = currentState.board?.copy(
-                columns = currentState.board.columns.map { column ->
-                    if (column.id == columnId) {
-                        column.copy(headerCoordinates = coordinates)
-                    } else {
-                        column
-                    }
-                }
-            )
-
-            currentState.copy(board = updatedBoard)
-        }
-    }
-
-    private fun setColumnBodyCoordinates(columnId: Long, coordinates: Coordinates) {
-        _uiState.update { currentState ->
-            val updatedBoard = currentState.board?.copy(
-                columns = currentState.board.columns.map { column ->
-                    if (column.id == columnId) {
-                        column.copy(bodyCoordinates = coordinates)
-                    } else {
-                        column
-                    }
-                }
-            )
-
-            currentState.copy(board = updatedBoard)
-        }
-    }
-
-    private fun setColumnCoordinates(columnId: Long, coordinates: Coordinates) {
-        _uiState.update { currentState ->
-            val updatedBoard = currentState.board?.copy(
-                columns = currentState.board.columns.map { column ->
-                    if (column.id == columnId) {
-                        column.copy(coordinates = coordinates)
-                    } else {
-                        column
-                    }
-                }
-            )
-
-            currentState.copy(board = updatedBoard)
-        }
-    }
-
-    private fun setCardCoordinates(cardId: Long, columnId: Long, coordinates: Coordinates) {
-        _uiState.update { currentState ->
-            val updatedBoard = currentState.board?.copy(
-                columns = currentState.board.columns.map { column ->
-                    if (column.id == columnId) {
-                        column.copy(cards = column.cards.map { card ->
-                            if (card.id == cardId) {
-                                card.copy(coordinates = coordinates)
-                            } else {
-                                card
-                            }
-                        })
-                    } else {
-                        column
-                    }
-                }
-            )
-
-            currentState.copy(board = updatedBoard)
-        }
-    }
-
-    // Helper functions
-    private fun mapToUiState(newBoard: Board, oldBoard: BoardUi?): BoardUi {
-
-        if (oldBoard == null) {
-            return newBoard.toBoardUi()
-        } else {
-
-            val mappedBoard = oldBoard.copy(
-                id = newBoard.id,
-                name = newBoard.name,
-                columns = newBoard.columns.map { column ->
-
-                    val isNewColumn = oldBoard.columns.find {
-                        it.id == column.id
-                    }
-
-                    isNewColumn?.copy(
-                        id = column.id,
-                        name = column.name,
-                        position = column.position,
-                        color = column.color,
-                        cards = column.cards.map { cards ->
-
-                            val isNewCard = isNewColumn.cards.find {
-                                it.id == cards.id
-                            }
-
-                            isNewCard?.copy(
-                                id = cards.id,
-                                title = cards.title,
-                                description = cards.description,
-                                position = cards.position,
-                                color = cards.color,
-                                createdAt = cards.createdAt,
-                                dueDate = cards.dueDate,
-                                thumbnailFileName = cards.thumbnailFileName,
-                                checklists = cards.checklists,
-                                attachments = cards.attachments,
-                                labels = cards.labels
-                            )
-                                ?: cards.toCardUi()
-                        }
-                    )
-                        ?: column.toColumnUi()
-                }
-            )
-
-            return mappedBoard
-
-        }
-    }
-
-    private fun sendSnackbar(snackbarEvent: SnackbarEvent) {
-        viewModelScope.launch(dispatcherProvider.main) {
-            _sideEffectChannel.send(
-                BoardSideEffect.ShowSnackBar(
-                    snackbarEvent
-                )
-            )
-        }
     }
 
     override fun onCleared() {
