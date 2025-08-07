@@ -7,9 +7,9 @@ data class BoardState(
     val board: BoardUi? = null,
     val isLoading: Boolean = false,
     val topBarType: BoardAppBarType = BoardAppBarType.DEFAULT,
+    val activeDropdownColumnId: Long? = null,
     val creatingColumnName: String? = null,
     val cardCreationState: CardCreationState = CardCreationState(),
-
     val dragState: DragState = DragState(),
 )
 

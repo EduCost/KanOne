@@ -31,6 +31,9 @@
     <string name="board_snackbar_column_creation_error">Error creating column</string>
     <string name="board_snackbar_fetch_board_error">Error fetching board data</string>
     <string name="board_snackbar_card_creation_error">Error creating card</string>
+    <string name="board_dropdown_menu_add_card">Add Card</string>
+    <string name="board_dropdown_menu_rename_column">Rename</string>
+    <string name="board_dropdown_menu_order_by">Order by</string>
     <!--  BOARD SCREEN  -->
 
 

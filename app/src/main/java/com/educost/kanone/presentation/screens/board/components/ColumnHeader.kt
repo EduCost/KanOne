@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,14 +33,19 @@ import androidx.compose.ui.unit.dp
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.Coordinates
+import com.educost.kanone.presentation.screens.board.state.BoardState
 import com.educost.kanone.presentation.theme.KanOneTheme
 
 @Composable
 fun ColumnHeader(
     modifier: Modifier = Modifier,
     column: ColumnUi,
+    state: BoardState,
     onIntent: (BoardIntent) -> Unit
 ) {
+
+    val isDropdownMenuExpanded by remember(state.activeDropdownColumnId) { mutableStateOf(state.activeDropdownColumnId == column.id) }
+
     val headerColor by remember {
         derivedStateOf {
             if (column.color != null) {
@@ -86,11 +92,16 @@ fun ColumnHeader(
             Spacer(modifier = Modifier.weight(1f))
 
             IconButton(
-                onClick = { /*TODO*/ }
+                onClick = { onIntent(BoardIntent.OpenColumnDropdownMenu(column.id)) }
             ) {
                 Icon(
                     Icons.Filled.MoreVert,
                     contentDescription = null
+                )
+                ColumnDropdownMenu(
+                    expanded = isDropdownMenuExpanded,
+                    column = column,
+                    onIntent = onIntent
                 )
             }
         }
@@ -111,6 +122,7 @@ private fun ColumnHeaderPreview() {
                     color = null,
                     cards = emptyList()
                 ),
+                state = BoardState(),
                 onIntent = {}
             )
         }

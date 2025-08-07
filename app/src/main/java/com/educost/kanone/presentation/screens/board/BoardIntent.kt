@@ -23,6 +23,14 @@ sealed interface BoardIntent {
     data object CancelColumnCreation : BoardIntent
     data object ConfirmColumnCreation : BoardIntent
 
+    // Column dropdown menu
+    data class OpenColumnDropdownMenu(val columnId: Long) : BoardIntent
+    data object CloseColumnDropdownMenu : BoardIntent
+    data class OnAddCard(val columnId: Long) : BoardIntent
+    data class OnRename(val columnId: Long) : BoardIntent
+
+
+
 
     // Set coordinates
     data class SetBoardCoordinates(val coordinates: Coordinates) : BoardIntent

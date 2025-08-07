@@ -49,6 +49,7 @@ fun BoardColumn(
                 .padding(16.dp)
                 .fillMaxWidth(),
             column = column,
+            state = state,
             onIntent = onIntent
         )
 

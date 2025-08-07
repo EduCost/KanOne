@@ -80,6 +80,12 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.CancelColumnCreation -> cancelColumnCreation()
             is BoardIntent.ConfirmColumnCreation -> confirmColumnCreation()
 
+            // Dropdown menu
+            is BoardIntent.OpenColumnDropdownMenu -> openColumnDropdownMenu(intent.columnId)
+            is BoardIntent.CloseColumnDropdownMenu -> closeColumnDropdownMenu()
+            is BoardIntent.OnAddCard -> TODO()
+            is BoardIntent.OnRename -> TODO()
+
             // Set coordinates
             is BoardIntent.SetBoardCoordinates -> setBoardCoordinates(intent.coordinates)
             is BoardIntent.SetColumnHeaderCoordinates -> setColumnHeaderCoordinates(
@@ -265,6 +271,16 @@ class BoardViewModel @Inject constructor(
         cancelColumnCreation()
     }
 
+
+    // Dropdown menu
+
+    private fun openColumnDropdownMenu(columnId: Long) {
+        _uiState.update { it.copy(activeDropdownColumnId = columnId) }
+    }
+
+    private fun closeColumnDropdownMenu() {
+        _uiState.update { it.copy(activeDropdownColumnId = null) }
+    }
 
     // Set coordinates
     private fun setBoardCoordinates(coordinates: Coordinates) {
