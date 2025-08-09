@@ -23,11 +23,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -43,8 +49,19 @@ fun AddColumn(
     state: BoardState,
     onIntent: (BoardIntent) -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
+    val isAddingNewColumn by remember(state.topBarType) {
+        mutableStateOf(state.topBarType == BoardAppBarType.ADD_COLUMN)
+    }
 
-    if (state.topBarType == BoardAppBarType.ADD_COLUMN) {
+    LaunchedEffect(isAddingNewColumn) {
+        if (isAddingNewColumn) {
+            focusManager.clearFocus()
+            focusManager.moveFocus(FocusDirection.Down)
+        }
+    }
+
+    if (isAddingNewColumn) {
 
         Box(
             modifier = modifier
@@ -88,7 +105,7 @@ fun AddColumn(
 
         OutlinedButton(
             modifier = modifier.padding(16.dp),
-            onClick = {onIntent(BoardIntent.StartCreatingColumn)},
+            onClick = { onIntent(BoardIntent.StartCreatingColumn) },
             shape = MaterialTheme.shapes.small,
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = MaterialTheme.colorScheme.onSurface,

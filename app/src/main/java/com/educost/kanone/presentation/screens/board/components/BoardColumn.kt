@@ -111,23 +111,11 @@ fun BoardColumn(
             }
 
             item {
-                if (state.cardCreationState.columnId == column.id) {
-                    AddCardTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        newCardTitle = state.cardCreationState.title ?: "",
-                        onTitleChange = { onIntent(BoardIntent.OnCardTitleChange(it)) },
-                        onConfirmCreateCard = { onIntent(BoardIntent.ConfirmCardCreation) }
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        AddCardButton { onIntent(BoardIntent.StartCreatingCard(column.id)) }
-                    }
-                }
+                AddCard(
+                    state = state,
+                    onIntent = onIntent,
+                    column = column
+                )
             }
         }
     }

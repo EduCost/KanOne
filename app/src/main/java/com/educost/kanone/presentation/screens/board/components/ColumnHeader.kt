@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,10 +27,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,7 +51,7 @@ fun ColumnHeader(
     state: BoardState,
     onIntent: (BoardIntent) -> Unit,
 ) {
-
+    
     val isDropdownMenuExpanded by remember(state.activeDropdownColumnId) {
         mutableStateOf(state.activeDropdownColumnId == column.id)
     }
@@ -66,6 +69,14 @@ fun ColumnHeader(
             } else {
                 Color.Gray
             }
+        }
+    }
+
+    val focusManager = LocalFocusManager.current
+    LaunchedEffect(isOnEditMode) {
+        if (isOnEditMode) {
+            focusManager.clearFocus()
+            focusManager.moveFocus(FocusDirection.Down)
         }
     }
 
