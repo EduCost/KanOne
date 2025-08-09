@@ -44,7 +44,8 @@ class BoardViewModelMappingTest {
             dispatcherProvider = dispatcherProvider,
             observeCompleteBoardUseCase = observeCompleteBoardUseCase,
             createColumnUseCase = mockk(),
-            createCardUseCase = mockk()
+            createCardUseCase = mockk(),
+            updateColumnUseCase = mockk()
         )
     }
 

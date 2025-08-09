@@ -49,4 +49,23 @@ class ColumnRepositoryImpl(val columnDao: ColumnDao) : ColumnRepository {
             }
         }
     }
+
+    override suspend fun updateColumn(
+        column: KanbanColumn,
+        boardId: Long
+    ): Result<Unit, InsertDataError> {
+        return try {
+            columnDao.updateColumn(column.toColumnEntity(boardId))
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            when (e) {
+                is IOException -> Result.Error(InsertDataError.IO_ERROR)
+                else -> {
+                    Log.e(LogTags.COLUMN_REPO, e.stackTraceToString())
+                    Result.Error(InsertDataError.UNKNOWN)
+                }
+            }
+
+        }
+    }
 }

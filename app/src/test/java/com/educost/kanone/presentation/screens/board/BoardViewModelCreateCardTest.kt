@@ -44,7 +44,8 @@ class BoardViewModelCreateCardTest {
             dispatcherProvider = dispatcherProvider,
             observeCompleteBoardUseCase = observeCompleteBoardUseCase,
             createColumnUseCase = mockk(),
-            createCardUseCase = createCardUseCase
+            createCardUseCase = createCardUseCase,
+            updateColumnUseCase = mockk()
         )
     }
 

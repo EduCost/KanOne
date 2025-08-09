@@ -28,6 +28,7 @@ import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
+import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -124,6 +125,11 @@ object AppModule {
     @Singleton
     fun provideCreateCardUseCase(cardRepository: CardRepository): CreateCardUseCase {
         return CreateCardUseCase(cardRepository)
+    }
 
+    @Provides
+    @Singleton
+    fun provideUpdateColumnRepository(columnRepository: ColumnRepository): UpdateColumnUseCase {
+        return UpdateColumnUseCase(columnRepository)
     }
 }

@@ -14,16 +14,19 @@ import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
+import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.mapper.toBoardUi
 import com.educost.kanone.presentation.screens.board.mapper.toCardUi
 import com.educost.kanone.presentation.screens.board.mapper.toColumnUi
+import com.educost.kanone.presentation.screens.board.mapper.toKanbanColumn
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.state.BoardState
 import com.educost.kanone.presentation.screens.board.state.CardCreationState
+import com.educost.kanone.presentation.screens.board.state.ColumnEditState
 import com.educost.kanone.presentation.screens.board.state.DragState
 import com.educost.kanone.presentation.screens.board.state.ScrollState
 import com.educost.kanone.presentation.util.SnackbarEvent
@@ -46,7 +49,8 @@ class BoardViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
     private val observeCompleteBoardUseCase: ObserveCompleteBoardUseCase,
     private val createColumnUseCase: CreateColumnUseCase,
-    private val createCardUseCase: CreateCardUseCase
+    private val createCardUseCase: CreateCardUseCase,
+    private val updateColumnUseCase: UpdateColumnUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BoardState())
@@ -64,15 +68,15 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.ObserveBoard -> observeBoard(intent.boardId)
 
             // Drag and drop
-            is BoardIntent.OnDrag -> onDrag(intent.position)
             is BoardIntent.OnDragStart -> onDragStart(intent.offset)
+            is BoardIntent.OnDrag -> onDrag(intent.position)
             is BoardIntent.OnDragStop -> onDragStop()
 
             // Create card
+            is BoardIntent.StartCreatingCard -> startCreatingCard(intent.columnId)
+            is BoardIntent.OnCardTitleChange -> onCardTitleChange(intent.title)
             is BoardIntent.CancelCardCreation -> cancelCardCreation()
             is BoardIntent.ConfirmCardCreation -> confirmCardCreation()
-            is BoardIntent.OnCardTitleChange -> onCardTitleChange(intent.title)
-            is BoardIntent.StartCreatingCard -> startCreatingCard(intent.columnId)
 
             // Create column
             is BoardIntent.StartCreatingColumn -> startCreatingColumn()
@@ -80,11 +84,17 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.CancelColumnCreation -> cancelColumnCreation()
             is BoardIntent.ConfirmColumnCreation -> confirmColumnCreation()
 
+            // Edit column
+            is BoardIntent.StartRenamingColumn -> startRenamingColumn(intent.columnId)
+            is BoardIntent.OnColumnRename -> onColumnRename(intent.name)
+            is BoardIntent.CancelColumnRename -> cancelColumnRename()
+            is BoardIntent.ConfirmColumnRename -> confirmColumnRename()
+
             // Dropdown menu
             is BoardIntent.OpenColumnDropdownMenu -> openColumnDropdownMenu(intent.columnId)
             is BoardIntent.CloseColumnDropdownMenu -> closeColumnDropdownMenu()
             is BoardIntent.OnAddCard -> TODO()
-            is BoardIntent.OnRename -> TODO()
+            is BoardIntent.OnRename -> onRename(intent.columnId)
 
             // Set coordinates
             is BoardIntent.SetBoardCoordinates -> setBoardCoordinates(intent.coordinates)
@@ -238,39 +248,113 @@ class BoardViewModel @Inject constructor(
     }
 
     private fun confirmColumnCreation() {
-        uiState.value.board?.let { board ->
-            val column = KanbanColumn(
-                id = 0,
-                name = uiState.value.creatingColumnName ?: "",
-                position = board.columns.size,
-                color = null,
-                cards = emptyList()
-            )
-            viewModelScope.launch(dispatcherProvider.main) {
-                when (createColumnUseCase(column = column, boardId = board.id)) {
-                    is Result.Error -> sendSnackbar(
-                        SnackbarEvent(
-                            message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
-                            withDismissAction = true
-                        )
-                    )
 
-                    is Result.Success -> Unit
-                }
-            }
-
-        } ?: viewModelScope.launch(dispatcherProvider.main) {
+        val newName = uiState.value.creatingColumnName
+        if (newName.isNullOrBlank()) {
             sendSnackbar(
                 SnackbarEvent(
-                    message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
+                    message = UiText.StringResource(R.string.board_snackbar_column_empty_name_error),
                     withDismissAction = true
                 )
             )
+            return
+        }
+
+        val board = uiState.value.board!!
+        val column = KanbanColumn(
+            id = 0,
+            name = newName,
+            position = board.columns.size,
+            color = null,
+            cards = emptyList()
+        )
+        viewModelScope.launch(dispatcherProvider.main) {
+            when (createColumnUseCase(column = column, boardId = board.id)) {
+                is Result.Error -> sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
+                        withDismissAction = true
+                    )
+                )
+
+                is Result.Success -> Unit
+            }
         }
 
         cancelColumnCreation()
     }
 
+
+    // Edit Column
+    private fun startRenamingColumn(id: Long) {
+        _uiState.update {
+            it.copy(
+                columnEditState = it.columnEditState.copy(editingColumnId = id),
+                topBarType = BoardAppBarType.RENAME_COLUMN
+            )
+        }
+    }
+
+    private fun onColumnRename(name: String) {
+        _uiState.update {
+            it.copy(columnEditState = it.columnEditState.copy(newColumnName = name))
+        }
+    }
+
+    private fun cancelColumnRename() {
+        _uiState.update {
+            it.copy(
+                topBarType = BoardAppBarType.DEFAULT,
+                columnEditState = ColumnEditState()
+            )
+        }
+    }
+
+    private fun confirmColumnRename() {
+
+        val newName = uiState.value.columnEditState.newColumnName
+        val columnId = uiState.value.columnEditState.editingColumnId
+        val columnBeingRenamed = uiState.value.board!!.columns.find { it.id == columnId }
+
+        if (newName.isNullOrBlank()) {
+            sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.board_snackbar_column_empty_name_error),
+                    withDismissAction = true
+                )
+            )
+            return
+        }
+        if (columnId == null || columnBeingRenamed == null) {
+            sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.board_snackbar_column_rename_error),
+                    withDismissAction = true
+                )
+            )
+            return
+        }
+
+        val newColumn = columnBeingRenamed.copy(name = newName).toKanbanColumn()
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val result = updateColumnUseCase(newColumn, uiState.value.board!!.id)
+
+            when (result) {
+                is Result.Error -> {
+                    sendSnackbar(
+                        SnackbarEvent(
+                            message = UiText.StringResource(R.string.board_snackbar_column_rename_error),
+                            withDismissAction = true
+                        )
+                    )
+                }
+
+                is Result.Success -> Unit
+            }
+        }
+        cancelColumnRename()
+    }
 
     // Dropdown menu
 
@@ -280,6 +364,15 @@ class BoardViewModel @Inject constructor(
 
     private fun closeColumnDropdownMenu() {
         _uiState.update { it.copy(activeDropdownColumnId = null) }
+    }
+
+    private fun onRename(columnId: Long) {
+        _uiState.update {
+            it.copy(
+                topBarType = BoardAppBarType.RENAME_COLUMN,
+                columnEditState = it.columnEditState.copy(editingColumnId = columnId)
+            )
+        }
     }
 
     // Set coordinates

@@ -26,11 +26,15 @@
     <string name="board_appbar_create_card">Create Card</string>
     <string name="board_appbar_content_description_cancel_card_creation">Cancel card creation</string>
     <string name="board_appbar_content_description_confirm_card_creation">Confirm card creation</string>
+    <string name="board_appbar_rename_column">Rename</string>
+    <string name="board_appbar_content_description_cancel_column_rename">Cancel column rename</string>
+    <string name="board_appbar_content_description_confirm_column_rename">Confirm column rename</string>
     <string name="board_button_add_column">Add Column</string>
-    <string name="board_textfield_label_column_name">Column Name</string>
     <string name="board_snackbar_column_creation_error">Error creating column</string>
+    <string name="board_snackbar_column_empty_name_error">Column name is required</string> <!-- Shows when user tries to rename or create a column with empty name -->
     <string name="board_snackbar_fetch_board_error">Error fetching board data</string>
     <string name="board_snackbar_card_creation_error">Error creating card</string>
+    <string name="board_snackbar_column_rename_error">Error renaming column</string>
     <string name="board_dropdown_menu_add_card">Add Card</string>
     <string name="board_dropdown_menu_rename_column">Rename</string>
     <string name="board_dropdown_menu_order_by">Order by</string>

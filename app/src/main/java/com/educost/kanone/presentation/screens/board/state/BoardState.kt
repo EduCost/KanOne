@@ -9,6 +9,7 @@ data class BoardState(
     val topBarType: BoardAppBarType = BoardAppBarType.DEFAULT,
     val activeDropdownColumnId: Long? = null,
     val creatingColumnName: String? = null,
+    val columnEditState: ColumnEditState = ColumnEditState(),
     val cardCreationState: CardCreationState = CardCreationState(),
     val dragState: DragState = DragState(),
 )
@@ -16,4 +17,9 @@ data class BoardState(
 data class CardCreationState(
     val title: String? = null,
     val columnId: Long? = null,
+)
+
+data class ColumnEditState(
+    val editingColumnId: Long? = null,
+    val newColumnName: String? = null,
 )

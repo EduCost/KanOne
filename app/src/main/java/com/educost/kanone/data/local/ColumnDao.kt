@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.educost.kanone.data.model.entity.ColumnEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -19,4 +20,7 @@ interface ColumnDao {
 
     @Delete
     suspend fun deleteColumn(column: ColumnEntity)
+
+    @Update
+    suspend fun updateColumn(column: ColumnEntity)
 }

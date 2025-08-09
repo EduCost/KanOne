@@ -42,7 +42,8 @@ class BoardViewModelCreateColumnTest {
             dispatcherProvider = dispatcherProvider,
             observeCompleteBoardUseCase = observeCompleteBoardUseCase,
             createColumnUseCase = createColumnUseCase,
-            createCardUseCase = mockk()
+            createCardUseCase = mockk(),
+            updateColumnUseCase = mockk()
         )
     }
 
@@ -205,4 +206,6 @@ class BoardViewModelCreateColumnTest {
             }
         }
     }
+
+    /*TODO: test send snackbar when name is empty*/
 }
