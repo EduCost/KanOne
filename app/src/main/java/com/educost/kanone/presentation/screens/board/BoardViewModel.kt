@@ -765,7 +765,7 @@ class BoardViewModel @Inject constructor(
             } else {
                 0
             }
-        } else if (targetNotFound && !columnHasCards) {
+        } else if (targetNotFound) { // Didn't found card and column has no cards
             return 0
         } else {
             return potentialTargetIndex
