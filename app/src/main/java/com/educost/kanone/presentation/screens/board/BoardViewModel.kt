@@ -85,7 +85,6 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.ConfirmColumnCreation -> confirmColumnCreation()
 
             // Edit column
-            is BoardIntent.StartRenamingColumn -> startRenamingColumn(intent.columnId)
             is BoardIntent.OnColumnRename -> onColumnRename(intent.name)
             is BoardIntent.CancelColumnRename -> cancelColumnRename()
             is BoardIntent.ConfirmColumnRename -> confirmColumnRename()
@@ -220,6 +219,7 @@ class BoardViewModel @Inject constructor(
     }
 
     private fun startCreatingCard(columnId: Long) {
+        clearEditAndCreationStates()
         _uiState.update {
             it.copy(
                 cardCreationState = CardCreationState(columnId = columnId),
@@ -231,6 +231,7 @@ class BoardViewModel @Inject constructor(
 
     // Create column
     private fun startCreatingColumn() {
+        clearEditAndCreationStates()
         _uiState.update { it.copy(topBarType = BoardAppBarType.ADD_COLUMN) }
     }
 
@@ -286,14 +287,6 @@ class BoardViewModel @Inject constructor(
 
 
     // Edit Column
-    private fun startRenamingColumn(id: Long) {
-        _uiState.update {
-            it.copy(
-                columnEditState = it.columnEditState.copy(editingColumnId = id),
-                topBarType = BoardAppBarType.RENAME_COLUMN
-            )
-        }
-    }
 
     private fun onColumnRename(name: String) {
         _uiState.update {
@@ -356,6 +349,7 @@ class BoardViewModel @Inject constructor(
         cancelColumnRename()
     }
 
+
     // Dropdown menu
 
     private fun openColumnDropdownMenu(columnId: Long) {
@@ -367,6 +361,7 @@ class BoardViewModel @Inject constructor(
     }
 
     private fun onRename(columnId: Long) {
+        clearEditAndCreationStates()
         _uiState.update {
             it.copy(
                 topBarType = BoardAppBarType.RENAME_COLUMN,
@@ -454,6 +449,19 @@ class BoardViewModel @Inject constructor(
 
 
     // Helper functions
+
+    private fun clearEditAndCreationStates() {
+        _uiState.update {
+            it.copy(
+                topBarType = BoardAppBarType.DEFAULT,
+                activeDropdownColumnId = null,
+                cardCreationState = CardCreationState(),
+                columnEditState = ColumnEditState(),
+                creatingColumnName = null
+            )
+        }
+    }
+
     private fun mapToUiState(newBoard: Board, oldBoard: BoardUi?): BoardUi {
 
         if (oldBoard == null) {
@@ -518,7 +526,7 @@ class BoardViewModel @Inject constructor(
 
     // Drag and drop
     fun onDragStart(offset: Offset) {
-
+        clearEditAndCreationStates()
         _uiState.update { currentState ->
             val board = currentState.board ?: return
 

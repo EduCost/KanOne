@@ -24,7 +24,6 @@ sealed interface BoardIntent {
     data object ConfirmColumnCreation : BoardIntent
 
     // Edit Column
-    data class StartRenamingColumn(val columnId: Long) : BoardIntent
     data class OnColumnRename(val name: String) : BoardIntent
     data object CancelColumnRename : BoardIntent
     data object ConfirmColumnRename : BoardIntent
