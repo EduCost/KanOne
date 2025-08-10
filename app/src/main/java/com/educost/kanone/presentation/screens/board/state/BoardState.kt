@@ -15,6 +15,7 @@ data class BoardState(
 )
 
 data class CardCreationState(
+    val isAppendingToEnd: Boolean = false,
     val title: String? = null,
     val columnId: Long? = null,
 )

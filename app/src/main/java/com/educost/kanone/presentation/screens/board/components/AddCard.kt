@@ -25,8 +25,10 @@ fun AddCard(
     column: ColumnUi
 ) {
 
-    val isAddingCard by remember(state.cardCreationState.columnId) {
-        mutableStateOf(state.cardCreationState.columnId == column.id)
+    val isAddingCard by remember(state.cardCreationState) {
+        mutableStateOf(
+            state.cardCreationState.columnId == column.id && state.cardCreationState.isAppendingToEnd
+        )
     }
 
     val focusManager = LocalFocusManager.current
@@ -51,7 +53,7 @@ fun AddCard(
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            AddCardButton { onIntent(BoardIntent.StartCreatingCard(column.id)) }
+            AddCardButton { onIntent(BoardIntent.StartCreatingCard(column.id, true)) }
         }
     }
 }

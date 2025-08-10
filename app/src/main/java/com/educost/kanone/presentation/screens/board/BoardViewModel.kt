@@ -73,7 +73,11 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.OnDragStop -> onDragStop()
 
             // Create card
-            is BoardIntent.StartCreatingCard -> startCreatingCard(intent.columnId)
+            is BoardIntent.StartCreatingCard -> startCreatingCard(
+                intent.columnId,
+                intent.isAppendingToEnd
+            )
+
             is BoardIntent.OnCardTitleChange -> onCardTitleChange(intent.title)
             is BoardIntent.CancelCardCreation -> cancelCardCreation()
             is BoardIntent.ConfirmCardCreation -> confirmCardCreation()
@@ -92,7 +96,6 @@ class BoardViewModel @Inject constructor(
             // Dropdown menu
             is BoardIntent.OpenColumnDropdownMenu -> openColumnDropdownMenu(intent.columnId)
             is BoardIntent.CloseColumnDropdownMenu -> closeColumnDropdownMenu()
-            is BoardIntent.OnAddCard -> TODO()
             is BoardIntent.OnRenameColumnClicked -> onRenameColumnClicked(intent.columnId)
 
             // Set coordinates
@@ -218,11 +221,14 @@ class BoardViewModel @Inject constructor(
         _uiState.update { it.copy(cardCreationState = it.cardCreationState.copy(title = newTitle)) }
     }
 
-    private fun startCreatingCard(columnId: Long) {
+    private fun startCreatingCard(columnId: Long, isAppendingToEnd: Boolean) {
         clearEditAndCreationStates()
         _uiState.update {
             it.copy(
-                cardCreationState = CardCreationState(columnId = columnId),
+                cardCreationState = CardCreationState(
+                    columnId = columnId,
+                    isAppendingToEnd = isAppendingToEnd
+                ),
                 topBarType = BoardAppBarType.ADD_CARD
             )
         }

@@ -56,7 +56,7 @@ fun ColumnDropdownMenu(
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.board_dropdown_menu_add_card)) },
                 onClick = {
-                    onIntent(BoardIntent.OnAddCard(column.id))
+                    onIntent(BoardIntent.StartCreatingCard(column.id, false))
                     onIntent(BoardIntent.CloseColumnDropdownMenu)
                 },
                 leadingIcon = {

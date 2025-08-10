@@ -12,7 +12,7 @@ sealed interface BoardIntent {
     data object OnDragStop : BoardIntent
 
     // Create Card
-    data class StartCreatingCard(val columnId: Long) : BoardIntent
+    data class StartCreatingCard(val columnId: Long, val isAppendingToEnd: Boolean) : BoardIntent
     data class OnCardTitleChange(val title: String) : BoardIntent
     data object ConfirmCardCreation : BoardIntent
     data object CancelCardCreation : BoardIntent
@@ -32,7 +32,6 @@ sealed interface BoardIntent {
     // Column dropdown menu
     data class OpenColumnDropdownMenu(val columnId: Long) : BoardIntent
     data object CloseColumnDropdownMenu : BoardIntent
-    data class OnAddCard(val columnId: Long) : BoardIntent
     data class OnRenameColumnClicked(val columnId: Long) : BoardIntent
 
 
