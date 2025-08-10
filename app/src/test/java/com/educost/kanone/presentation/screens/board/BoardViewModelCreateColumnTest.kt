@@ -157,7 +157,6 @@ class BoardViewModelCreateColumnTest {
             }
         }
     }
-
     @Test
     fun `GIVEN creating column, WHEN creation is failure, THEN snackbar is sent`() {
 
@@ -207,5 +206,42 @@ class BoardViewModelCreateColumnTest {
         }
     }
 
-    /*TODO: test send snackbar when name is empty*/
+    @Test
+    fun `GIVEN empty column name, WHEN create column, THEN snackbar is sent`() {
+
+        coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
+            Result.Success(Board(id = 1, name = "test", emptyList()))
+        )
+
+        coEvery {
+            createColumnUseCase(any(), any())
+        } returns Result.Success(1)
+
+
+        runTest(testDispatcher) {
+            viewModel.sideEffectFlow.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(1))
+                viewModel.onIntent(BoardIntent.StartCreatingColumn)
+
+                // null
+                viewModel.onIntent(BoardIntent.ConfirmColumnCreation)
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                // empty
+                viewModel.onIntent(BoardIntent.OnColumnNameChanged(""))
+                viewModel.onIntent(BoardIntent.ConfirmColumnCreation)
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                // blank
+                viewModel.onIntent(BoardIntent.OnColumnNameChanged(" "))
+                viewModel.onIntent(BoardIntent.ConfirmColumnCreation)
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
+            }
+            coVerify(exactly = 0) {
+                createColumnUseCase(any(), any())
+            }
+        }
+    }
 }

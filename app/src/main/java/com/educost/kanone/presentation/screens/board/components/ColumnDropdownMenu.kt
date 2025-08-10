@@ -68,7 +68,7 @@ fun ColumnDropdownMenu(
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.board_dropdown_menu_rename_column)) },
                 onClick = {
-                    onIntent(BoardIntent.OnRename(column.id))
+                    onIntent(BoardIntent.OnRenameColumnClicked(column.id))
                     onIntent(BoardIntent.CloseColumnDropdownMenu)
                 },
                 leadingIcon = {

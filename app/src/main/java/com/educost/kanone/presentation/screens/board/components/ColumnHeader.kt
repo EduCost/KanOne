@@ -110,7 +110,7 @@ fun ColumnHeader(
             if (isOnEditMode) {
                 BasicTextField(
                     value = state.columnEditState.newColumnName ?: "",
-                    onValueChange = { onIntent(BoardIntent.OnColumnRename(it)) },
+                    onValueChange = { onIntent(BoardIntent.OnEditColumnNameChange(it)) },
                     textStyle = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface

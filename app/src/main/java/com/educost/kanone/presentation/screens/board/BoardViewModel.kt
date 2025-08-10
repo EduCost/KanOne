@@ -85,7 +85,7 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.ConfirmColumnCreation -> confirmColumnCreation()
 
             // Edit column
-            is BoardIntent.OnColumnRename -> onColumnRename(intent.name)
+            is BoardIntent.OnEditColumnNameChange -> onEditColumnNameChange(intent.name)
             is BoardIntent.CancelColumnRename -> cancelColumnRename()
             is BoardIntent.ConfirmColumnRename -> confirmColumnRename()
 
@@ -93,7 +93,7 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.OpenColumnDropdownMenu -> openColumnDropdownMenu(intent.columnId)
             is BoardIntent.CloseColumnDropdownMenu -> closeColumnDropdownMenu()
             is BoardIntent.OnAddCard -> TODO()
-            is BoardIntent.OnRename -> onRename(intent.columnId)
+            is BoardIntent.OnRenameColumnClicked -> onRenameColumnClicked(intent.columnId)
 
             // Set coordinates
             is BoardIntent.SetBoardCoordinates -> setBoardCoordinates(intent.coordinates)
@@ -288,7 +288,7 @@ class BoardViewModel @Inject constructor(
 
     // Edit Column
 
-    private fun onColumnRename(name: String) {
+    private fun onEditColumnNameChange(name: String) {
         _uiState.update {
             it.copy(columnEditState = it.columnEditState.copy(newColumnName = name))
         }
@@ -360,7 +360,7 @@ class BoardViewModel @Inject constructor(
         _uiState.update { it.copy(activeDropdownColumnId = null) }
     }
 
-    private fun onRename(columnId: Long) {
+    private fun onRenameColumnClicked(columnId: Long) {
         clearEditAndCreationStates()
         _uiState.update {
             it.copy(

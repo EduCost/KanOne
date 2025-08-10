@@ -24,7 +24,7 @@ sealed interface BoardIntent {
     data object ConfirmColumnCreation : BoardIntent
 
     // Edit Column
-    data class OnColumnRename(val name: String) : BoardIntent
+    data class OnEditColumnNameChange(val name: String) : BoardIntent
     data object CancelColumnRename : BoardIntent
     data object ConfirmColumnRename : BoardIntent
 
@@ -33,7 +33,7 @@ sealed interface BoardIntent {
     data class OpenColumnDropdownMenu(val columnId: Long) : BoardIntent
     data object CloseColumnDropdownMenu : BoardIntent
     data class OnAddCard(val columnId: Long) : BoardIntent
-    data class OnRename(val columnId: Long) : BoardIntent
+    data class OnRenameColumnClicked(val columnId: Long) : BoardIntent
 
 
 
