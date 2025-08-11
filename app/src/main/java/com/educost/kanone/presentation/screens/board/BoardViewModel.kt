@@ -13,7 +13,9 @@ import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
+import com.educost.kanone.domain.usecase.DeleteColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
+import com.educost.kanone.domain.usecase.RestoreColumnUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.mapper.toBoardUi
@@ -29,6 +31,7 @@ import com.educost.kanone.presentation.screens.board.state.CardCreationState
 import com.educost.kanone.presentation.screens.board.state.ColumnEditState
 import com.educost.kanone.presentation.screens.board.state.DragState
 import com.educost.kanone.presentation.screens.board.state.ScrollState
+import com.educost.kanone.presentation.util.SnackbarAction
 import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText
 import com.educost.kanone.utils.Result
@@ -50,7 +53,9 @@ class BoardViewModel @Inject constructor(
     private val observeCompleteBoardUseCase: ObserveCompleteBoardUseCase,
     private val createColumnUseCase: CreateColumnUseCase,
     private val createCardUseCase: CreateCardUseCase,
-    private val updateColumnUseCase: UpdateColumnUseCase
+    private val updateColumnUseCase: UpdateColumnUseCase,
+    private val deleteColumnUseCase: DeleteColumnUseCase,
+    private val restoreColumnUseCase: RestoreColumnUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BoardState())
@@ -97,6 +102,7 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.OpenColumnDropdownMenu -> openColumnDropdownMenu(intent.columnId)
             is BoardIntent.CloseColumnDropdownMenu -> closeColumnDropdownMenu()
             is BoardIntent.OnRenameColumnClicked -> onRenameColumnClicked(intent.columnId)
+            is BoardIntent.OnDeleteColumnClicked -> onDeleteColumnClicked(intent.columnId)
 
             // Set coordinates
             is BoardIntent.SetBoardCoordinates -> setBoardCoordinates(intent.coordinates)
@@ -359,6 +365,7 @@ class BoardViewModel @Inject constructor(
     // Dropdown menu
 
     private fun openColumnDropdownMenu(columnId: Long) {
+        clearEditAndCreationStates()
         _uiState.update { it.copy(activeDropdownColumnId = columnId) }
     }
 
@@ -375,6 +382,51 @@ class BoardViewModel @Inject constructor(
             )
         }
     }
+
+    private fun onDeleteColumnClicked(columnId: Long) {
+
+        val column = uiState.value.board!!.columns.find { it.id == columnId }
+        if (column != null) {
+            viewModelScope.launch(dispatcherProvider.main) {
+                val result = deleteColumnUseCase(
+                    column = column.toKanbanColumn(),
+                    boardId = uiState.value.board!!.id
+                )
+
+                when (result) {
+
+                    is Result.Error -> sendSnackbar(
+                        SnackbarEvent(
+                            message = UiText.StringResource(R.string.board_snackbar_column_delete_error),
+                            withDismissAction = true
+                        )
+                    )
+
+                    is Result.Success -> sendSnackbar(
+                        SnackbarEvent(
+                            message = UiText.StringResource(R.string.board_snackbar_column_deleted),
+                            withDismissAction = true,
+                            duration = SnackbarDuration.Long,
+                            action = SnackbarAction(
+                                label = UiText.StringResource(R.string.undo_action),
+                                action = {
+                                    restoreDeletedColumn(column)
+                                }
+                            ),
+                        )
+                    )
+                }
+            }
+        } else {
+            sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.board_snackbar_column_delete_error),
+                    withDismissAction = true
+                )
+            )
+        }
+    }
+
 
     // Set coordinates
     private fun setBoardCoordinates(coordinates: Coordinates) {
@@ -455,6 +507,20 @@ class BoardViewModel @Inject constructor(
 
 
     // Helper functions
+
+    private fun restoreDeletedColumn(column: ColumnUi) {
+        viewModelScope.launch(dispatcherProvider.main) {
+            val result = restoreColumnUseCase(column.toKanbanColumn(), uiState.value.board!!.id)
+            if (result is Result.Error) {
+                sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.board_snackbar_column_restore_error),
+                        withDismissAction = true
+                    )
+                )
+            }
+        }
+    }
 
     private fun clearEditAndCreationStates() {
         _uiState.update {

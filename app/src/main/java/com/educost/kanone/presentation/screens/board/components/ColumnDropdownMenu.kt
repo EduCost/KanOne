@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
@@ -116,6 +118,30 @@ fun ColumnDropdownMenu(
             DropdownMenuItem(
                 text = { Text("Date Created") },
                 onClick = { }
+            )
+        }
+
+        /*  =======================================================================  */
+
+        AnimatedVisibility(visible = (menuState == MenuState.MAIN)) { // Delete column
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(R.string.board_dropdown_menu_delete_column),
+                        color = Color.Red
+                    )
+                },
+                onClick = {
+                    onIntent(BoardIntent.OnDeleteColumnClicked(column.id))
+                    onIntent(BoardIntent.CloseColumnDropdownMenu)
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null,
+                        tint = Color.Red
+                    )
+                }
             )
         }
     }

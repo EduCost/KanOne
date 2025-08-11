@@ -2,8 +2,15 @@ package com.educost.kanone.data.repository
 
 import android.util.Log
 import com.educost.kanone.data.local.ColumnDao
+import com.educost.kanone.data.mapper.toAttachmentEntity
+import com.educost.kanone.data.mapper.toCardEntity
+import com.educost.kanone.data.mapper.toChecklistEntity
 import com.educost.kanone.data.mapper.toColumnEntity
 import com.educost.kanone.data.mapper.toKanbanColumn
+import com.educost.kanone.data.mapper.toLabelEntity
+import com.educost.kanone.data.model.entity.AttachmentEntity
+import com.educost.kanone.data.model.entity.ChecklistEntity
+import com.educost.kanone.data.model.entity.LabelEntity
 import com.educost.kanone.domain.error.FetchDataError
 import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.KanbanColumn
@@ -66,6 +73,66 @@ class ColumnRepositoryImpl(val columnDao: ColumnDao) : ColumnRepository {
                 }
             }
 
+        }
+    }
+
+    override suspend fun deleteColumn(
+        column: KanbanColumn,
+        boardId: Long
+    ): Result<Unit, InsertDataError> {
+        return try {
+            columnDao.deleteColumn(column.toColumnEntity(boardId))
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            when (e) {
+                is IOException -> Result.Error(InsertDataError.IO_ERROR)
+                else -> {
+                    Log.e(LogTags.COLUMN_REPO, e.stackTraceToString())
+                    Result.Error(InsertDataError.UNKNOWN)
+                }
+            }
+        }
+    }
+
+    override suspend fun restoreColumn(
+        column: KanbanColumn,
+        boardId: Long
+    ): Result<Unit, InsertDataError> {
+        return try {
+            val columnEntity = column.toColumnEntity(boardId)
+            val cards = column.cards.map { it.toCardEntity(columnEntity.id) }
+            val labels = mutableListOf<LabelEntity>()
+            val checklists = mutableListOf<ChecklistEntity>()
+            val attachments = mutableListOf<AttachmentEntity>()
+
+            column.cards.forEach { card ->
+                card.labels.forEach { label ->
+                    labels.add(label.toLabelEntity(card.id))
+                }
+                card.checklists.forEach { checklist ->
+                    checklists.add(checklist.toChecklistEntity(card.id))
+                }
+                card.attachments.forEach { attachment ->
+                    attachments.add(attachment.toAttachmentEntity(card.id))
+                }
+            }
+
+            columnDao.restoreWholeColumn(
+                column = columnEntity,
+                cards = cards,
+                labels = labels,
+                checklists = checklists,
+                attachments = attachments
+            )
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            when (e) {
+                is IOException -> Result.Error(InsertDataError.IO_ERROR)
+                else -> {
+                    Log.e(LogTags.COLUMN_REPO, e.stackTraceToString())
+                    Result.Error(InsertDataError.UNKNOWN)
+                }
+            }
         }
     }
 }

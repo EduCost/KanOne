@@ -17,8 +17,10 @@ import com.educost.kanone.domain.repository.ColumnRepository
 import com.educost.kanone.domain.usecase.CreateBoardUseCase
 import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
+import com.educost.kanone.domain.usecase.DeleteColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
+import com.educost.kanone.domain.usecase.RestoreColumnUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import dagger.Module
 import dagger.Provides
@@ -122,5 +124,17 @@ object AppModule {
     @Singleton
     fun provideUpdateColumnRepository(columnRepository: ColumnRepository): UpdateColumnUseCase {
         return UpdateColumnUseCase(columnRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteColumnUseCase(columnRepository: ColumnRepository): DeleteColumnUseCase {
+        return DeleteColumnUseCase(columnRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRestoreColumnUseCase(columnRepository: ColumnRepository): RestoreColumnUseCase {
+        return RestoreColumnUseCase(columnRepository)
     }
 }

@@ -33,8 +33,7 @@ sealed interface BoardIntent {
     data class OpenColumnDropdownMenu(val columnId: Long) : BoardIntent
     data object CloseColumnDropdownMenu : BoardIntent
     data class OnRenameColumnClicked(val columnId: Long) : BoardIntent
-
-
+    data class OnDeleteColumnClicked(val columnId: Long) : BoardIntent
 
 
     // Set coordinates
