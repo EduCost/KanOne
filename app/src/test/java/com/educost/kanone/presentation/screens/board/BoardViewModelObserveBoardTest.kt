@@ -40,7 +40,9 @@ class BoardViewModelObserveBoardTest {
             observeCompleteBoardUseCase = observeCompleteBoardUseCase,
             createColumnUseCase = mockk(),
             createCardUseCase = mockk(),
-            updateColumnUseCase = mockk()
+            updateColumnUseCase = mockk(),
+            deleteColumnUseCase = mockk(),
+            restoreColumnUseCase = mockk()
         )
     }
 

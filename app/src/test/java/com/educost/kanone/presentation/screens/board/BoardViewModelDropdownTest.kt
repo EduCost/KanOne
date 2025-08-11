@@ -3,7 +3,10 @@ package com.educost.kanone.presentation.screens.board
 import app.cash.turbine.test
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.dispatchers.TestDispatcherProvider
+import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.Board
+import com.educost.kanone.domain.model.KanbanColumn
+import com.educost.kanone.domain.usecase.DeleteColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
 import com.educost.kanone.utils.Result
@@ -28,18 +31,22 @@ class BoardViewModelDropdownTest {
     private lateinit var viewModel: BoardViewModel
 
     private lateinit var observeCompleteBoardUseCase: ObserveCompleteBoardUseCase
+    private lateinit var deleteColumnUseCase: DeleteColumnUseCase
 
     @Before
     fun setUp() {
         testDispatcher = UnconfinedTestDispatcher()
         dispatcherProvider = TestDispatcherProvider(testDispatcher)
         observeCompleteBoardUseCase = mockk()
+        deleteColumnUseCase = mockk()
         viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
             observeCompleteBoardUseCase = observeCompleteBoardUseCase,
             createColumnUseCase = mockk(),
             createCardUseCase = mockk(),
-            updateColumnUseCase = mockk()
+            updateColumnUseCase = mockk(),
+            deleteColumnUseCase = deleteColumnUseCase,
+            restoreColumnUseCase = mockk()
         )
     }
 
@@ -60,8 +67,10 @@ class BoardViewModelDropdownTest {
                 viewModel.onIntent(BoardIntent.OpenColumnDropdownMenu(columnId))
                 val updatedState = awaitItem()
                 assertThat(updatedState.activeDropdownColumnId).isEqualTo(columnId)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify { observeCompleteBoardUseCase(boardId) }
             }
-            coVerify { observeCompleteBoardUseCase(boardId) }
         }
     }
 
@@ -85,8 +94,10 @@ class BoardViewModelDropdownTest {
                 viewModel.onIntent(BoardIntent.CloseColumnDropdownMenu)
                 val updatedState = awaitItem()
                 assertThat(updatedState.activeDropdownColumnId).isEqualTo(null)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify { observeCompleteBoardUseCase(boardId) }
             }
-            coVerify { observeCompleteBoardUseCase(boardId) }
         }
     }
 
@@ -108,8 +119,150 @@ class BoardViewModelDropdownTest {
                 val updatedState = awaitItem()
                 assertThat(updatedState.topBarType).isEqualTo(BoardAppBarType.RENAME_COLUMN)
                 assertThat(updatedState.columnEditState.editingColumnId).isEqualTo(columnId)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify { observeCompleteBoardUseCase(boardId) }
             }
-            coVerify { observeCompleteBoardUseCase(boardId) }
+        }
+    }
+
+    @Test
+    fun `SHOULD send snackbar WHEN did not find column on delete column`() {
+
+        val boardId = 1L
+        val columnId = 1L
+        val column = KanbanColumn(
+            id = columnId,
+            name = "column test 1",
+            position = 1,
+            color = null,
+            cards = emptyList()
+        )
+        val board = Board(
+            id = boardId,
+            name = "board test",
+            columns = listOf(column)
+        )
+
+        coEvery { observeCompleteBoardUseCase(boardId) } returns flowOf(
+            Result.Success(board)
+        )
+
+        coEvery { deleteColumnUseCase(column, boardId) } returns Result.Success(Unit)
+
+        runTest(testDispatcher) {
+            viewModel.sideEffectFlow.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(boardId))
+                viewModel.onIntent(BoardIntent.OnDeleteColumnClicked(columnId + 1))
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify(exactly = 0) { deleteColumnUseCase(column, boardId) }
+            }
+        }
+    }
+
+    @Test
+    fun `SHOULD call delete column use case WHEN delete column is called`() {
+
+        val boardId = 1L
+        val columnId = 1L
+        val column = KanbanColumn(
+            id = columnId,
+            name = "column test 1",
+            position = 1,
+            color = null,
+            cards = emptyList()
+        )
+        val board = Board(
+            id = boardId,
+            name = "board test",
+            columns = listOf(column)
+        )
+
+        coEvery { observeCompleteBoardUseCase(boardId) } returns flowOf(
+            Result.Success(board)
+        )
+
+        coEvery { deleteColumnUseCase(column, boardId) } returns Result.Success(Unit)
+
+        runTest(testDispatcher) {
+            viewModel.onIntent(BoardIntent.ObserveBoard(boardId))
+            viewModel.onIntent(BoardIntent.OnDeleteColumnClicked(columnId))
+
+            coVerify(exactly = 1) { deleteColumnUseCase(column, boardId) }
+        }
+    }
+
+    @Test
+    fun `SHOULD send snackbar WHEN delete column is successful`() {
+
+        val boardId = 1L
+        val columnId = 1L
+        val column = KanbanColumn(
+            id = columnId,
+            name = "column test 1",
+            position = 1,
+            color = null,
+            cards = emptyList()
+        )
+        val board = Board(
+            id = boardId,
+            name = "board test",
+            columns = listOf(column)
+        )
+
+        coEvery { observeCompleteBoardUseCase(boardId) } returns flowOf(
+            Result.Success(board)
+        )
+
+        coEvery { deleteColumnUseCase(column, boardId) } returns Result.Success(Unit)
+
+        runTest(testDispatcher) {
+            viewModel.sideEffectFlow.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(boardId))
+                viewModel.onIntent(BoardIntent.OnDeleteColumnClicked(columnId))
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify(exactly = 1) { deleteColumnUseCase(column, boardId) }
+            }
+        }
+    }
+
+    @Test
+    fun `SHOULD send snackbar WHEN delete column is not successful`() {
+
+        val boardId = 1L
+        val columnId = 1L
+        val column = KanbanColumn(
+            id = columnId,
+            name = "column test 1",
+            position = 1,
+            color = null,
+            cards = emptyList()
+        )
+        val board = Board(
+            id = boardId,
+            name = "board test",
+            columns = listOf(column)
+        )
+
+        coEvery { observeCompleteBoardUseCase(boardId) } returns flowOf(
+            Result.Success(board)
+        )
+
+        coEvery { deleteColumnUseCase(column, boardId) } returns Result.Error(InsertDataError.UNKNOWN)
+
+        runTest(testDispatcher) {
+            viewModel.sideEffectFlow.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(boardId))
+                viewModel.onIntent(BoardIntent.OnDeleteColumnClicked(columnId))
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify(exactly = 1) { deleteColumnUseCase(column, boardId) }
+            }
         }
     }
 }

@@ -44,7 +44,9 @@ class BoardViewModelEditColumnTest {
             observeCompleteBoardUseCase = observeCompleteBoardUseCase,
             createColumnUseCase = mockk(),
             createCardUseCase = mockk(),
-            updateColumnUseCase = updateColumnUseCase
+            updateColumnUseCase = updateColumnUseCase,
+            deleteColumnUseCase = mockk(),
+            restoreColumnUseCase = mockk()
         )
     }
 
