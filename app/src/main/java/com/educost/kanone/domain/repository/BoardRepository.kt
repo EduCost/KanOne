@@ -3,6 +3,7 @@ package com.educost.kanone.domain.repository
 import com.educost.kanone.domain.error.FetchDataError
 import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.Board
+import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.utils.Result
 import kotlinx.coroutines.flow.Flow
 
@@ -16,4 +17,5 @@ interface BoardRepository {
 
     suspend fun createBoard(board: Board): Result<Long, InsertDataError>
 
+    suspend fun updateBoardData(boardId: Long, columns: List<KanbanColumn>): Result<Unit, InsertDataError>
 }

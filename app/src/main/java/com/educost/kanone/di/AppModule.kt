@@ -21,6 +21,7 @@ import com.educost.kanone.domain.usecase.DeleteColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.domain.usecase.RestoreColumnUseCase
+import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import dagger.Module
 import dagger.Provides
@@ -137,4 +138,11 @@ object AppModule {
     fun provideRestoreColumnUseCase(columnRepository: ColumnRepository): RestoreColumnUseCase {
         return RestoreColumnUseCase(columnRepository)
     }
+
+    @Provides
+    @Singleton
+    fun providePersistBoardPositionsUseCase(boardRepository: BoardRepository): PersistBoardPositionsUseCase {
+        return PersistBoardPositionsUseCase(boardRepository)
+    }
+
 }

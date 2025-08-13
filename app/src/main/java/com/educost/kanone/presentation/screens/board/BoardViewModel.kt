@@ -16,6 +16,7 @@ import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.DeleteColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.domain.usecase.RestoreColumnUseCase
+import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.mapper.toBoardUi
@@ -55,7 +56,8 @@ class BoardViewModel @Inject constructor(
     private val createCardUseCase: CreateCardUseCase,
     private val updateColumnUseCase: UpdateColumnUseCase,
     private val deleteColumnUseCase: DeleteColumnUseCase,
-    private val restoreColumnUseCase: RestoreColumnUseCase
+    private val restoreColumnUseCase: RestoreColumnUseCase,
+    private val persistBoardPositionsUseCase: PersistBoardPositionsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BoardState())
@@ -163,6 +165,23 @@ class BoardViewModel @Inject constructor(
 
 
     // Create card
+    private fun startCreatingCard(columnId: Long, isAppendingToEnd: Boolean) {
+        clearEditAndCreationStates()
+        _uiState.update {
+            it.copy(
+                cardCreationState = CardCreationState(
+                    columnId = columnId,
+                    isAppendingToEnd = isAppendingToEnd
+                ),
+                topBarType = BoardAppBarType.ADD_CARD
+            )
+        }
+    }
+
+    private fun onCardTitleChange(newTitle: String) {
+        _uiState.update { it.copy(cardCreationState = it.cardCreationState.copy(title = newTitle)) }
+    }
+
     private fun cancelCardCreation() {
         _uiState.update {
             it.copy(
@@ -175,9 +194,13 @@ class BoardViewModel @Inject constructor(
     private fun confirmCardCreation() {
         uiState.value.cardCreationState.let {
 
-            val position = uiState.value.board?.columns?.find { column ->
-                column.id == it.columnId
-            }?.cards?.size
+            val position = if (it.isAppendingToEnd) {
+                uiState.value.board?.columns?.find { column ->
+                    column.id == it.columnId
+                }?.cards?.size
+            } else {
+                -1 // ensures first position
+            }
 
             if (it.title == null || it.columnId == null || position == null) {
                 viewModelScope.launch(dispatcherProvider.main) {
@@ -220,23 +243,6 @@ class BoardViewModel @Inject constructor(
                 }
             }
             cancelCardCreation()
-        }
-    }
-
-    private fun onCardTitleChange(newTitle: String) {
-        _uiState.update { it.copy(cardCreationState = it.cardCreationState.copy(title = newTitle)) }
-    }
-
-    private fun startCreatingCard(columnId: Long, isAppendingToEnd: Boolean) {
-        clearEditAndCreationStates()
-        _uiState.update {
-            it.copy(
-                cardCreationState = CardCreationState(
-                    columnId = columnId,
-                    isAppendingToEnd = isAppendingToEnd
-                ),
-                topBarType = BoardAppBarType.ADD_CARD
-            )
         }
     }
 
@@ -537,7 +543,10 @@ class BoardViewModel @Inject constructor(
     private fun mapToUiState(newBoard: Board, oldBoard: BoardUi?): BoardUi {
 
         if (oldBoard == null) {
-            return newBoard.toBoardUi()
+            val sortedColumns = newBoard.columns
+                .map { column -> column.copy(cards = column.cards.sortedBy { it.position }) }
+                .sortedBy { it.position }
+            return newBoard.copy(columns = sortedColumns).toBoardUi()
         } else {
 
             val mappedBoard = oldBoard.copy(
@@ -574,10 +583,10 @@ class BoardViewModel @Inject constructor(
                                 labels = cards.labels
                             )
                                 ?: cards.toCardUi()
-                        }
+                        }.sortedBy { it.position }
                     )
                         ?: column.toColumnUi()
-                }
+                }.sortedBy { it.position }
             )
 
             return mappedBoard
@@ -592,6 +601,16 @@ class BoardViewModel @Inject constructor(
                     snackbarEvent
                 )
             )
+        }
+    }
+
+    private fun updatePositions() {
+
+        val board = uiState.value.board ?: return
+        val columns = board.columns.map { it.toKanbanColumn() }
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            persistBoardPositionsUseCase(board.id, columns)
         }
     }
 
@@ -804,6 +823,7 @@ class BoardViewModel @Inject constructor(
     fun onDragStop() {
         _uiState.update { it.copy(dragState = DragState()) }
         cancelAutoScroll()
+        updatePositions()
     }
 
     private fun isHeaderPressed(
@@ -887,7 +907,7 @@ class BoardViewModel @Inject constructor(
     }
 
 
-    // Auto scroll
+// Auto scroll
 
     private fun handleVerticalScroll(
         selectedCard: CardUi,
