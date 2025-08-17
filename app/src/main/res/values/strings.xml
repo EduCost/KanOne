@@ -5,7 +5,7 @@
     <string name="menu_icon_content_description">Menu Button</string>
     <string name="pick_color_dialog_cancel_button">Cancel</string>
     <string name="pick_color_dialog_confirm_button">Confirm</string>
-
+    <string name="undo_action">Undo</string>
     <!--  COMMON  -->
 
     <!--  HOME SCREEN  -->
@@ -26,11 +26,28 @@
     <string name="board_appbar_create_card">Create Card</string>
     <string name="board_appbar_content_description_cancel_card_creation">Cancel card creation</string>
     <string name="board_appbar_content_description_confirm_card_creation">Confirm card creation</string>
+    <string name="board_appbar_rename_column">Rename</string>
+    <string name="board_appbar_content_description_cancel_column_rename">Cancel column rename</string>
+    <string name="board_appbar_content_description_confirm_column_rename">Confirm column rename</string>
     <string name="board_button_add_column">Add Column</string>
-    <string name="board_textfield_label_column_name">Column Name</string>
     <string name="board_snackbar_column_creation_error">Error creating column</string>
+    <string name="board_snackbar_column_empty_name_error">Column name is required</string> <!-- Shows when user tries to rename or create a column with empty name -->
     <string name="board_snackbar_fetch_board_error">Error fetching board data</string>
     <string name="board_snackbar_card_creation_error">Error creating card</string>
+    <string name="board_snackbar_column_rename_error">Error renaming column</string>
+    <string name="board_snackbar_column_delete_error">Error deleting column</string>
+    <string name="board_snackbar_column_restore_error">Could not restore column</string>
+    <string name="board_snackbar_column_deleted">Column deleted</string>
+    <string name="board_snackbar_reorder_cards_error">Error reordering cards</string>
+    <string name="board_dropdown_menu_add_card">Add Card</string>
+    <string name="board_dropdown_menu_rename_column">Rename</string>
+    <string name="board_dropdown_menu_delete_column">Delete column</string>
+    <string name="board_dropdown_menu_order_by">Order by</string>
+    <string name="board_dropdown_menu_order_by_ascending">Ascending Order</string>
+    <string name="board_dropdown_menu_order_by_descending">Descending Order</string>
+    <string name="board_dropdown_menu_order_by_name">Name</string>
+    <string name="board_dropdown_menu_order_by_due_date">Due Date</string>
+    <string name="board_dropdown_menu_order_by_date_created">Date Created</string>
     <!--  BOARD SCREEN  -->
 
 

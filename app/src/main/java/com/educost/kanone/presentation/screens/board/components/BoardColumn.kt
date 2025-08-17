@@ -2,7 +2,6 @@ package com.educost.kanone.presentation.screens.board.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,12 +13,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.presentation.screens.board.BoardIntent
@@ -38,6 +43,21 @@ fun BoardColumn(
     state: BoardState,
     onIntent: (BoardIntent) -> Unit
 ) {
+
+    var isAddingCardOnTop by remember(state.cardCreationState) {
+        mutableStateOf(
+            state.cardCreationState.columnId == column.id &&
+                    !state.cardCreationState.isAppendingToEnd
+        )
+    }
+    val focusManager = LocalFocusManager.current
+    LaunchedEffect(isAddingCardOnTop) {
+        if (isAddingCardOnTop) {
+            focusManager.clearFocus()
+            focusManager.moveFocus(FocusDirection.Down)
+        }
+    }
+
     Column(
         modifier = modifier
             .width(300.dp)
@@ -49,6 +69,7 @@ fun BoardColumn(
                 .padding(16.dp)
                 .fillMaxWidth(),
             column = column,
+            state = state,
             onIntent = onIntent
         )
 
@@ -70,6 +91,16 @@ fun BoardColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             state = column.listState
         ) {
+
+            item {
+                if (isAddingCardOnTop) {
+                    AddCardTextField(
+                        newCardTitle = state.cardCreationState.title ?: "",
+                        onTitleChange = { onIntent(BoardIntent.OnCardTitleChange(it)) },
+                        onConfirmCreateCard = { onIntent(BoardIntent.ConfirmCardCreation) }
+                    )
+                }
+            }
 
             itemsIndexed(
                 items = column.cards,
@@ -110,23 +141,11 @@ fun BoardColumn(
             }
 
             item {
-                if (state.cardCreationState.columnId == column.id) {
-                    AddCardTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        newCardTitle = state.cardCreationState.title ?: "",
-                        onTitleChange = { onIntent(BoardIntent.OnCardTitleChange(it)) },
-                        onConfirmCreateCard = { onIntent(BoardIntent.ConfirmCardCreation) }
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        AddCardButton { onIntent(BoardIntent.StartCreatingCard(column.id)) }
-                    }
-                }
+                AddCard(
+                    state = state,
+                    onIntent = onIntent,
+                    column = column
+                )
             }
         }
     }

@@ -6,7 +6,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.educost.kanone.data.model.entity.BoardEntity
+import com.educost.kanone.data.model.entity.CardEntity
+import com.educost.kanone.data.model.entity.ColumnEntity
 import com.educost.kanone.data.model.relation.BoardWithColumns
 import kotlinx.coroutines.flow.Flow
 
@@ -28,4 +31,16 @@ interface BoardDao {
     @Transaction
     @Query("SELECT * FROM boards WHERE id = :boardId")
     fun observeCompleteBoard(boardId: Long): Flow<BoardWithColumns>
+
+    @Update
+    suspend fun updateColumns(columns: List<ColumnEntity>)
+
+    @Update
+    suspend fun updateCards(cards: List<CardEntity>)
+
+    @Transaction
+    suspend fun updateBoardData(columns: List<ColumnEntity>, cards: List<CardEntity>) {
+        updateColumns(columns)
+        updateCards(cards)
+    }
 }

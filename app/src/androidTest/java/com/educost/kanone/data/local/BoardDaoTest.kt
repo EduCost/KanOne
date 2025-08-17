@@ -12,7 +12,6 @@ import com.educost.kanone.data.model.entity.LabelEntity
 import com.educost.kanone.data.model.relation.BoardWithColumns
 import com.educost.kanone.data.model.relation.CardWithRelations
 import com.educost.kanone.data.model.relation.ColumnsWithCards
-import com.educost.kanone.presentation.theme.Palette
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -213,7 +212,7 @@ class BoardDaoTest {
     private fun getTestColumn(boardId: Long): ColumnEntity = ColumnEntity(
         name = "Test Column",
         position = 0,
-        color = Palette.NONE,
+        color = -1,
         boardId = boardId
     )
 

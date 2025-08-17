@@ -11,4 +11,11 @@ interface ColumnRepository {
     fun observeColumns(boardId: Long): Flow<Result<List<KanbanColumn>, FetchDataError>>
 
     suspend fun createColumn(column: KanbanColumn, boardId: Long): Result<Long, InsertDataError>
+
+    suspend fun updateColumn(column: KanbanColumn, boardId: Long): Result<Unit, InsertDataError>
+
+    suspend fun deleteColumn(column: KanbanColumn, boardId: Long): Result<Unit, InsertDataError>
+
+    suspend fun restoreColumn(column: KanbanColumn, boardId: Long): Result<Unit, InsertDataError>
+
 }

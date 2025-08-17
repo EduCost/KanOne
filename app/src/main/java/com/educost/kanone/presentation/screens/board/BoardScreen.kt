@@ -70,6 +70,7 @@ fun BoardScreen(
                     val result = snackBarHostState.showSnackbar(
                         message = event.snackbarEvent.message.asString(context),
                         actionLabel = event.snackbarEvent.action?.label?.asString(context),
+                        withDismissAction = event.snackbarEvent.withDismissAction,
                         duration = event.snackbarEvent.duration
                     )
                     if (result == SnackbarResult.ActionPerformed) {
@@ -183,7 +184,6 @@ fun BoardScreen(
 
                 item {
                     AddColumn(
-                        modifier = Modifier.padding(16.dp),
                         state = state,
                         onIntent = onIntent
                     )

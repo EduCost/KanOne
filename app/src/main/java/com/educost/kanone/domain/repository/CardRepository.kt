@@ -11,4 +11,6 @@ interface CardRepository {
     fun observeCards(columnIds: List<Long>): Flow<Result<List<CardItem>, FetchDataError>>
 
     suspend fun createCard(card: CardItem, columnId: Long): Result<Long, InsertDataError>
+
+    suspend fun updateCards(cards: List<CardItem>, columnId: Long): Result<Unit, InsertDataError>
 }

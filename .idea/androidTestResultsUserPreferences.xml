@@ -37,6 +37,7 @@
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_2" value="120" />
                   <entry key="Tests" value="360" />
+                  <entry key="samsung SM-G781B" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>

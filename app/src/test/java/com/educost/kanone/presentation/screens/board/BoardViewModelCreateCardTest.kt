@@ -44,7 +44,12 @@ class BoardViewModelCreateCardTest {
             dispatcherProvider = dispatcherProvider,
             observeCompleteBoardUseCase = observeCompleteBoardUseCase,
             createColumnUseCase = mockk(),
-            createCardUseCase = createCardUseCase
+            createCardUseCase = createCardUseCase,
+            updateColumnUseCase = mockk(),
+            deleteColumnUseCase = mockk(),
+            restoreColumnUseCase = mockk(),
+            persistBoardPositionsUseCase = mockk(),
+            reorderCardsUseCase = mockk()
         )
     }
 
@@ -63,7 +68,7 @@ class BoardViewModelCreateCardTest {
                     awaitItem()
                 }
 
-                viewModel.onIntent(BoardIntent.StartCreatingCard(0))
+                viewModel.onIntent(BoardIntent.StartCreatingCard(0, true))
                 val updatedState = awaitItem()
                 assertThat(updatedState.topBarType).isEqualTo(BoardAppBarType.ADD_CARD)
                 assertThat(updatedState.cardCreationState.columnId).isEqualTo(0)
@@ -89,7 +94,7 @@ class BoardViewModelCreateCardTest {
                     awaitItem()
                 }
 
-                viewModel.onIntent(BoardIntent.StartCreatingCard(0))
+                viewModel.onIntent(BoardIntent.StartCreatingCard(0, true))
                 awaitItem()
 
                 viewModel.onIntent(BoardIntent.CancelCardCreation)
@@ -152,7 +157,7 @@ class BoardViewModelCreateCardTest {
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
-                viewModel.onIntent(BoardIntent.StartCreatingCard(columnId))
+                viewModel.onIntent(BoardIntent.StartCreatingCard(columnId, true))
 
                 viewModel.onIntent(BoardIntent.ConfirmCardCreation)
                 assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
@@ -225,7 +230,7 @@ class BoardViewModelCreateCardTest {
             viewModel.sideEffectFlow.test {
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
                 viewModel.onIntent(BoardIntent.OnCardTitleChange("new title"))
-                viewModel.onIntent(BoardIntent.StartCreatingCard(columnId + 1)) // Should not find any column
+                viewModel.onIntent(BoardIntent.StartCreatingCard(columnId + 1, true)) // Should not find any column
 
                 viewModel.onIntent(BoardIntent.ConfirmCardCreation)
                 assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
@@ -263,7 +268,7 @@ class BoardViewModelCreateCardTest {
         runTest(testDispatcher) {
 
             viewModel.onIntent(BoardIntent.ObserveBoard(1))
-            viewModel.onIntent(BoardIntent.StartCreatingCard(columnId))
+            viewModel.onIntent(BoardIntent.StartCreatingCard(columnId, true))
             viewModel.onIntent(BoardIntent.OnCardTitleChange("new title"))
             viewModel.onIntent(BoardIntent.ConfirmCardCreation)
 
@@ -302,7 +307,7 @@ class BoardViewModelCreateCardTest {
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
-                viewModel.onIntent(BoardIntent.StartCreatingCard(columnId))
+                viewModel.onIntent(BoardIntent.StartCreatingCard(columnId, true))
                 viewModel.onIntent(BoardIntent.OnCardTitleChange("new title"))
 
                 viewModel.onIntent(BoardIntent.ConfirmCardCreation)

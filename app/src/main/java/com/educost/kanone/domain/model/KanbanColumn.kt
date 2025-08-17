@@ -4,6 +4,6 @@ data class KanbanColumn(
     val id: Long,
     val name: String,
     val position: Int,
-    val color: Int?,
-    val cards: List<CardItem>
+    val color: Int? = null,
+    val cards: List<CardItem> = emptyList()
 )

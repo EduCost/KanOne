@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.educost.kanone.data.model.entity.CardEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -19,5 +20,9 @@ interface CardDao {
 
     @Delete
     suspend fun deleteCard(card: CardEntity)
+
+    @Update
+    suspend fun updateCards(cards: List<CardEntity>)
+
 
 }

@@ -2,32 +2,28 @@ package com.educost.kanone.di
 
 import android.content.Context
 import androidx.room.Room
-import com.educost.kanone.data.local.AttachmentDao
 import com.educost.kanone.data.local.BoardDao
 import com.educost.kanone.data.local.CardDao
-import com.educost.kanone.data.local.ChecklistDao
 import com.educost.kanone.data.local.ColumnDao
 import com.educost.kanone.data.local.KanbanDatabase
-import com.educost.kanone.data.local.LabelDao
-import com.educost.kanone.data.repository.AttachmentRepositoryImpl
 import com.educost.kanone.data.repository.BoardRepositoryImpl
 import com.educost.kanone.data.repository.CardRepositoryImpl
-import com.educost.kanone.data.repository.ChecklistRepositoryImpl
 import com.educost.kanone.data.repository.ColumnRepositoryImpl
-import com.educost.kanone.data.repository.LabelRepositoryImpl
 import com.educost.kanone.dispatchers.DefaultDispatcherProvider
 import com.educost.kanone.dispatchers.DispatcherProvider
-import com.educost.kanone.domain.repository.AttachmentRepository
 import com.educost.kanone.domain.repository.BoardRepository
 import com.educost.kanone.domain.repository.CardRepository
-import com.educost.kanone.domain.repository.ChecklistRepository
 import com.educost.kanone.domain.repository.ColumnRepository
-import com.educost.kanone.domain.repository.LabelRepository
 import com.educost.kanone.domain.usecase.CreateBoardUseCase
 import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
+import com.educost.kanone.domain.usecase.DeleteColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
+import com.educost.kanone.domain.usecase.RestoreColumnUseCase
+import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
+import com.educost.kanone.domain.usecase.ReorderCardsUseCase
+import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -124,6 +120,37 @@ object AppModule {
     @Singleton
     fun provideCreateCardUseCase(cardRepository: CardRepository): CreateCardUseCase {
         return CreateCardUseCase(cardRepository)
-
     }
+
+    @Provides
+    @Singleton
+    fun provideUpdateColumnRepository(columnRepository: ColumnRepository): UpdateColumnUseCase {
+        return UpdateColumnUseCase(columnRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteColumnUseCase(columnRepository: ColumnRepository): DeleteColumnUseCase {
+        return DeleteColumnUseCase(columnRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRestoreColumnUseCase(columnRepository: ColumnRepository): RestoreColumnUseCase {
+        return RestoreColumnUseCase(columnRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providePersistBoardPositionsUseCase(boardRepository: BoardRepository): PersistBoardPositionsUseCase {
+        return PersistBoardPositionsUseCase(boardRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideReorderCardsUseCase(cardRepository: CardRepository): ReorderCardsUseCase {
+        return ReorderCardsUseCase(cardRepository)
+    }
+
+
 }

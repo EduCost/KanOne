@@ -15,10 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -70,6 +66,14 @@ fun BoardAppBar(
             rightIconContentDescription = stringResource(R.string.board_appbar_content_description_confirm_card_creation),
             onRightIconClick = { onIntent(BoardIntent.ConfirmCardCreation) }
         )
+
+        BoardAppBarType.RENAME_COLUMN -> ActionTopBar(
+            title = stringResource(R.string.board_appbar_rename_column),
+            leftIconContentDescription = stringResource(R.string.board_appbar_content_description_cancel_column_rename),
+            onLeftIconClick = { onIntent(BoardIntent.CancelColumnRename) },
+            rightIconContentDescription = stringResource(R.string.board_appbar_content_description_confirm_column_rename),
+            onRightIconClick = { onIntent(BoardIntent.ConfirmColumnRename) }
+        )
     }
 }
 
@@ -83,7 +87,6 @@ fun ActionTopBar(
     rightIcon: ImageVector = Icons.Filled.Check,
     rightIconContentDescription: String,
     onRightIconClick: () -> Unit
-
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,

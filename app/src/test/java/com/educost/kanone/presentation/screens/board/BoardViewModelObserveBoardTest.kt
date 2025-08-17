@@ -39,7 +39,12 @@ class BoardViewModelObserveBoardTest {
             dispatcherProvider = dispatcherProvider,
             observeCompleteBoardUseCase = observeCompleteBoardUseCase,
             createColumnUseCase = mockk(),
-            createCardUseCase = mockk()
+            createCardUseCase = mockk(),
+            updateColumnUseCase = mockk(),
+            deleteColumnUseCase = mockk(),
+            restoreColumnUseCase = mockk(),
+            persistBoardPositionsUseCase = mockk(),
+            reorderCardsUseCase = mockk()
         )
     }
 
