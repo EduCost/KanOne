@@ -46,7 +46,9 @@ class BoardViewModelDropdownTest {
             createCardUseCase = mockk(),
             updateColumnUseCase = mockk(),
             deleteColumnUseCase = deleteColumnUseCase,
-            restoreColumnUseCase = mockk()
+            restoreColumnUseCase = mockk(),
+            persistBoardPositionsUseCase = mockk(),
+            reorderCardsUseCase = mockk()
         )
     }
 

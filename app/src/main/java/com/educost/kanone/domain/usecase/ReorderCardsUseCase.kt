@@ -17,19 +17,33 @@ class ReorderCardsUseCase(val cardRepository: CardRepository) {
 
         val cards = column.cards
 
+        if (cards.isEmpty()) {
+            return Result.Success(Unit)
+        }
+
         val sortedCards = when (orderType) {
             OrderType.ASCENDING -> {
                 when (cardOrder) {
-                    CardOrder.NAME -> cards.sortedBy { it.title }
-                    CardOrder.DUE_DATE -> cards.sortedBy { it.dueDate }
+                    CardOrder.NAME -> cards.sortedBy { it.title.lowercase() }
                     CardOrder.DATE_CREATED -> cards.sortedBy { it.createdAt }
+                    CardOrder.DUE_DATE -> {
+                        val nonNullDueDates = cards.filter { it.dueDate != null }
+                        val nullDueDates = cards.filter { it.dueDate == null }
+                        val sortedNonNullDueDates = nonNullDueDates.sortedBy { it.dueDate }
+                        sortedNonNullDueDates + nullDueDates
+                    }
                 }
             }
             OrderType.DESCENDING -> {
                 when (cardOrder) {
-                    CardOrder.NAME -> cards.sortedByDescending { it.title }
-                    CardOrder.DUE_DATE -> cards.sortedByDescending { it.dueDate }
+                    CardOrder.NAME -> cards.sortedByDescending { it.title.lowercase() }
                     CardOrder.DATE_CREATED -> cards.sortedByDescending { it.createdAt }
+                    CardOrder.DUE_DATE -> {
+                        val nonNullDueDates = cards.filter { it.dueDate != null }
+                        val nullDueDates = cards.filter { it.dueDate == null }
+                        val sortedNonNullDueDates = nonNullDueDates.sortedByDescending { it.dueDate }
+                        sortedNonNullDueDates + nullDueDates
+                    }
                 }
             }
         }
