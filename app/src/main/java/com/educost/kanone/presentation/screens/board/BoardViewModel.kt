@@ -15,8 +15,9 @@ import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.DeleteColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
-import com.educost.kanone.domain.usecase.RestoreColumnUseCase
 import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
+import com.educost.kanone.domain.usecase.ReorderCardsUseCase
+import com.educost.kanone.domain.usecase.RestoreColumnUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.mapper.toBoardUi
@@ -32,6 +33,8 @@ import com.educost.kanone.presentation.screens.board.state.CardCreationState
 import com.educost.kanone.presentation.screens.board.state.ColumnEditState
 import com.educost.kanone.presentation.screens.board.state.DragState
 import com.educost.kanone.presentation.screens.board.state.ScrollState
+import com.educost.kanone.presentation.screens.board.utils.CardOrder
+import com.educost.kanone.presentation.screens.board.utils.OrderType
 import com.educost.kanone.presentation.util.SnackbarAction
 import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText
@@ -57,7 +60,8 @@ class BoardViewModel @Inject constructor(
     private val updateColumnUseCase: UpdateColumnUseCase,
     private val deleteColumnUseCase: DeleteColumnUseCase,
     private val restoreColumnUseCase: RestoreColumnUseCase,
-    private val persistBoardPositionsUseCase: PersistBoardPositionsUseCase
+    private val persistBoardPositionsUseCase: PersistBoardPositionsUseCase,
+    private val reorderCardsUseCase: ReorderCardsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BoardState())
@@ -105,6 +109,11 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.CloseColumnDropdownMenu -> closeColumnDropdownMenu()
             is BoardIntent.OnRenameColumnClicked -> onRenameColumnClicked(intent.columnId)
             is BoardIntent.OnDeleteColumnClicked -> onDeleteColumnClicked(intent.columnId)
+            is BoardIntent.OnOrderByClicked -> reorderCardsInColumn(
+                columnId = intent.columnId,
+                orderType = intent.orderType,
+                cardOrder = intent.cardOrder
+            )
 
             // Set coordinates
             is BoardIntent.SetBoardCoordinates -> setBoardCoordinates(intent.coordinates)
@@ -611,6 +620,34 @@ class BoardViewModel @Inject constructor(
 
         viewModelScope.launch(dispatcherProvider.main) {
             persistBoardPositionsUseCase(board.id, columns)
+        }
+    }
+
+    private fun reorderCardsInColumn(columnId: Long, orderType: OrderType, cardOrder: CardOrder) {
+        val board = uiState.value.board ?: return
+
+        val column = board.columns.find { it.id == columnId }
+
+        if (column != null) {
+            viewModelScope.launch(dispatcherProvider.main) {
+                val result = reorderCardsUseCase(column.toKanbanColumn(), orderType, cardOrder)
+
+                if (result is Result.Error) {
+                    sendSnackbar(
+                        SnackbarEvent(
+                            message = UiText.StringResource(R.string.board_snackbar_reorder_cards_error),
+                            withDismissAction = true
+                        )
+                    )
+                }
+            }
+        } else {
+            sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.board_snackbar_reorder_cards_error),
+                    withDismissAction = true
+                )
+            )
         }
     }
 

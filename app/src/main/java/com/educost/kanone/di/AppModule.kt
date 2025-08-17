@@ -22,6 +22,7 @@ import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.domain.usecase.RestoreColumnUseCase
 import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
+import com.educost.kanone.domain.usecase.ReorderCardsUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import dagger.Module
 import dagger.Provides
@@ -144,5 +145,12 @@ object AppModule {
     fun providePersistBoardPositionsUseCase(boardRepository: BoardRepository): PersistBoardPositionsUseCase {
         return PersistBoardPositionsUseCase(boardRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideReorderCardsUseCase(cardRepository: CardRepository): ReorderCardsUseCase {
+        return ReorderCardsUseCase(cardRepository)
+    }
+
 
 }

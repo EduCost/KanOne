@@ -51,7 +51,7 @@ fun ColumnHeader(
     state: BoardState,
     onIntent: (BoardIntent) -> Unit,
 ) {
-    
+
     val isDropdownMenuExpanded by remember(state.activeDropdownColumnId) {
         mutableStateOf(state.activeDropdownColumnId == column.id)
     }
@@ -126,6 +126,7 @@ fun ColumnHeader(
                     modifier = Modifier.fillMaxWidth()
                 )
             } else {
+
                 Text(
                     modifier = Modifier.weight(1f),
                     text = column.name,
@@ -135,7 +136,6 @@ fun ColumnHeader(
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-
                 IconButton(
                     onClick = { onIntent(BoardIntent.OpenColumnDropdownMenu(column.id)) }
                 ) {
@@ -143,6 +143,9 @@ fun ColumnHeader(
                         Icons.Filled.MoreVert,
                         contentDescription = null
                     )
+                }
+
+                Box {
                     ColumnDropdownMenu(
                         expanded = isDropdownMenuExpanded,
                         column = column,

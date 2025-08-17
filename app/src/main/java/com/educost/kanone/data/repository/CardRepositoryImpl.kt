@@ -49,4 +49,23 @@ class CardRepositoryImpl(val cardDao: CardDao) : CardRepository {
             }
         }
     }
+
+    override suspend fun updateCards(
+        cards: List<CardItem>,
+        columnId: Long
+    ): Result<Unit, InsertDataError> {
+        return try {
+            val cardsEntities = cards.map { it.toCardEntity(columnId) }
+            cardDao.updateCards(cardsEntities)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            when (e) {
+                is IOException -> Result.Error(InsertDataError.IO_ERROR)
+                else -> {
+                    Log.e(LogTags.CARD_REPO, e.stackTraceToString())
+                    Result.Error(InsertDataError.UNKNOWN)
+                }
+            }
+        }
+    }
 }

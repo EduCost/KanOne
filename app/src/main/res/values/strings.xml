@@ -38,10 +38,16 @@
     <string name="board_snackbar_column_delete_error">Error deleting column</string>
     <string name="board_snackbar_column_restore_error">Could not restore column</string>
     <string name="board_snackbar_column_deleted">Column deleted</string>
+    <string name="board_snackbar_reorder_cards_error">Error reordering cards</string>
     <string name="board_dropdown_menu_add_card">Add Card</string>
     <string name="board_dropdown_menu_rename_column">Rename</string>
     <string name="board_dropdown_menu_delete_column">Delete column</string>
     <string name="board_dropdown_menu_order_by">Order by</string>
+    <string name="board_dropdown_menu_order_by_ascending">Ascending Order</string>
+    <string name="board_dropdown_menu_order_by_descending">Descending Order</string>
+    <string name="board_dropdown_menu_order_by_name">Name</string>
+    <string name="board_dropdown_menu_order_by_due_date">Due Date</string>
+    <string name="board_dropdown_menu_order_by_date_created">Date Created</string>
     <!--  BOARD SCREEN  -->
 
 
