@@ -8,7 +8,10 @@ import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.usecase.DeleteColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
+import com.educost.kanone.domain.usecase.ReorderCardsUseCase
 import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
+import com.educost.kanone.presentation.screens.board.utils.CardOrder
+import com.educost.kanone.presentation.screens.board.utils.OrderType
 import com.educost.kanone.utils.Result
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
@@ -32,6 +35,7 @@ class BoardViewModelDropdownTest {
 
     private lateinit var observeCompleteBoardUseCase: ObserveCompleteBoardUseCase
     private lateinit var deleteColumnUseCase: DeleteColumnUseCase
+    private lateinit var reorderCardsUseCase: ReorderCardsUseCase
 
     @Before
     fun setUp() {
@@ -39,6 +43,8 @@ class BoardViewModelDropdownTest {
         dispatcherProvider = TestDispatcherProvider(testDispatcher)
         observeCompleteBoardUseCase = mockk()
         deleteColumnUseCase = mockk()
+        reorderCardsUseCase = mockk()
+
         viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
             observeCompleteBoardUseCase = observeCompleteBoardUseCase,
@@ -48,7 +54,7 @@ class BoardViewModelDropdownTest {
             deleteColumnUseCase = deleteColumnUseCase,
             restoreColumnUseCase = mockk(),
             persistBoardPositionsUseCase = mockk(),
-            reorderCardsUseCase = mockk()
+            reorderCardsUseCase = reorderCardsUseCase
         )
     }
 
@@ -254,7 +260,12 @@ class BoardViewModelDropdownTest {
             Result.Success(board)
         )
 
-        coEvery { deleteColumnUseCase(column, boardId) } returns Result.Error(InsertDataError.UNKNOWN)
+        coEvery {
+            deleteColumnUseCase(
+                column,
+                boardId
+            )
+        } returns Result.Error(InsertDataError.UNKNOWN)
 
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
@@ -264,6 +275,149 @@ class BoardViewModelDropdownTest {
 
                 cancelAndConsumeRemainingEvents()
                 coVerify(exactly = 1) { deleteColumnUseCase(column, boardId) }
+            }
+        }
+    }
+
+    @Test
+    fun `SHOULD send snackbar WHEN call reorder cards but did not found column`() {
+        val column = KanbanColumn(
+            id = 1,
+            name = "column test 1",
+            position = 1,
+            cards = emptyList()
+        )
+        val board = Board(
+            id = 1,
+            name = "board test",
+            columns = listOf(column)
+        )
+
+        coEvery { observeCompleteBoardUseCase(board.id) } returns flowOf(
+            Result.Success(board)
+        )
+
+        coEvery {
+            reorderCardsUseCase(
+                column,
+                OrderType.ASCENDING,
+                CardOrder.NAME
+            )
+        } returns Result.Success(Unit)
+
+        runTest(testDispatcher) {
+            viewModel.sideEffectFlow.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(board.id))
+                viewModel.onIntent(
+                    BoardIntent.OnOrderByClicked(
+                        columnId = column.id + 1,
+                        orderType = OrderType.ASCENDING,
+                        cardOrder = CardOrder.NAME
+                    )
+                )
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify(exactly = 0) { reorderCardsUseCase(any(), any(), any()) }
+            }
+        }
+    }
+
+    @Test
+    fun `SHOULD call reorder cards use case WHEN call reorder cards`() {
+
+        val column = KanbanColumn(
+            id = 1,
+            name = "column test 1",
+            position = 1,
+            cards = emptyList()
+        )
+        val board = Board(
+            id = 1,
+            name = "board test",
+            columns = listOf(column)
+        )
+
+        coEvery { observeCompleteBoardUseCase(board.id) } returns flowOf(
+            Result.Success(board)
+        )
+
+        coEvery {
+            reorderCardsUseCase(
+                column,
+                OrderType.ASCENDING,
+                CardOrder.NAME
+            )
+        } returns Result.Success(Unit)
+
+
+        runTest(testDispatcher) {
+            viewModel.onIntent(BoardIntent.ObserveBoard(board.id))
+            viewModel.onIntent(
+                BoardIntent.OnOrderByClicked(
+                    column.id,
+                    OrderType.ASCENDING,
+                    CardOrder.NAME
+                )
+            )
+
+            coVerify(exactly = 1) {
+                reorderCardsUseCase(
+                    column,
+                    OrderType.ASCENDING,
+                    CardOrder.NAME
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `SHOULD send snackbar WHEN call reorder cards and returns error`() {
+        val column = KanbanColumn(
+            id = 1,
+            name = "column test 1",
+            position = 1,
+            cards = emptyList()
+        )
+        val board = Board(
+            id = 1,
+            name = "board test",
+            columns = listOf(column)
+        )
+
+        coEvery { observeCompleteBoardUseCase(board.id) } returns flowOf(
+            Result.Success(board)
+        )
+
+        coEvery {
+            reorderCardsUseCase(
+                column,
+                OrderType.ASCENDING,
+                CardOrder.NAME
+            )
+        } returns Result.Error(InsertDataError.UNKNOWN)
+
+
+        runTest(testDispatcher) {
+            viewModel.sideEffectFlow.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(board.id))
+                viewModel.onIntent(
+                    BoardIntent.OnOrderByClicked(
+                        column.id,
+                        OrderType.ASCENDING,
+                        CardOrder.NAME
+                    )
+                )
+
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+                cancelAndConsumeRemainingEvents()
+                coVerify(exactly = 1) {
+                    reorderCardsUseCase(
+                        column,
+                        OrderType.ASCENDING,
+                        CardOrder.NAME
+                    )
+                }
             }
         }
     }
