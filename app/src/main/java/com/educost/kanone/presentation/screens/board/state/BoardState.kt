@@ -1,6 +1,6 @@
 package com.educost.kanone.presentation.screens.board.state
 
-import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
+import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 
 data class BoardState(

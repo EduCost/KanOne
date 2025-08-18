@@ -8,7 +8,7 @@ import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
-import com.educost.kanone.presentation.screens.board.components.BoardAppBarType
+import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.state.CardCreationState
 import com.educost.kanone.utils.Result
 import com.google.common.truth.Truth.assertThat

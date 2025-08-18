@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.board.BoardIntent
+import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 
 @Composable
 fun BoardAppBar(

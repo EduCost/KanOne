@@ -1,4 +1,4 @@
-package com.educost.kanone.presentation.screens.board.components
+package com.educost.kanone.presentation.screens.board.utils
 
 enum class BoardAppBarType {
     DEFAULT,
