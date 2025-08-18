@@ -54,7 +54,7 @@ class BoardViewModelMappingTest {
     }
 
     @Test
-    fun `GIVEN null board, WHEN new board is observed, THEN new board is mapped to BoardUi`() {
+    fun `SHOULD map new board to BoardUi WHEN previous board is null`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
@@ -78,7 +78,7 @@ class BoardViewModelMappingTest {
     }
 
     @Test
-    fun `GIVEN existing board, WHEN new board is observed, THEN previous board is updated without changing Ui properties`() {
+    fun `SHOULD update previous board without changing Ui properties WHEN new board is observed`() {
 
         val boardFlow = MutableSharedFlow<Result<Board, FetchDataError>>()
         coEvery { observeCompleteBoardUseCase(any()) } returns boardFlow.asSharedFlow()
@@ -115,7 +115,7 @@ class BoardViewModelMappingTest {
     }
 
     @Test
-    fun `GIVEN empty columns, WHEN new columns is collected, THEN new columns are mapped to ColumnUi`() {
+    fun `SHOULD map new columns to ColumnUi WHEN new columns is collected`() {
 
         val newBoard = Board(
             id = 1,
@@ -155,10 +155,10 @@ class BoardViewModelMappingTest {
                 assertThat(updatedBoard?.id).isEqualTo(1)
                 assertThat(updatedBoard?.columns).hasSize(2)
                 assertThat(updatedBoard?.columns[0]?.id).isEqualTo(1)
-                assertThat(updatedBoard?.columns[0]?.bodyCoordinates).isEqualTo(Coordinates())
+                assertThat(updatedBoard?.columns[0]?.listCoordinates).isEqualTo(Coordinates())
 
                 assertThat(updatedBoard?.columns[1]?.id).isEqualTo(2)
-                assertThat(updatedBoard?.columns[1]?.bodyCoordinates).isEqualTo(Coordinates())
+                assertThat(updatedBoard?.columns[1]?.listCoordinates).isEqualTo(Coordinates())
 
                 cancelAndConsumeRemainingEvents()
                 coVerify { observeCompleteBoardUseCase(any()) }
@@ -167,7 +167,7 @@ class BoardViewModelMappingTest {
     }
 
     @Test
-    fun `GIVEN existing columns, WHEN existing column is updated, THEN column is updated without changing Ui properties`() {
+    fun `SHOULD update column without changing Ui properties WHEN existing column is updated`() {
 
         val boardFlow = MutableSharedFlow<Result<Board, FetchDataError>>()
         coEvery { observeCompleteBoardUseCase(any()) } returns boardFlow.asSharedFlow()
@@ -238,7 +238,7 @@ class BoardViewModelMappingTest {
                         firstColumnCoordinates
                     )
                 )
-                assertThat(awaitItem().board?.columns[0]?.bodyCoordinates).isEqualTo(
+                assertThat(awaitItem().board?.columns[0]?.listCoordinates).isEqualTo(
                     firstColumnCoordinates
                 )
 
@@ -248,7 +248,7 @@ class BoardViewModelMappingTest {
                         secondColumnCoordinates
                     )
                 )
-                assertThat(awaitItem().board?.columns[1]?.bodyCoordinates).isEqualTo(
+                assertThat(awaitItem().board?.columns[1]?.listCoordinates).isEqualTo(
                     secondColumnCoordinates
                 )
 
@@ -256,7 +256,7 @@ class BoardViewModelMappingTest {
                 viewModel.onIntent(BoardIntent.SetBoardCoordinates(newBoardCoordinates))
                 val updatedBoardCoordinates = awaitItem().board
                 assertThat(updatedBoardCoordinates?.coordinates).isEqualTo(newBoardCoordinates)
-                assertThat(updatedBoardCoordinates?.columns[0]?.bodyCoordinates).isEqualTo(
+                assertThat(updatedBoardCoordinates?.columns[0]?.listCoordinates).isEqualTo(
                     firstColumnCoordinates
                 )
 
@@ -264,14 +264,14 @@ class BoardViewModelMappingTest {
                 val updatedColumns = awaitItem().board?.columns
 
                 // Check if the first column still the same
-                assertThat(updatedColumns?.get(0)?.bodyCoordinates).isEqualTo(
+                assertThat(updatedColumns?.get(0)?.listCoordinates).isEqualTo(
                     firstColumnCoordinates
                 )
                 assertThat(updatedColumns?.get(0)?.name).isEqualTo("column test 1")
 
                 // Check if the name was updated and didn't changed the coordinates
                 assertThat(updatedColumns?.get(1)?.name).isEqualTo("column updated 2")
-                assertThat(updatedColumns?.get(1)?.bodyCoordinates).isEqualTo(
+                assertThat(updatedColumns?.get(1)?.listCoordinates).isEqualTo(
                     secondColumnCoordinates
                 )
 
@@ -283,7 +283,7 @@ class BoardViewModelMappingTest {
     }
 
     @Test
-    fun `GIVEN empty cards, WHEN new cards is collected, THEN new cards are mapped to CardUi`() {
+    fun `SHOULD map new cards to CardUi WHEN new cards is collected`() {
 
         val newBoard = Board(
             id = 1,
@@ -349,7 +349,7 @@ class BoardViewModelMappingTest {
     }
 
     @Test
-    fun `GIVEN existing cards, WHEN existing card is updated, THEN card is updated without changing Ui properties`() {
+    fun `SHOULD update card without changing Ui properties WHEN existing card is updated`() {
 
         val boardFlow = MutableSharedFlow<Result<Board, FetchDataError>>()
         coEvery { observeCompleteBoardUseCase(any()) } returns boardFlow.asSharedFlow()
@@ -510,7 +510,7 @@ class BoardViewModelMappingTest {
                 )
                 viewModel.onIntent(BoardIntent.SetCardCoordinates(1, 1, firstCardCoordinates))
                 viewModel.onIntent(BoardIntent.SetCardCoordinates(2, 1, secondCardCoordinates))
-                assertThat(awaitItem().board?.columns[0]?.bodyCoordinates).isEqualTo(
+                assertThat(awaitItem().board?.columns[0]?.listCoordinates).isEqualTo(
                     firstColumnCoordinates
                 )
                 assertThat(awaitItem().board?.columns[0]?.cards?.get(0)?.coordinates).isEqualTo(
@@ -528,7 +528,7 @@ class BoardViewModelMappingTest {
                     )
                 )
                 viewModel.onIntent(BoardIntent.SetCardCoordinates(3, 2, thirdCardCoordinates))
-                assertThat(awaitItem().board?.columns[1]?.bodyCoordinates).isEqualTo(
+                assertThat(awaitItem().board?.columns[1]?.listCoordinates).isEqualTo(
                     secondColumnCoordinates
                 )
                 assertThat(awaitItem().board?.columns[1]?.cards?.get(0)?.coordinates).isEqualTo(
@@ -547,7 +547,7 @@ class BoardViewModelMappingTest {
                 assertThat(updatedColumns?.get(0)?.cards?.get(1)?.coordinates).isEqualTo(
                     secondCardCoordinates
                 )
-                assertThat(updatedColumns?.get(0)?.bodyCoordinates).isEqualTo(
+                assertThat(updatedColumns?.get(0)?.listCoordinates).isEqualTo(
                     firstColumnCoordinates
                 )
 
@@ -555,7 +555,7 @@ class BoardViewModelMappingTest {
                 assertThat(updatedColumns?.get(1)?.cards?.get(0)?.coordinates).isEqualTo(
                     thirdCardCoordinates
                 )
-                assertThat(updatedColumns?.get(1)?.bodyCoordinates).isEqualTo(
+                assertThat(updatedColumns?.get(1)?.listCoordinates).isEqualTo(
                     secondColumnCoordinates
                 )
 

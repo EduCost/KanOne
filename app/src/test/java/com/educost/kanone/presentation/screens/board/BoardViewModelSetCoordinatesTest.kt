@@ -51,7 +51,7 @@ class BoardViewModelSetCoordinatesTest {
     }
 
     @Test
-    fun `GIVEN new board coordinates, WHEN SetBoardCoordinates intent is processed , THEN coordinates are updated`() {
+    fun `SHOULD update board coordinates WHEN new board coordinates are set`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
@@ -74,7 +74,7 @@ class BoardViewModelSetCoordinatesTest {
     }
 
     @Test
-    fun `GIVEN new column header coordinates, WHEN SetColumnHeaderCoordinates intent is processed , THEN coordinates are updated`() {
+    fun `SHOULD update column header coordinates WHEN new column header coordinates are set`() {
 
         val newBoard = Board(
             id = 1,
@@ -134,7 +134,7 @@ class BoardViewModelSetCoordinatesTest {
     }
 
     @Test
-    fun `GIVEN new column body coordinates, WHEN SetColumnBodyCoordinates intent is processed , THEN coordinates are updated`() {
+    fun `SHOULD update column body coordinates WHEN new column body coordinates are set`() {
 
         val newBoard = Board(
             id = 1,
@@ -169,10 +169,10 @@ class BoardViewModelSetCoordinatesTest {
                 awaitItem() // Loading state
 
                 val firstColumns = awaitItem().board?.columns
-                assertThat(firstColumns?.get(0)?.bodyCoordinates).isEqualTo(
+                assertThat(firstColumns?.get(0)?.listCoordinates).isEqualTo(
                     Coordinates()
                 )
-                assertThat(firstColumns?.get(1)?.bodyCoordinates).isEqualTo(
+                assertThat(firstColumns?.get(1)?.listCoordinates).isEqualTo(
                     Coordinates()
                 )
 
@@ -180,10 +180,10 @@ class BoardViewModelSetCoordinatesTest {
                 viewModel.onIntent(BoardIntent.SetColumnBodyCoordinates(1, newCoordinates))
 
                 val updatedColumns = awaitItem().board?.columns
-                assertThat(updatedColumns?.get(0)?.bodyCoordinates).isEqualTo(
+                assertThat(updatedColumns?.get(0)?.listCoordinates).isEqualTo(
                     newCoordinates
                 )
-                assertThat(updatedColumns?.get(1)?.bodyCoordinates).isEqualTo(
+                assertThat(updatedColumns?.get(1)?.listCoordinates).isEqualTo(
                     Coordinates()
                 )
 
@@ -195,7 +195,7 @@ class BoardViewModelSetCoordinatesTest {
     }
 
     @Test
-    fun `GIVEN new column body coordinates, WHEN SetColumnCoordinates intent is processed , THEN coordinates are updated`() {
+    fun `SHOULD update column coordinates WHEN new column coordinates are set`() {
 
         val newBoard = Board(
             id = 1,
@@ -255,7 +255,7 @@ class BoardViewModelSetCoordinatesTest {
     }
 
     @Test
-    fun `GIVEN new card coordinates, WHEN SetCardCoordinates intent is processed , THEN coordinates are updated`() {
+    fun `SHOULD update card coordinates WHEN new card coordinates are set`() {
 
         val newBoard = Board(
             id = 1,

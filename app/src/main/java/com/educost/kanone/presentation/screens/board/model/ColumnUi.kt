@@ -9,7 +9,7 @@ data class ColumnUi(
     val color: Int?,
     val cards: List<CardUi>,
     val coordinates: Coordinates = Coordinates(),
-    val bodyCoordinates: Coordinates = Coordinates(),
+    val listCoordinates: Coordinates = Coordinates(),
     val headerCoordinates: Coordinates = Coordinates(),
     val listState: LazyListState = LazyListState()
 )

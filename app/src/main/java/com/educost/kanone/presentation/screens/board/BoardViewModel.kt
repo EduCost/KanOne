@@ -471,7 +471,7 @@ class BoardViewModel @Inject constructor(
             val updatedBoard = currentState.board?.copy(
                 columns = currentState.board.columns.map { column ->
                     if (column.id == columnId) {
-                        column.copy(bodyCoordinates = coordinates)
+                        column.copy(listCoordinates = coordinates)
                     } else {
                         column
                     }
@@ -960,8 +960,8 @@ class BoardViewModel @Inject constructor(
 
         val cardTop = dragState.itemOffset.y
         val cardBottom = cardTop + selectedCard.coordinates.height
-        val columnTop = selectedColumn.bodyCoordinates.position.y
-        val columnBottom = columnTop + selectedColumn.bodyCoordinates.height
+        val columnTop = selectedColumn.listCoordinates.position.y
+        val columnBottom = columnTop + selectedColumn.listCoordinates.height
 
         val canScrollUp = selectedColumn.listState.canScrollBackward
         val canScrollDown = selectedColumn.listState.canScrollForward

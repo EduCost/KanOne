@@ -52,7 +52,7 @@ class BoardViewModelCreateColumnTest {
     }
 
     @Test
-    fun `GIVEN default UI state, WHEN startCreatingColumn intent is processed, THEN topBarType is ADD_COLUMN`() {
+    fun `SHOULD set topBarType to ADD_COLUMN WHEN start creating new column`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
@@ -61,10 +61,7 @@ class BoardViewModelCreateColumnTest {
         runTest(testDispatcher) {
             viewModel.uiState.test {
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
-
-                repeat(3) { // initial value -> loading state -> board received
-                    awaitItem()
-                }
+                skipItems(3)
 
                 viewModel.onIntent(BoardIntent.StartCreatingColumn)
                 assertThat(awaitItem().topBarType).isEqualTo(BoardAppBarType.ADD_COLUMN)
@@ -76,7 +73,7 @@ class BoardViewModelCreateColumnTest {
     }
 
     @Test
-    fun `GIVEN new column name, WHEN OnColumnNameChanged intent is processed, THEN column name state is updated`() {
+    fun `SHOULD update new column name state WHEN new column name change`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
@@ -85,10 +82,7 @@ class BoardViewModelCreateColumnTest {
         runTest(testDispatcher) {
             viewModel.uiState.test {
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
-
-                repeat(3) { // initial value -> loading state -> board received
-                    awaitItem()
-                }
+                skipItems(3)
 
                 viewModel.onIntent(BoardIntent.OnColumnNameChanged("new name"))
                 assertThat(awaitItem().creatingColumnName).isEqualTo("new name")
@@ -100,7 +94,7 @@ class BoardViewModelCreateColumnTest {
     }
 
     @Test
-    fun `GIVEN creating column, WHEN CancelColumnCreation intent is processed, THEN state is reset`() {
+    fun `SHOULD reset state WHEN cancel column creation`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
@@ -111,10 +105,7 @@ class BoardViewModelCreateColumnTest {
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
                 viewModel.onIntent(BoardIntent.StartCreatingColumn)
                 viewModel.onIntent(BoardIntent.OnColumnNameChanged("new name"))
-
-                repeat(3) { // initial value -> loading state -> board received
-                    awaitItem()
-                }
+                skipItems(3)
 
                 assertThat(awaitItem().topBarType).isEqualTo(BoardAppBarType.ADD_COLUMN)
                 assertThat(awaitItem().creatingColumnName).isEqualTo("new name")
@@ -131,7 +122,7 @@ class BoardViewModelCreateColumnTest {
     }
 
     @Test
-    fun `GIVEN creating column, WHEN creation is successful, THEN state is reset`() {
+    fun `SHOULD reset state WHEN creation is successful`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
@@ -140,13 +131,13 @@ class BoardViewModelCreateColumnTest {
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
+                // set up
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
+                skipItems(3)
                 viewModel.onIntent(BoardIntent.StartCreatingColumn)
                 viewModel.onIntent(BoardIntent.OnColumnNameChanged("new name"))
+                skipItems(2)
 
-                repeat(5) {
-                    awaitItem()
-                }
 
                 viewModel.onIntent(BoardIntent.ConfirmColumnCreation)
                 val updatedState = awaitItem()
@@ -161,8 +152,9 @@ class BoardViewModelCreateColumnTest {
             }
         }
     }
+
     @Test
-    fun `GIVEN creating column, WHEN creation is failure, THEN snackbar is sent`() {
+    fun `SHOULD send snackbar WHEN creation is failure`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
@@ -190,7 +182,7 @@ class BoardViewModelCreateColumnTest {
     }
 
     @Test
-    fun `GIVEN null board, WHEN create column is processed, THEN snackbar is sent`() {
+    fun `SHOULD send snackbar WHEN create column is called and board is null`() {
 
         coEvery {
             createColumnUseCase(any(), any())
@@ -211,7 +203,7 @@ class BoardViewModelCreateColumnTest {
     }
 
     @Test
-    fun `GIVEN empty column name, WHEN create column, THEN snackbar is sent`() {
+    fun `SHOULD send snackbar WHEN create column is called and column name is empty`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))

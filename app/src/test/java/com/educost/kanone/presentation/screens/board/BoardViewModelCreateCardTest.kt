@@ -54,7 +54,7 @@ class BoardViewModelCreateCardTest {
     }
 
     @Test
-    fun `GIVEN default UI state, WHEN start creating card, THEN state is updated`() {
+    fun `SHOULD update state WHEN start creating card`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
@@ -63,10 +63,7 @@ class BoardViewModelCreateCardTest {
         runTest(testDispatcher) {
             viewModel.uiState.test {
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
-
-                repeat(3) { // initial value -> loading state -> board received
-                    awaitItem()
-                }
+                skipItems(3)
 
                 viewModel.onIntent(BoardIntent.StartCreatingCard(0, true))
                 val updatedState = awaitItem()
@@ -80,7 +77,7 @@ class BoardViewModelCreateCardTest {
     }
 
     @Test
-    fun `GIVEN default UI state, WHEN cancel card creation, THEN state is updated`() {
+    fun `SHOULD update state WHEN cancel card creation`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
@@ -89,10 +86,7 @@ class BoardViewModelCreateCardTest {
         runTest(testDispatcher) {
             viewModel.uiState.test {
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
-
-                repeat(3) { // initial value -> loading state -> board received
-                    awaitItem()
-                }
+                skipItems(3)
 
                 viewModel.onIntent(BoardIntent.StartCreatingCard(0, true))
                 awaitItem()
@@ -109,7 +103,7 @@ class BoardViewModelCreateCardTest {
     }
 
     @Test
-    fun `GIVEN default UI state, WHEN new card title change, THEN state is updated`() {
+    fun `SHOULD update state WHEN new card title change`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
@@ -118,10 +112,7 @@ class BoardViewModelCreateCardTest {
         runTest(testDispatcher) {
             viewModel.uiState.test {
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
-
-                repeat(3) { // initial value -> loading state -> board received
-                    awaitItem()
-                }
+                skipItems(3)
 
                 viewModel.onIntent(BoardIntent.OnCardTitleChange("new title"))
                 assertThat(awaitItem().cardCreationState.title).isEqualTo("new title")
@@ -133,7 +124,7 @@ class BoardViewModelCreateCardTest {
     }
 
     @Test
-    fun `GIVEN null title, WHEN create card, THEN snackbar is sent`() {
+    fun `SHOULD send snackbar WHEN create card with null title`() {
 
         val columnId = 1L
         val initialBoard = Board(
@@ -169,7 +160,7 @@ class BoardViewModelCreateCardTest {
     }
 
     @Test
-    fun `GIVEN null columnId, WHEN create card, THEN snackbar is sent`() {
+    fun `SHOULD send snackbar WHEN create card with null columnId`() {
 
         val columnId = 1L
         val initialBoard = Board(
@@ -193,6 +184,7 @@ class BoardViewModelCreateCardTest {
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
+                // columnId not specified because start create card is not called
                 viewModel.onIntent(BoardIntent.OnCardTitleChange("new title"))
 
                 viewModel.onIntent(BoardIntent.ConfirmCardCreation)
@@ -205,7 +197,7 @@ class BoardViewModelCreateCardTest {
     }
 
     @Test
-    fun `GIVEN null position, WHEN create card, THEN snackbar is sent`() {
+    fun `SHOULD send snackbar WHEN did not find column while creating card`() {
 
         val columnId = 1L
         val initialBoard = Board(
@@ -242,7 +234,7 @@ class BoardViewModelCreateCardTest {
     }
 
     @Test
-    fun `GIVEN not null states, WHEN create card, THEN card repository is called`() {
+    fun `SHOULD call card repository WHEN create card`() {
 
         val columnId = 1L
         val initialBoard = Board(
@@ -280,7 +272,7 @@ class BoardViewModelCreateCardTest {
     }
 
     @Test
-    fun `GIVEN result error, WHEN create card, THEN snackbar is sent`() {
+    fun `SHOULD send snackbar WHEN create card with result error`() {
 
         val columnId = 1L
         val initialBoard = Board(

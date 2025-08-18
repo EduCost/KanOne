@@ -50,7 +50,7 @@ class BoardViewModelObserveBoardTest {
 
 
     @Test
-    fun `GIVEN result success, WHEN board is observed, THEN loading state updates to true then false`() {
+    fun `SHOULD update loading state to true than to false WHEN observe board is successful`() {
 
         val boardId = 1L
 
@@ -71,7 +71,7 @@ class BoardViewModelObserveBoardTest {
     }
 
     @Test
-    fun `GIVEN result error, WHEN board is observed, THEN loading state updates to true then false`() {
+    fun `SHOULD update loading state to true than to false WHEN observe board returns error`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Error(FetchDataError.UNKNOWN)
@@ -90,7 +90,7 @@ class BoardViewModelObserveBoardTest {
     }
 
     @Test
-    fun `GIVEN result error, WHEN board is observed, THEN snackbar is sent`() {
+    fun `SHOULD send snackbar WHEN observe board returns error`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Error(FetchDataError.UNKNOWN)
