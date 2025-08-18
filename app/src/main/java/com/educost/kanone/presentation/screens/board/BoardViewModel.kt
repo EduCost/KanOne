@@ -77,6 +77,7 @@ class BoardViewModel @Inject constructor(
     fun onIntent(intent: BoardIntent) {
         when (intent) {
             is BoardIntent.ObserveBoard -> observeBoard(intent.boardId)
+            is BoardIntent.OnCardClick -> navigateToCardScreen(intent.cardId)
 
             // Drag and drop
             is BoardIntent.OnDragStart -> onDragStart(intent.offset)
@@ -174,6 +175,12 @@ class BoardViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun navigateToCardScreen(cardId: Long) {
+        viewModelScope.launch(dispatcherProvider.main) {
+            _sideEffectChannel.send(BoardSideEffect.NavigateToCardScreen(cardId))
         }
     }
 

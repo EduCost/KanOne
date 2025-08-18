@@ -50,6 +50,7 @@ import java.time.LocalDateTime
 fun BoardScreen(
     modifier: Modifier = Modifier,
     viewModel: BoardViewModel = hiltViewModel(),
+    onNavigateToCard: (Long) -> Unit,
     boardId: Long
 ) {
 
@@ -64,6 +65,9 @@ fun BoardScreen(
 
     ObserveAsEvents(flow = viewModel.sideEffectFlow) { event ->
         when (event) {
+
+            is BoardSideEffect.NavigateToCardScreen -> onNavigateToCard(event.cardId)
+
             is BoardSideEffect.ShowSnackBar -> {
                 scope.launch {
                     snackBarHostState.currentSnackbarData?.dismiss()
