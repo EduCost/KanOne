@@ -30,9 +30,9 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.educost.kanone.presentation.components.ColorPickerDialog
 import com.educost.kanone.presentation.screens.board.components.AddColumn
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
-import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.components.BoardColumn
 import com.educost.kanone.presentation.screens.board.components.ColumnCard
 import com.educost.kanone.presentation.screens.board.model.BoardUi
@@ -40,6 +40,7 @@ import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.state.BoardState
+import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
 import kotlinx.coroutines.launch
@@ -190,6 +191,21 @@ fun BoardScreen(
                 }
             }
         }
+    }
+
+    if (state.columnEditState.isShowingColorPicker) {
+
+        val initialColor = remember {
+            state.board?.columns?.find {
+                it.id == state.columnEditState.editingColumnId
+            }?.color
+        }
+
+        ColorPickerDialog(
+            initialColor = initialColor,
+            onDismiss = { onIntent(BoardIntent.CancelColumnColorEdit) },
+            onConfirm = { onIntent(BoardIntent.ConfirmColumnColorEdit(it)) }
+        )
     }
 
     val localDensity = LocalDensity.current

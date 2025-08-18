@@ -38,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
 import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.ColumnUi

@@ -1,7 +1,7 @@
 package com.educost.kanone.presentation.screens.board.state
 
-import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.model.BoardUi
+import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 
 data class BoardState(
     val board: BoardUi? = null,
@@ -22,5 +22,7 @@ data class CardCreationState(
 
 data class ColumnEditState(
     val editingColumnId: Long? = null,
+    val isRenaming: Boolean = false,
     val newColumnName: String? = null,
+    val isShowingColorPicker: Boolean = false,
 )

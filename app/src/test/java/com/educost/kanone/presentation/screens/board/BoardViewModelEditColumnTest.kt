@@ -8,8 +8,8 @@ import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
-import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.state.ColumnEditState
+import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.utils.Result
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
@@ -307,6 +307,132 @@ class BoardViewModelEditColumnTest {
                 cancelAndConsumeRemainingEvents()
                 coVerify { updateColumnUseCase(expectedColumn, boardId) }
             }
+        }
+    }
+
+    @Test
+    fun `SHOULD update column edit state WHEN start editing column color`() {
+        coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
+            Result.Success(Board(id = 1, name = "test", emptyList()))
+        )
+
+        runTest(testDispatcher) {
+            viewModel.uiState.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(1))
+                skipItems(3)
+
+                val columnId = 1L
+                viewModel.onIntent(BoardIntent.StartEditingColumnColor(columnId))
+                val updatedState = awaitItem()
+                assertThat(updatedState.columnEditState.editingColumnId).isEqualTo(columnId)
+                assertThat(updatedState.columnEditState.isShowingColorPicker).isTrue()
+
+                cancelAndConsumeRemainingEvents()
+            }
+        }
+    }
+
+    @Test
+    fun `SHOULD send snackbar WHEN tried to update color but did not find column`() {
+
+        val column = KanbanColumn(
+            id = 1,
+            name = "column test 1",
+            position = 1,
+        )
+        val board = Board(
+            id = 1,
+            name = "board test",
+            columns = emptyList()
+        )
+
+        coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
+            Result.Success(board)
+        )
+        coEvery { updateColumnUseCase(any(), any()) } returns
+                Result.Error(InsertDataError.UNKNOWN)
+
+        runTest(testDispatcher) {
+            viewModel.sideEffectFlow.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(1))
+
+                viewModel.onIntent(BoardIntent.StartEditingColumnColor(column.id + 1)) // should not find column
+                viewModel.onIntent(BoardIntent.ConfirmColumnColorEdit(-1))
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify(exactly = 0) { updateColumnUseCase(any(), any()) }
+            }
+        }
+
+    }
+
+    @Test
+    fun `SHOULD send snackbar WHEN update column color returns error`() {
+
+        val column = KanbanColumn(
+            id = 1,
+            name = "column test 1",
+            position = 1,
+        )
+        val board = Board(
+            id = 1,
+            name = "board test",
+            columns = listOf(column)
+        )
+        val newColor = -1
+        val expectedColumn = column.copy(color = newColor)
+
+        coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
+            Result.Success(board)
+        )
+        coEvery {
+            updateColumnUseCase(expectedColumn, board.id)
+        } returns Result.Error(InsertDataError.UNKNOWN)
+
+        runTest(testDispatcher) {
+            viewModel.sideEffectFlow.test {
+                viewModel.onIntent(BoardIntent.ObserveBoard(1))
+
+                viewModel.onIntent(BoardIntent.StartEditingColumnColor(column.id))
+                viewModel.onIntent(BoardIntent.ConfirmColumnColorEdit(newColor))
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify(exactly = 1) { updateColumnUseCase(expectedColumn, board.id) }
+            }
+        }
+    }
+
+    @Test
+    fun `SHOULD call update column use case WHEN update column color`() {
+
+        val column = KanbanColumn(
+            id = 1,
+            name = "column test 1",
+            position = 1,
+        )
+        val board = Board(
+            id = 1,
+            name = "board test",
+            columns = listOf(column)
+        )
+        val newColor = -1
+        val expectedColumn = column.copy(color = newColor)
+
+        coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
+            Result.Success(board)
+        )
+        coEvery {
+            updateColumnUseCase(expectedColumn, board.id)
+        } returns Result.Success(Unit)
+
+        runTest(testDispatcher) {
+            viewModel.onIntent(BoardIntent.ObserveBoard(1))
+
+            viewModel.onIntent(BoardIntent.StartEditingColumnColor(column.id))
+            viewModel.onIntent(BoardIntent.ConfirmColumnColorEdit(newColor))
+            coVerify(exactly = 1) { updateColumnUseCase(expectedColumn, board.id) }
         }
     }
 

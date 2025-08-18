@@ -30,6 +30,10 @@ sealed interface BoardIntent {
     data object CancelColumnRename : BoardIntent
     data object ConfirmColumnRename : BoardIntent
 
+    data class StartEditingColumnColor(val columnId: Long) : BoardIntent
+    data object CancelColumnColorEdit : BoardIntent
+    data class ConfirmColumnColorEdit(val newColor: Int) : BoardIntent
+
 
     // Column dropdown menu
     data class OpenColumnDropdownMenu(val columnId: Long) : BoardIntent

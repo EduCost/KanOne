@@ -8,8 +8,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,8 +33,12 @@ fun ColorPickerDialog(
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
     onConfirm: (Int) -> Unit,
+    initialColor: Int? = null
 ) {
 
+    val initialColor = remember {
+        if (initialColor != null) Color(initialColor) else null
+    }
     var newColor by remember { mutableStateOf(-1) }
 
     AlertDialog(
@@ -59,7 +64,8 @@ fun ColorPickerDialog(
                     controller = controller,
                     onColorChanged = { colorEnvelope: ColorEnvelope ->
                         newColor = colorEnvelope.color.toArgb()
-                    }
+                    },
+                    initialColor = initialColor,
                 )
                 BrightnessSlider(
                     modifier = Modifier
@@ -67,11 +73,12 @@ fun ColorPickerDialog(
                         .padding(10.dp)
                         .height(35.dp),
                     controller = controller,
+                    initialColor = initialColor
                 )
             }
         },
         confirmButton = {
-            Button(
+            FilledTonalButton(
                 onClick = {
                     onConfirm(newColor)
                     onDismiss()
@@ -81,7 +88,7 @@ fun ColorPickerDialog(
             }
         },
         dismissButton = {
-            Button(
+            TextButton(
                 onClick = onDismiss
             ) {
                 Text(text = stringResource(R.string.pick_color_dialog_cancel_button))

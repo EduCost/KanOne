@@ -19,7 +19,6 @@ import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
 import com.educost.kanone.domain.usecase.ReorderCardsUseCase
 import com.educost.kanone.domain.usecase.RestoreColumnUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
-import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.mapper.toBoardUi
 import com.educost.kanone.presentation.screens.board.mapper.toCardUi
 import com.educost.kanone.presentation.screens.board.mapper.toColumnUi
@@ -33,6 +32,7 @@ import com.educost.kanone.presentation.screens.board.state.CardCreationState
 import com.educost.kanone.presentation.screens.board.state.ColumnEditState
 import com.educost.kanone.presentation.screens.board.state.DragState
 import com.educost.kanone.presentation.screens.board.state.ScrollState
+import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.utils.CardOrder
 import com.educost.kanone.presentation.screens.board.utils.OrderType
 import com.educost.kanone.presentation.util.SnackbarAction
@@ -101,8 +101,13 @@ class BoardViewModel @Inject constructor(
 
             // Edit column
             is BoardIntent.OnEditColumnNameChange -> onEditColumnNameChange(intent.name)
-            is BoardIntent.CancelColumnRename -> cancelColumnRename()
+            is BoardIntent.CancelColumnRename -> cancelColumnEdit()
             is BoardIntent.ConfirmColumnRename -> confirmColumnRename()
+
+            is BoardIntent.StartEditingColumnColor -> startEditingColumnColor(intent.columnId)
+            is BoardIntent.CancelColumnColorEdit -> cancelColumnEdit()
+            is BoardIntent.ConfirmColumnColorEdit -> confirmColorEdit(intent.newColor)
+
 
             // Dropdown menu
             is BoardIntent.OpenColumnDropdownMenu -> openColumnDropdownMenu(intent.columnId)
@@ -321,7 +326,7 @@ class BoardViewModel @Inject constructor(
         }
     }
 
-    private fun cancelColumnRename() {
+    private fun cancelColumnEdit() {
         _uiState.update {
             it.copy(
                 topBarType = BoardAppBarType.DEFAULT,
@@ -373,7 +378,50 @@ class BoardViewModel @Inject constructor(
                 is Result.Success -> Unit
             }
         }
-        cancelColumnRename()
+        cancelColumnEdit()
+    }
+
+    private fun startEditingColumnColor(columnId: Long) {
+        _uiState.update {
+            it.copy(
+                columnEditState = ColumnEditState(
+                    editingColumnId = columnId,
+                    isShowingColorPicker = true
+                )
+            )
+        }
+    }
+
+    private fun confirmColorEdit(newColor: Int) {
+        val columnId = uiState.value.columnEditState.editingColumnId
+        val column = uiState.value.board!!.columns.find { it.id == columnId }
+
+        if (column != null) {
+            val updateColumn = column.copy(color = newColor).toKanbanColumn()
+
+            viewModelScope.launch(dispatcherProvider.main) {
+                val result = updateColumnUseCase(updateColumn, uiState.value.board!!.id)
+
+                if (result is Result.Error) {
+                    sendSnackbar(
+                        SnackbarEvent(
+                            message = UiText.StringResource(R.string.board_snackbar_edit_column_color_error),
+                            withDismissAction = true
+                        )
+                    )
+                }
+            }
+
+        } else {
+            sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.board_snackbar_edit_column_color_error),
+                    withDismissAction = true
+                )
+            )
+        }
+
+        cancelColumnEdit()
     }
 
 
@@ -393,7 +441,10 @@ class BoardViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 topBarType = BoardAppBarType.RENAME_COLUMN,
-                columnEditState = it.columnEditState.copy(editingColumnId = columnId)
+                columnEditState = it.columnEditState.copy(
+                    editingColumnId = columnId,
+                    isRenaming = true
+                )
             )
         }
     }

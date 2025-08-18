@@ -127,6 +127,7 @@ class BoardViewModelDropdownTest {
                 val updatedState = awaitItem()
                 assertThat(updatedState.topBarType).isEqualTo(BoardAppBarType.RENAME_COLUMN)
                 assertThat(updatedState.columnEditState.editingColumnId).isEqualTo(columnId)
+                assertThat(updatedState.columnEditState.isRenaming).isTrue()
 
                 cancelAndConsumeRemainingEvents()
                 coVerify { observeCompleteBoardUseCase(boardId) }
