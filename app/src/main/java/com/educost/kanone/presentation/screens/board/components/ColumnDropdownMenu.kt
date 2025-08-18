@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Abc
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.HistoryToggleOff
+import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -35,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
@@ -58,15 +62,18 @@ fun ColumnDropdownMenu(
     val rotation by animateFloatAsState(
         targetValue = if (menuType == MenuType.DEFAULT) 360f else 180f
     )
+    val dismiss = remember {
+        {
+            onIntent(BoardIntent.CloseColumnDropdownMenu)
+            menuType = MenuType.DEFAULT
+            orderByType = null
+        }
+    }
     DropdownMenu(
         modifier = modifier
             .animateContentSize(),
         expanded = expanded,
-        onDismissRequest = {
-            onIntent(BoardIntent.CloseColumnDropdownMenu)
-            menuType = MenuType.DEFAULT
-            orderByType = null
-        },
+        onDismissRequest = { dismiss() },
         shape = RoundedCornerShape(12.dp)
     ) {
 
@@ -75,7 +82,7 @@ fun ColumnDropdownMenu(
                 text = { Text(stringResource(R.string.board_dropdown_menu_add_card)) },
                 onClick = {
                     onIntent(BoardIntent.StartCreatingCard(column.id, false))
-                    onIntent(BoardIntent.CloseColumnDropdownMenu)
+                    dismiss()
                 },
                 leadingIcon = {
                     Icon(Icons.Default.Add, null)
@@ -87,7 +94,7 @@ fun ColumnDropdownMenu(
                 text = { Text(stringResource(R.string.board_dropdown_menu_rename_column)) },
                 onClick = {
                     onIntent(BoardIntent.OnRenameColumnClicked(column.id))
-                    onIntent(BoardIntent.CloseColumnDropdownMenu)
+                    dismiss()
                 },
                 leadingIcon = {
                     Icon(Icons.Default.Create, null)
@@ -102,7 +109,6 @@ fun ColumnDropdownMenu(
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.board_dropdown_menu_order_by)) },
                 onClick = {
-                    orderByType = null
                     menuType = if (menuType == MenuType.DEFAULT)
                         MenuType.ORDER_BY
                     else
@@ -134,8 +140,9 @@ fun ColumnDropdownMenu(
                                 cardOrder = CardOrder.NAME
                             )
                         )
-                        onIntent(BoardIntent.CloseColumnDropdownMenu)
-                    }
+                        dismiss()
+                    },
+                    icon = Icons.Filled.Abc
                 )
 
                 OrderByDropdownMenuItem(
@@ -150,8 +157,9 @@ fun ColumnDropdownMenu(
                                 cardOrder = CardOrder.DUE_DATE
                             )
                         )
-                        onIntent(BoardIntent.CloseColumnDropdownMenu)
-                    }
+                        dismiss()
+                    },
+                    icon = Icons.Outlined.Event
                 )
 
                 OrderByDropdownMenuItem(
@@ -166,8 +174,9 @@ fun ColumnDropdownMenu(
                                 cardOrder = CardOrder.DATE_CREATED
                             )
                         )
-                        onIntent(BoardIntent.CloseColumnDropdownMenu)
-                    }
+                        dismiss()
+                    },
+                    icon = Icons.Filled.HistoryToggleOff
                 )
 
             }
@@ -186,7 +195,7 @@ fun ColumnDropdownMenu(
                 },
                 onClick = {
                     onIntent(BoardIntent.OnDeleteColumnClicked(column.id))
-                    onIntent(BoardIntent.CloseColumnDropdownMenu)
+                    dismiss()
                 },
                 leadingIcon = {
                     Icon(
@@ -208,6 +217,7 @@ fun OrderByDropdownMenuItem(
     onConfirmOrder: (OrderType) -> Unit,
     onClick: () -> Unit,
     isSelected: Boolean,
+    icon: ImageVector,
 ) {
     /*TODO: Improve the animations*/
 
@@ -215,7 +225,10 @@ fun OrderByDropdownMenuItem(
         DropdownMenuItem(
             modifier = modifier,
             text = { Text(name) },
-            onClick = onClick
+            onClick = onClick,
+            leadingIcon = {
+                Icon(icon, null)
+            }
         )
     }
 
