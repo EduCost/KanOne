@@ -51,6 +51,9 @@
     <string name="board_dropdown_menu_order_by_date_created">Date Created</string>
     <!--  BOARD SCREEN  -->
 
+    <!--  BOARD SCREEN  -->
+    <string name="card_snackbar_observe_card_error">Error fetching card data.</string>
+    <!--  BOARD SCREEN  -->
 
 
 </resources>

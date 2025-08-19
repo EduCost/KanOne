@@ -19,6 +19,7 @@ import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.DeleteColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
+import com.educost.kanone.domain.usecase.ObserveCardUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.domain.usecase.RestoreColumnUseCase
 import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
@@ -152,5 +153,10 @@ object AppModule {
         return ReorderCardsUseCase(cardRepository)
     }
 
+    @Provides
+    @Singleton
+    fun provideObserveCardUseCase(cardRepository: CardRepository): ObserveCardUseCase {
+        return ObserveCardUseCase(cardRepository)
+    }
 
 }

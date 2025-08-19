@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CardRepository {
 
-    fun observeCards(columnIds: List<Long>): Flow<Result<List<CardItem>, FetchDataError>>
+    fun observeCard(cardId: Long): Flow<Result<CardItem, FetchDataError>>
 
     suspend fun createCard(card: CardItem, columnId: Long): Result<Long, InsertDataError>
 

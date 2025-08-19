@@ -17,19 +17,21 @@ import java.io.IOException
 
 class CardRepositoryImpl(val cardDao: CardDao) : CardRepository {
 
-    override fun observeCards(columnIds: List<Long>): Flow<Result<List<CardItem>, FetchDataError>> {
-        return cardDao.observeCards(columnIds).map { cards ->
-            Result.Success(cards.map { it.toCardItem() })
+    override fun observeCard(cardId: Long): Flow<Result<CardItem, FetchDataError>> {
+        return cardDao.observeCard(cardId)
+            .map { card ->
+                Result.Success(card.toCardItem())
+            }
+            .catch { e ->
+                when (e) {
+                    is IOException -> Result.Error(FetchDataError.IO_ERROR)
 
-        }.catch { e ->
-            when (e) {
-                is IOException -> Result.Error(FetchDataError.IO_ERROR)
-                else -> {
-                    Log.e(LogTags.CARD_REPO, e.stackTraceToString())
-                    Result.Error(FetchDataError.UNKNOWN)
+                    else -> {
+                        Log.e(LogTags.CARD_REPO, e.stackTraceToString())
+                        Result.Error(FetchDataError.UNKNOWN)
+                    }
                 }
             }
-        }
     }
 
     override suspend fun createCard(
