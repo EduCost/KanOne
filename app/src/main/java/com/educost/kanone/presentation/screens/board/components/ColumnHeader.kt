@@ -33,11 +33,13 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
@@ -141,7 +143,7 @@ fun ColumnHeader(
                 ) {
                     Icon(
                         Icons.Filled.MoreVert,
-                        contentDescription = null
+                        contentDescription = stringResource(R.string.icon_more_vert_content_description)
                     )
                 }
 

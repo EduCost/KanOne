@@ -3,6 +3,8 @@
 
     <!--  COMMON  -->
     <string name="menu_icon_content_description">Menu Button</string>
+    <string name="navigate_back_button_content_description">Navigate Back</string>
+    <string name="icon_more_vert_content_description">More Options</string>
     <string name="pick_color_dialog_cancel_button">Cancel</string>
     <string name="pick_color_dialog_confirm_button">Confirm</string>
     <string name="undo_action">Undo</string>
@@ -51,9 +53,22 @@
     <string name="board_dropdown_menu_order_by_date_created">Date Created</string>
     <!--  BOARD SCREEN  -->
 
-    <!--  BOARD SCREEN  -->
+    <!--  CARD SCREEN  -->
+    <string name="card_description">Description</string>
+    <string name="card_labels">Labels</string>
+    <string name="card_attachments">Attachments</string>
+    <string name="card_created_at">Created at</string>
+    <string name="card_due_date">Due date</string>
+    <string name="card_tasks">Tasks</string>
+    <string name="card_description_text_field_placeholder">Add a description</string>
+    <string name="card_add_due_date_button">Add due date</string>
+    <string name="card_edit_description_button_content_description">Edit Description Button</string>
+    <string name="card_add_task_button_content_description">Add Task Button</string>
+    <string name="card_add_attachment_button_content_description">Add Attachment Button</string>
+    <string name="card_add_label_button_content_description">Add Label Button</string>
     <string name="card_snackbar_observe_card_error">Error fetching card data.</string>
-    <!--  BOARD SCREEN  -->
+
+    <!--  CARD SCREEN  -->
 
 
 </resources>
