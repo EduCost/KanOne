@@ -73,7 +73,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideChecklistDao(database: KanbanDatabase) = database.checklistDao()
+    fun provideTaskDao(database: KanbanDatabase) = database.taskDao()
 
     @Provides
     @Singleton

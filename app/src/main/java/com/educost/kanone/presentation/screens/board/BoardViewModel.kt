@@ -243,7 +243,7 @@ class BoardViewModel @Inject constructor(
                     createdAt = LocalDateTime.now(),
                     dueDate = null,
                     thumbnailFileName = null,
-                    checklists = emptyList(),
+                    tasks = emptyList(),
                     attachments = emptyList(),
                     labels = emptyList()
                 )
@@ -645,7 +645,7 @@ class BoardViewModel @Inject constructor(
                                 createdAt = cards.createdAt,
                                 dueDate = cards.dueDate,
                                 thumbnailFileName = cards.thumbnailFileName,
-                                checklists = cards.checklists,
+                                tasks = cards.tasks,
                                 attachments = cards.attachments,
                                 labels = cards.labels
                             )

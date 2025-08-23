@@ -1,7 +1,7 @@
 package com.educost.kanone.presentation.screens.board.model
 
 import com.educost.kanone.domain.model.Attachment
-import com.educost.kanone.domain.model.Checklist
+import com.educost.kanone.domain.model.Task
 import com.educost.kanone.domain.model.Label
 import java.time.LocalDateTime
 
@@ -14,7 +14,7 @@ data class CardUi(
     val createdAt: LocalDateTime,
     val dueDate: LocalDateTime?,
     val thumbnailFileName: String?,
-    val checklists: List<Checklist>,
+    val tasks: List<Task>,
     val attachments: List<Attachment>,
     val labels: List<Label>,
     val coordinates: Coordinates

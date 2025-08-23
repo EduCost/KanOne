@@ -6,7 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "checklists",
+    tableName = "tasks",
     foreignKeys = [
         ForeignKey(
             entity = CardEntity::class,
@@ -17,7 +17,7 @@ import androidx.room.PrimaryKey
         )
     ]
 )
-data class ChecklistEntity(
+data class TaskEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val description: String,
     val position: Int,

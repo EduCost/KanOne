@@ -271,7 +271,7 @@ private fun BoardScreenPreview() {
                                     dueDate = null,
                                     createdAt = LocalDateTime.now(),
                                     thumbnailFileName = null,
-                                    checklists = emptyList(),
+                                    tasks = emptyList(),
                                     attachments = emptyList(),
                                     labels = emptyList(),
                                     coordinates = Coordinates()

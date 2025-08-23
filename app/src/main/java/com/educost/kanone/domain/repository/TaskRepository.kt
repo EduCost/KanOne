@@ -1,11 +1,11 @@
 package com.educost.kanone.domain.repository
 
 import com.educost.kanone.domain.error.FetchDataError
-import com.educost.kanone.domain.model.Checklist
+import com.educost.kanone.domain.model.Task
 import com.educost.kanone.utils.Result
 import kotlinx.coroutines.flow.Flow
 
-interface ChecklistRepository {
+interface TaskRepository {
 
-    fun observeChecklists(cardIds: List<Long>): Flow<Result<List<Checklist>, FetchDataError>>
+    fun observeTasks(cardIds: List<Long>): Flow<Result<List<Task>, FetchDataError>>
 }

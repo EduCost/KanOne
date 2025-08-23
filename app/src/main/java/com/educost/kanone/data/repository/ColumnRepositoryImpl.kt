@@ -4,12 +4,12 @@ import android.util.Log
 import com.educost.kanone.data.local.ColumnDao
 import com.educost.kanone.data.mapper.toAttachmentEntity
 import com.educost.kanone.data.mapper.toCardEntity
-import com.educost.kanone.data.mapper.toChecklistEntity
+import com.educost.kanone.data.mapper.toTaskEntity
 import com.educost.kanone.data.mapper.toColumnEntity
 import com.educost.kanone.data.mapper.toKanbanColumn
 import com.educost.kanone.data.mapper.toLabelEntity
 import com.educost.kanone.data.model.entity.AttachmentEntity
-import com.educost.kanone.data.model.entity.ChecklistEntity
+import com.educost.kanone.data.model.entity.TaskEntity
 import com.educost.kanone.data.model.entity.LabelEntity
 import com.educost.kanone.domain.error.FetchDataError
 import com.educost.kanone.domain.error.InsertDataError
@@ -102,15 +102,15 @@ class ColumnRepositoryImpl(val columnDao: ColumnDao) : ColumnRepository {
             val columnEntity = column.toColumnEntity(boardId)
             val cards = column.cards.map { it.toCardEntity(columnEntity.id) }
             val labels = mutableListOf<LabelEntity>()
-            val checklists = mutableListOf<ChecklistEntity>()
+            val tasks = mutableListOf<TaskEntity>()
             val attachments = mutableListOf<AttachmentEntity>()
 
             column.cards.forEach { card ->
                 card.labels.forEach { label ->
                     labels.add(label.toLabelEntity(card.id))
                 }
-                card.checklists.forEach { checklist ->
-                    checklists.add(checklist.toChecklistEntity(card.id))
+                card.tasks.forEach { task ->
+                    tasks.add(task.toTaskEntity(card.id))
                 }
                 card.attachments.forEach { attachment ->
                     attachments.add(attachment.toAttachmentEntity(card.id))
@@ -121,7 +121,7 @@ class ColumnRepositoryImpl(val columnDao: ColumnDao) : ColumnRepository {
                 column = columnEntity,
                 cards = cards,
                 labels = labels,
-                checklists = checklists,
+                tasks = tasks,
                 attachments = attachments
             )
             Result.Success(Unit)

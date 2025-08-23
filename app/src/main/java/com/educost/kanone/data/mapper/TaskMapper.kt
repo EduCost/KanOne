@@ -1,16 +1,16 @@
 package com.educost.kanone.data.mapper
 
-import com.educost.kanone.data.model.entity.ChecklistEntity
-import com.educost.kanone.domain.model.Checklist
+import com.educost.kanone.data.model.entity.TaskEntity
+import com.educost.kanone.domain.model.Task
 
-fun ChecklistEntity.toChecklist() = Checklist(
+fun TaskEntity.toTask() = Task(
     id = this.id,
     description = this.description,
     isCompleted = this.isCompleted,
     position = this.position
 )
 
-fun Checklist.toChecklistEntity(cardId: Long) = ChecklistEntity(
+fun Task.toTaskEntity(cardId: Long) = TaskEntity(
     id = this.id,
     description = this.description,
     position = this.position,

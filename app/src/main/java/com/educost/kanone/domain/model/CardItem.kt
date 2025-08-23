@@ -11,7 +11,7 @@ data class CardItem(
     val createdAt: LocalDateTime,
     val dueDate: LocalDateTime? = null,
     val thumbnailFileName: String? = null,
-    val checklists: List<Checklist> = emptyList(),
+    val tasks: List<Task> = emptyList(),
     val attachments: List<Attachment> = emptyList(),
     val labels: List<Label> = emptyList(),
 )

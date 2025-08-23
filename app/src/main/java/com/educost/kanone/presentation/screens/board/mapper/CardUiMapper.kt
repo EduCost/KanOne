@@ -13,7 +13,7 @@ fun CardUi.toCardItem() = CardItem(
     createdAt = this.createdAt,
     dueDate = this.dueDate,
     thumbnailFileName = this.thumbnailFileName,
-    checklists = this.checklists,
+    tasks = this.tasks,
     attachments = this.attachments,
     labels = this.labels
 )
@@ -27,7 +27,7 @@ fun CardItem.toCardUi() = CardUi(
     createdAt = this.createdAt,
     dueDate = this.dueDate,
     thumbnailFileName = this.thumbnailFileName,
-    checklists = this.checklists,
+    tasks = this.tasks,
     attachments = this.attachments,
     labels = this.labels,
     coordinates = Coordinates()

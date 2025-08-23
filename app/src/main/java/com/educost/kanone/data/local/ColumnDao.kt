@@ -9,7 +9,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.educost.kanone.data.model.entity.AttachmentEntity
 import com.educost.kanone.data.model.entity.CardEntity
-import com.educost.kanone.data.model.entity.ChecklistEntity
+import com.educost.kanone.data.model.entity.TaskEntity
 import com.educost.kanone.data.model.entity.ColumnEntity
 import com.educost.kanone.data.model.entity.LabelEntity
 import kotlinx.coroutines.flow.Flow
@@ -36,7 +36,7 @@ interface ColumnDao {
     suspend fun restoreLabels(labels: List<LabelEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun restoreChecklists(checklists: List<ChecklistEntity>)
+    suspend fun restoreTasks(tasks: List<TaskEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun restoreAttachments(attachments: List<AttachmentEntity>)
@@ -46,13 +46,13 @@ interface ColumnDao {
         column: ColumnEntity,
         cards: List<CardEntity>,
         labels: List<LabelEntity>,
-        checklists: List<ChecklistEntity>,
+        tasks: List<TaskEntity>,
         attachments: List<AttachmentEntity>
     ) {
         createColumn(column)
         restoreCards(cards)
         restoreLabels(labels)
-        restoreChecklists(checklists)
+        restoreTasks(tasks)
         restoreAttachments(attachments)
     }
 }

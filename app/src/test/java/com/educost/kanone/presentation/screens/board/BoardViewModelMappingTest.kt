@@ -304,7 +304,7 @@ class BoardViewModelMappingTest {
                             createdAt = LocalDateTime.now(),
                             dueDate = null,
                             thumbnailFileName = "thumbnail.png",
-                            checklists = emptyList(),
+                            tasks = emptyList(),
                             attachments = emptyList(),
                             labels = emptyList()
                         )
@@ -374,7 +374,7 @@ class BoardViewModelMappingTest {
                                 createdAt = LocalDateTime.now(),
                                 dueDate = null,
                                 thumbnailFileName = null,
-                                checklists = emptyList(),
+                                tasks = emptyList(),
                                 attachments = emptyList(),
                                 labels = emptyList()
                             ),
@@ -387,7 +387,7 @@ class BoardViewModelMappingTest {
                                 createdAt = LocalDateTime.now(),
                                 dueDate = null,
                                 thumbnailFileName = null,
-                                checklists = emptyList(),
+                                tasks = emptyList(),
                                 attachments = emptyList(),
                                 labels = emptyList()
                             )
@@ -408,7 +408,7 @@ class BoardViewModelMappingTest {
                                 createdAt = LocalDateTime.now(),
                                 dueDate = null,
                                 thumbnailFileName = null,
-                                checklists = emptyList(),
+                                tasks = emptyList(),
                                 attachments = emptyList(),
                                 labels = emptyList()
                             )
@@ -437,7 +437,7 @@ class BoardViewModelMappingTest {
                                 createdAt = LocalDateTime.now(),
                                 dueDate = null,
                                 thumbnailFileName = null,
-                                checklists = emptyList(),
+                                tasks = emptyList(),
                                 attachments = emptyList(),
                                 labels = emptyList()
                             ),
@@ -450,7 +450,7 @@ class BoardViewModelMappingTest {
                                 createdAt = LocalDateTime.now(),
                                 dueDate = null,
                                 thumbnailFileName = null,
-                                checklists = emptyList(),
+                                tasks = emptyList(),
                                 attachments = emptyList(),
                                 labels = emptyList()
                             )
@@ -471,7 +471,7 @@ class BoardViewModelMappingTest {
                                 createdAt = LocalDateTime.now(),
                                 dueDate = null,
                                 thumbnailFileName = null,
-                                checklists = emptyList(),
+                                tasks = emptyList(),
                                 attachments = emptyList(),
                                 labels = emptyList()
                             )

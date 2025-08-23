@@ -6,6 +6,5 @@ object LogTags {
     const val CARD_REPO = "CardRepository"
     const val COLUMN_REPO = "ColumnRepository"
     const val LABEL_REPO = "LabelRepository"
-    const val CHECKLIST_REPO = "ChecklistRepository"
-    const val BOARD_VIEW_MODEL = "BoardViewModel"
+    const val TASK_REPO = "TaskRepository"
 }

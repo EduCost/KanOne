@@ -202,7 +202,7 @@ private fun CardScreenPreview() {
                     color = null,
                     dueDate = /*LocalDateTime.now().plusDays(3)*/null,
                     thumbnailFileName = null,
-                    checklists = emptyList(),
+                    tasks = emptyList(),
                     attachments = emptyList(),
                     labels = emptyList(),
                 )

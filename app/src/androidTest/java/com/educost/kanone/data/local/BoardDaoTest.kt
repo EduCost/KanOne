@@ -27,7 +27,7 @@ class BoardDaoTest {
     private lateinit var columnDao: ColumnDao
     private lateinit var cardDao: CardDao
     private lateinit var attachmentDao: AttachmentDao
-    private lateinit var checklistDao: ChecklistDao
+    private lateinit var taskDao: TaskDao
     private lateinit var labelDao: LabelDao
 
     @Before
@@ -41,7 +41,7 @@ class BoardDaoTest {
         columnDao = db.columnDao()
         cardDao = db.cardDao()
         attachmentDao = db.attachmentDao()
-        checklistDao = db.checklistDao()
+        taskDao = db.taskDao()
         labelDao = db.labelDao()
     }
 
@@ -142,7 +142,7 @@ class BoardDaoTest {
                             CardWithRelations(
                                 expectedCard,
                                 attachments = emptyList(),
-                                checklists = emptyList(),
+                                tasks = emptyList(),
                                 labels = emptyList()
                             )
                         )
@@ -191,7 +191,7 @@ class BoardDaoTest {
                             CardWithRelations(
                                 expectedCard,
                                 attachments = emptyList(),
-                                checklists = emptyList(),
+                                tasks = emptyList(),
                                 labels = listOf(expectedLabel)
                             )
                         )

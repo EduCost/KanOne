@@ -5,7 +5,7 @@ import androidx.room.Junction
 import androidx.room.Relation
 import com.educost.kanone.data.model.entity.AttachmentEntity
 import com.educost.kanone.data.model.entity.CardEntity
-import com.educost.kanone.data.model.entity.ChecklistEntity
+import com.educost.kanone.data.model.entity.TaskEntity
 import com.educost.kanone.data.model.entity.LabelCardCrossRef
 import com.educost.kanone.data.model.entity.LabelEntity
 
@@ -16,7 +16,7 @@ data class CardWithRelations(
         parentColumn = "id",
         entityColumn = "card_id"
     )
-    val checklists: List<ChecklistEntity>,
+    val tasks: List<TaskEntity>,
 
     @Relation(
         parentColumn = "id",
