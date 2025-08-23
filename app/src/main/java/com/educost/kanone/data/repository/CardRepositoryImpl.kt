@@ -70,4 +70,32 @@ class CardRepositoryImpl(val cardDao: CardDao) : CardRepository {
             }
         }
     }
+
+    override suspend fun updateCard(
+        card: CardItem,
+        columnId: Long
+    ): Result<Unit, InsertDataError> {
+        return try {
+            cardDao.updateCard(card.toCardEntity(columnId))
+            Result.Success(Unit)
+        } catch (e: IOException) {
+            Result.Error(InsertDataError.IO_ERROR)
+        } catch (e: Exception) {
+            Log.e(LogTags.CARD_REPO, e.stackTraceToString())
+            Result.Error(InsertDataError.UNKNOWN)
+        }
+    }
+
+    override suspend fun getCardColumnId(cardId: Long): Result<Long, FetchDataError> {
+        return try {
+            val columnId = cardDao.getCardColumnId(cardId)
+            Result.Success(columnId)
+        } catch (e: IOException) {
+            Result.Error(FetchDataError.IO_ERROR)
+        } catch (e: Exception) {
+            Log.e(LogTags.CARD_REPO, e.stackTraceToString())
+            Result.Error(FetchDataError.UNKNOWN)
+        }
+
+    }
 }

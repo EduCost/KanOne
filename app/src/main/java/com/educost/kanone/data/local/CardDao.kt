@@ -25,5 +25,10 @@ interface CardDao {
     @Update
     suspend fun updateCards(cards: List<CardEntity>)
 
+    @Update
+    suspend fun updateCard(card: CardEntity)
+
+    @Query("SELECT column_id FROM cards WHERE id = :cardId")
+    suspend fun getCardColumnId(cardId: Long): Long
 
 }

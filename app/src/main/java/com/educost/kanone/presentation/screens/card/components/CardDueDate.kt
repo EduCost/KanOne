@@ -79,7 +79,7 @@ private fun AddDueDate(modifier: Modifier = Modifier) {
                 contentDescription = null
             )
             Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.card_add_due_date_button))
+            Text(stringResource(R.string.card_button_add_due_date))
         }
     }
 }

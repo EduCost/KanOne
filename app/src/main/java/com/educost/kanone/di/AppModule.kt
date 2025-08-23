@@ -18,12 +18,14 @@ import com.educost.kanone.domain.usecase.CreateBoardUseCase
 import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.DeleteColumnUseCase
+import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
 import com.educost.kanone.domain.usecase.ObserveCardUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.domain.usecase.RestoreColumnUseCase
 import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
 import com.educost.kanone.domain.usecase.ReorderCardsUseCase
+import com.educost.kanone.domain.usecase.UpdateCardUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import dagger.Module
 import dagger.Provides
@@ -157,6 +159,18 @@ object AppModule {
     @Singleton
     fun provideObserveCardUseCase(cardRepository: CardRepository): ObserveCardUseCase {
         return ObserveCardUseCase(cardRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateCardUseCase(cardRepository: CardRepository): UpdateCardUseCase {
+        return UpdateCardUseCase(cardRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetCardColumnIdUseCase(cardRepository: CardRepository): GetCardColumnIdUseCase {
+        return GetCardColumnIdUseCase(cardRepository)
     }
 
 }

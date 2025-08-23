@@ -38,6 +38,7 @@ import com.educost.kanone.presentation.screens.card.components.CardDescription
 import com.educost.kanone.presentation.screens.card.components.CardDueDate
 import com.educost.kanone.presentation.screens.card.components.CardLabels
 import com.educost.kanone.presentation.screens.card.components.CardTasks
+import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
 import kotlinx.coroutines.launch
@@ -105,7 +106,8 @@ private fun CardScreen(
 
                 CardAppBar(
                     card = card,
-                    onIntent = onIntent
+                    onIntent = onIntent,
+                    type = state.appBarType
                 )
             }
         }
@@ -130,7 +132,7 @@ private fun CardScreen(
                 modifier = Modifier
                     .verticalScroll(scrollState)
                     .padding(innerPadding)
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 8.dp, vertical = 16.dp)
             ) {
                 Image(
                     painter = painterResource(R.drawable.sample_image),
@@ -144,7 +146,12 @@ private fun CardScreen(
 
 
                 CardDescription(
-                    cardDescription = card.description ?: ""
+                    cardDescription = card.description ?: "",
+                    newDescription = state.newDescription,
+                    onEditClick = { onIntent(CardIntent.StartEditingDescription) },
+                    onDescriptionChange = { onIntent(CardIntent.OnDescriptionChanged(it)) },
+                    onDescriptionSave = { onIntent(CardIntent.SaveDescription) },
+                    isEditing = state.appBarType == CardAppBarType.DESCRIPTION
                 )
 
                 Spacer(Modifier.height(24.dp))

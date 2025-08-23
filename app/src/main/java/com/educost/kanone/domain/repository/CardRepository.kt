@@ -13,4 +13,8 @@ interface CardRepository {
     suspend fun createCard(card: CardItem, columnId: Long): Result<Long, InsertDataError>
 
     suspend fun updateCards(cards: List<CardItem>, columnId: Long): Result<Unit, InsertDataError>
+
+    suspend fun updateCard(card: CardItem, columnId: Long): Result<Unit, InsertDataError>
+
+    suspend fun getCardColumnId(cardId: Long): Result<Long, FetchDataError>
 }

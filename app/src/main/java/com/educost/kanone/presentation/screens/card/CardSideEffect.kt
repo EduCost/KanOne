@@ -2,7 +2,7 @@ package com.educost.kanone.presentation.screens.card
 
 import com.educost.kanone.presentation.util.SnackbarEvent
 
-interface CardSideEffect {
+sealed interface CardSideEffect {
 
     data class ShowSnackBar(val snackbarEvent: SnackbarEvent) : CardSideEffect
 
