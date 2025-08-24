@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import com.educost.kanone.R
 import com.educost.kanone.domain.model.CardItem
@@ -26,6 +27,9 @@ fun CardAppBar(
     onIntent: (CardIntent) -> Unit,
     type: CardAppBarType
 ) {
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     when (type) {
 
         CardAppBarType.DEFAULT -> {
@@ -64,6 +68,17 @@ fun CardAppBar(
             rightIcon = Icons.Default.Save,
             rightIconContentDescription = stringResource(R.string.card_appbar_save_description_content_description),
             onRightIconClick = { onIntent(CardIntent.SaveDescription) }
+        )
+
+        CardAppBarType.ADD_TASK -> ActionTopBar(
+            title = stringResource(R.string.card_appbar_create_task),
+            leftIconContentDescription = stringResource(R.string.card_appbar_cancel_task_creation_content_description),
+            onLeftIconClick = { onIntent(CardIntent.CancelCreatingTask) },
+            rightIconContentDescription = stringResource(R.string.card_appbar_create_task_content_description),
+            onRightIconClick = {
+                keyboardController?.hide()
+                onIntent(CardIntent.ConfirmTaskCreation)
+            }
         )
     }
 }

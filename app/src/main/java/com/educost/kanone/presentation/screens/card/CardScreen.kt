@@ -156,7 +156,7 @@ private fun CardScreen(
 
                 Spacer(Modifier.height(24.dp))
 
-                CardTasks()
+                CardTasks(tasks = card.tasks, state = state, onIntent = onIntent)
 
                 Spacer(Modifier.height(24.dp))
 

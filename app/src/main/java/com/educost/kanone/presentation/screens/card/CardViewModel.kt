@@ -5,9 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.educost.kanone.R
 import com.educost.kanone.dispatchers.DispatcherProvider
+import com.educost.kanone.domain.model.Task
+import com.educost.kanone.domain.usecase.CreateCardUseCase
+import com.educost.kanone.domain.usecase.CreateTaskUseCase
 import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveCardUseCase
 import com.educost.kanone.domain.usecase.UpdateCardUseCase
+import com.educost.kanone.domain.usecase.UpdateTaskUseCase
 import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText
@@ -26,7 +30,9 @@ class CardViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
     private val observeCardUseCase: ObserveCardUseCase,
     private val updateCardUseCase: UpdateCardUseCase,
-    private val getCardColumnIdUseCase: GetCardColumnIdUseCase
+    private val getCardColumnIdUseCase: GetCardColumnIdUseCase,
+    private val createTaskUseCase: CreateTaskUseCase,
+    private val updateTaskUseCase: UpdateTaskUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CardUiState())
@@ -44,7 +50,23 @@ class CardViewModel @Inject constructor(
             is CardIntent.StartEditingDescription -> startEditingDescription()
             is CardIntent.OnDescriptionChanged -> onDescriptionChanged(intent.description)
             is CardIntent.SaveDescription -> saveDescription()
-            is CardIntent.CancelEditingDescription -> cancelEditingDescription()
+            is CardIntent.CancelEditingDescription -> clearAllCreateAndEditStates()
+
+            // Create Task
+            is CardIntent.StartCreatingTask -> startCreatingTask()
+            is CardIntent.OnCreateTaskDescriptionChanged -> onCreateTaskDescriptionChanged(intent.description)
+            is CardIntent.OnCreateTaskIsCompletedChanged -> onCreateTaskIsCompletedChanged(intent.isCompleted)
+            is CardIntent.ConfirmTaskCreation -> confirmTaskCreation()
+            is CardIntent.CancelCreatingTask -> clearAllCreateAndEditStates()
+
+            // Edit Task
+            is CardIntent.StartEditingTask -> TODO()
+            is CardIntent.OnTaskDescriptionChange -> TODO()
+            is CardIntent.SaveTask -> TODO()
+            is CardIntent.CancelEditingTask -> TODO()
+
+            is CardIntent.OnTaskCheckedChange -> TODO()
+            is CardIntent.RemoveTask -> TODO()
         }
     }
 
@@ -70,6 +92,7 @@ class CardViewModel @Inject constructor(
 
     // Description
     private fun startEditingDescription() {
+        clearAllCreateAndEditStates()
         _uiState.update {
             it.copy(
                 appBarType = CardAppBarType.DESCRIPTION,
@@ -109,16 +132,70 @@ class CardViewModel @Inject constructor(
                 )
             )
 
-            cancelEditingDescription()
+            clearAllCreateAndEditStates()
         }
     }
 
-    private fun cancelEditingDescription() {
+
+    // Create Task
+    private fun startCreatingTask() {
+        clearAllCreateAndEditStates()
         _uiState.update {
             it.copy(
-                appBarType = CardAppBarType.DEFAULT,
-                newDescription = null
+                appBarType = CardAppBarType.ADD_TASK,
             )
+        }
+    }
+
+    private fun onCreateTaskDescriptionChanged(description: String) {
+        _uiState.update {
+            it.copy(createTaskState = it.createTaskState.copy(description = description))
+        }
+    }
+
+    private fun onCreateTaskIsCompletedChanged(isCompleted: Boolean) {
+        _uiState.update {
+            it.copy(createTaskState = it.createTaskState.copy(isCompleted = isCompleted))
+        }
+    }
+
+    private fun confirmTaskCreation() {
+        val card = _uiState.value.card!!
+
+        viewModelScope.launch(dispatcherProvider.main) {
+
+            val description = _uiState.value.createTaskState.description
+            val isCompleted = _uiState.value.createTaskState.isCompleted
+
+            if (description.isBlank()) {
+
+                sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.card_snackbar_create_task_with_empty_description_error),
+                        withDismissAction = true,
+                    )
+                )
+
+                return@launch
+            }
+
+            val task = Task(
+                id = 0,
+                description = description,
+                isCompleted = isCompleted,
+                position = card.tasks.size
+            )
+
+            val result = createTaskUseCase(task = task, cardId = card.id)
+
+            if (result is Result.Error) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.card_snackbar_create_task_error),
+                    withDismissAction = true,
+                )
+            )
+
+            clearAllCreateAndEditStates()
         }
     }
 
@@ -130,6 +207,16 @@ class CardViewModel @Inject constructor(
                 CardSideEffect.ShowSnackBar(
                     snackbarEvent
                 )
+            )
+        }
+    }
+
+    private fun clearAllCreateAndEditStates() {
+        _uiState.update {
+            it.copy(
+                appBarType = CardAppBarType.DEFAULT,
+                newDescription = null,
+                createTaskState = CreateTaskState()
             )
         }
     }

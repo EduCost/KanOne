@@ -6,17 +6,21 @@ import com.educost.kanone.data.local.BoardDao
 import com.educost.kanone.data.local.CardDao
 import com.educost.kanone.data.local.ColumnDao
 import com.educost.kanone.data.local.KanbanDatabase
+import com.educost.kanone.data.local.TaskDao
 import com.educost.kanone.data.repository.BoardRepositoryImpl
 import com.educost.kanone.data.repository.CardRepositoryImpl
 import com.educost.kanone.data.repository.ColumnRepositoryImpl
+import com.educost.kanone.data.repository.TaskRepositoryImpl
 import com.educost.kanone.dispatchers.DefaultDispatcherProvider
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.domain.repository.BoardRepository
 import com.educost.kanone.domain.repository.CardRepository
 import com.educost.kanone.domain.repository.ColumnRepository
+import com.educost.kanone.domain.repository.TaskRepository
 import com.educost.kanone.domain.usecase.CreateBoardUseCase
 import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
+import com.educost.kanone.domain.usecase.CreateTaskUseCase
 import com.educost.kanone.domain.usecase.DeleteColumnUseCase
 import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
@@ -27,6 +31,7 @@ import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
 import com.educost.kanone.domain.usecase.ReorderCardsUseCase
 import com.educost.kanone.domain.usecase.UpdateCardUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
+import com.educost.kanone.domain.usecase.UpdateTaskUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -92,6 +97,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideCardRepository(cardDao: CardDao): CardRepository = CardRepositoryImpl(cardDao)
+
+    @Provides
+    @Singleton
+    fun provideTaskRepository(taskDao: TaskDao): TaskRepository = TaskRepositoryImpl(taskDao)
 
 
     // Use cases
@@ -171,6 +180,18 @@ object AppModule {
     @Singleton
     fun provideGetCardColumnIdUseCase(cardRepository: CardRepository): GetCardColumnIdUseCase {
         return GetCardColumnIdUseCase(cardRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateTaskUseCase(taskRepository: TaskRepository): UpdateTaskUseCase {
+        return UpdateTaskUseCase(taskRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCreateTaskUseCase(taskRepository: TaskRepository): CreateTaskUseCase {
+        return CreateTaskUseCase(taskRepository)
     }
 
 }

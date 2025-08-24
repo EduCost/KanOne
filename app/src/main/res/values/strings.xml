@@ -55,8 +55,11 @@
 
     <!--  CARD SCREEN  -->
     <string name="card_appbar_save_description">Save</string>
+    <string name="card_appbar_create_task">Create Task</string>
     <string name="card_appbar_save_description_content_description">Save Description</string>
     <string name="card_appbar_cancel_description_content_description">Cancel Description Changes</string>
+    <string name="card_appbar_create_task_content_description">Confirm Task Creation</string>
+    <string name="card_appbar_cancel_task_creation_content_description">Cancel Task Creation</string>
     <string name="card_description">Description</string>
     <string name="card_labels">Labels</string>
     <string name="card_attachments">Attachments</string>
@@ -69,8 +72,10 @@
     <string name="card_add_task_button_content_description">Add Task</string>
     <string name="card_add_attachment_button_content_description">Add Attachment</string>
     <string name="card_add_label_button_content_description">Add Label</string>
-    <string name="card_snackbar_observe_card_error">Error fetching card data.</string>
-    <string name="card_snackbar_save_description_error">Error saving description.</string>
+    <string name="card_snackbar_observe_card_error">Error fetching card data</string>
+    <string name="card_snackbar_save_description_error">Error saving description</string>
+    <string name="card_snackbar_create_task_error">Error creating task</string>
+    <string name="card_snackbar_create_task_with_empty_description_error">Can not create task with empty description</string>
 
     <!--  CARD SCREEN  -->
 

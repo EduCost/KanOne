@@ -6,5 +6,11 @@ import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 data class CardUiState(
     val card: CardItem? = null,
     val appBarType: CardAppBarType = CardAppBarType.DEFAULT,
-    val newDescription: String? = null
+    val newDescription: String? = null,
+    val createTaskState: CreateTaskState = CreateTaskState()
+)
+
+data class CreateTaskState(
+    val description: String = "",
+    val isCompleted: Boolean = false
 )
