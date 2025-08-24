@@ -56,8 +56,11 @@
     <!--  CARD SCREEN  -->
     <string name="card_appbar_save_description">Save</string>
     <string name="card_appbar_create_task">Create Task</string>
+    <string name="card_appbar_edit_task">Rename Task</string>
     <string name="card_appbar_save_description_content_description">Save Description</string>
+    <string name="card_appbar_save_task_changes_content_description">Save Task Changes</string>
     <string name="card_appbar_cancel_description_content_description">Cancel Description Changes</string>
+    <string name="card_appbar_cancel_task_edit_content_description">Cancel Task Changes</string>
     <string name="card_appbar_create_task_content_description">Confirm Task Creation</string>
     <string name="card_appbar_cancel_task_creation_content_description">Cancel Task Creation</string>
     <string name="card_description">Description</string>
@@ -76,6 +79,9 @@
     <string name="card_snackbar_save_description_error">Error saving description</string>
     <string name="card_snackbar_create_task_error">Error creating task</string>
     <string name="card_snackbar_create_task_with_empty_description_error">Can not create task with empty description</string>
+    <string name="card_snackbar_edit_task_with_empty_description_error">Can not save task with empty description</string>
+    <string name="card_snackbar_edit_task_error">Error editing task</string>
+    <string name="card_snackbar_task_checked_change_error">Error while saving</string>
 
     <!--  CARD SCREEN  -->
 

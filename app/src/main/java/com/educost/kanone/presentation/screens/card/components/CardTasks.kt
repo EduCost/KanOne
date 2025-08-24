@@ -1,5 +1,6 @@
 package com.educost.kanone.presentation.screens.card.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,14 +14,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.outlined.CheckBox
-import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
@@ -28,20 +28,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
 import com.educost.kanone.domain.model.Task
-import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.card.CardIntent
 import com.educost.kanone.presentation.screens.card.CardUiState
 import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
+import com.educost.kanone.presentation.theme.KanOneTheme
 
 @Composable
 fun CardTasks(
@@ -52,9 +51,10 @@ fun CardTasks(
 ) {
 
     val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(state.appBarType) {
-        if (state.appBarType == CardAppBarType.ADD_TASK) {
+        if (state.appBarType == CardAppBarType.ADD_TASK || state.appBarType == CardAppBarType.EDIT_TASK) {
             focusManager.moveFocus(FocusDirection.Down)
         }
     }
@@ -91,13 +91,41 @@ fun CardTasks(
 
             if (tasks.isNotEmpty()) {
 
-                Spacer(Modifier.height(8.dp))
-
                 Column {
                     tasks.forEach { task ->
-                        TaskItem(task = task, onCheckedChange = {/*TODO*/ })
+                        TaskItem(
+                            modifier = Modifier.clickable {
+                                onIntent(
+                                    CardIntent.StartEditingTask(
+                                        task.id
+                                    )
+                                )
+                            },
+                            task = task,
+                            isEditing = state.appBarType == CardAppBarType.EDIT_TASK && state.editTaskState.taskId == task.id,
+                            newDescription = state.editTaskState.description,
+                            onCheckedChange = {
+                                onIntent(
+                                    CardIntent.OnTaskCheckedChange(
+                                        taskId = task.id,
+                                        isChecked = it
+                                    )
+                                )
+                            },
+                            onDescriptionChange = {
+                                onIntent(
+                                    CardIntent.OnTaskDescriptionChange(
+                                        taskId = task.id,
+                                        description = it
+                                    )
+                                )
+                            },
+                            onConfirm = {
+                                keyboardController?.hide()
+                                onIntent(CardIntent.ConfirmTaskEdit)
+                            }
+                        )
                     }
-
                 }
 
             }
@@ -108,13 +136,16 @@ fun CardTasks(
                     isCompleted = state.createTaskState.isCompleted,
                     onCheckedChange = { onIntent(CardIntent.OnCreateTaskIsCompletedChanged(it)) },
                     onDescriptionChanged = { onIntent(CardIntent.OnCreateTaskDescriptionChanged(it)) },
-                    onConfirm = { onIntent(CardIntent.ConfirmTaskCreation) }
+                    onConfirm = {
+                        keyboardController?.hide()
+                        onIntent(CardIntent.ConfirmTaskCreation)
+                    }
                 )
             }
 
             // Padding
             if (state.appBarType == CardAppBarType.ADD_TASK || tasks.isNotEmpty()) {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(12.dp))
             }
 
         }
@@ -132,29 +163,15 @@ private fun CreateTask(
     onConfirm: () -> Unit,
 ) {
 
-    val keyboardController = LocalSoftwareKeyboardController.current
 
-    Row(modifier = modifier, ) {
+    Row(modifier = modifier) {
 
         Checkbox(checked = isCompleted, onCheckedChange = { onCheckedChange(it) })
 
-        BasicTextField(
+        TaskTextField(
             value = description,
             onValueChange = { onDescriptionChanged(it) },
-            textStyle = MaterialTheme.typography.bodyLarge.copy(
-                color = MaterialTheme.colorScheme.onSurface
-            ),
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    onConfirm()
-                    keyboardController?.hide()
-                }
-            ),
-            modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
+            onConfirm = { onConfirm() }
         )
 
     }
@@ -164,7 +181,11 @@ private fun CreateTask(
 private fun TaskItem(
     modifier: Modifier = Modifier,
     task: Task,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
+    isEditing: Boolean,
+    newDescription: String,
+    onDescriptionChange: (String) -> Unit,
+    onConfirm: () -> Unit
 ) {
     Row(modifier = modifier) {
 
@@ -173,10 +194,73 @@ private fun TaskItem(
             onCheckedChange = onCheckedChange
         )
 
-        Text(
-            modifier = Modifier.padding(top = 12.dp),
-            text = task.description
-        )
+        if (isEditing) {
+            TaskTextField(
+                value = newDescription,
+                onValueChange = onDescriptionChange,
+                onConfirm = onConfirm
+            )
+        } else {
+            Text(
+                modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
+                text = task.description
+            )
+        }
 
+    }
+}
+
+@Composable
+private fun TaskTextField(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChange: (String) -> Unit,
+    onConfirm: () -> Unit
+) {
+    BasicTextField(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp),
+        value = value,
+        onValueChange = { onValueChange(it) },
+        textStyle = MaterialTheme.typography.bodyLarge.copy(
+            color = MaterialTheme.colorScheme.onSurface
+        ),
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { onConfirm() }
+        )
+    )
+}
+
+
+@PreviewLightDark
+@Composable
+private fun CardTasksPreview() {
+    KanOneTheme {
+        Surface {
+            CardTasks(
+                modifier = Modifier.padding(16.dp),
+                tasks = listOf(
+                    Task(
+                        id = 0,
+                        description = "Task 1",
+                        isCompleted = false,
+                        position = 0
+                    ),
+                    Task(
+                        id = 1,
+                        description = "Task 2",
+                        isCompleted = true,
+                        position = 1
+                    )
+                ),
+                state = CardUiState(),
+                onIntent = {}
+            )
+        }
     }
 }

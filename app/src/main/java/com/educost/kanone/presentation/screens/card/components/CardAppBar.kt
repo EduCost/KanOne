@@ -80,5 +80,17 @@ fun CardAppBar(
                 onIntent(CardIntent.ConfirmTaskCreation)
             }
         )
+
+        CardAppBarType.EDIT_TASK -> ActionTopBar(
+            title = stringResource(R.string.card_appbar_edit_task),
+            leftIconContentDescription = stringResource(R.string.card_appbar_cancel_task_edit_content_description),
+            onLeftIconClick = { onIntent(CardIntent.CancelEditingTask) },
+            rightIconContentDescription = stringResource(R.string.card_appbar_save_task_changes_content_description),
+            rightIcon = Icons.Default.Save,
+            onRightIconClick = {
+                keyboardController?.hide()
+                onIntent(CardIntent.ConfirmTaskEdit)
+            }
+        )
     }
 }

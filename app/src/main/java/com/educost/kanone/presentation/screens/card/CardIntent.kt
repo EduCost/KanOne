@@ -21,10 +21,10 @@ sealed interface CardIntent {
     // Edit Task
     data class StartEditingTask(val taskId: Long) : CardIntent
     data class OnTaskDescriptionChange(val taskId: Long, val description: String) : CardIntent
-    data object SaveTask : CardIntent
+    data object ConfirmTaskEdit : CardIntent
     data object CancelEditingTask : CardIntent
 
-    data class OnTaskCheckedChange(val taskId: Long, val checked: Boolean) : CardIntent
+    data class OnTaskCheckedChange(val taskId: Long, val isChecked: Boolean) : CardIntent
     data object RemoveTask : CardIntent
 
 

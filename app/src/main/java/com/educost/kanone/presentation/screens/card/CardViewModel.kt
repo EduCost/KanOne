@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.educost.kanone.R
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.domain.model.Task
-import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateTaskUseCase
 import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveCardUseCase
@@ -60,12 +59,12 @@ class CardViewModel @Inject constructor(
             is CardIntent.CancelCreatingTask -> clearAllCreateAndEditStates()
 
             // Edit Task
-            is CardIntent.StartEditingTask -> TODO()
-            is CardIntent.OnTaskDescriptionChange -> TODO()
-            is CardIntent.SaveTask -> TODO()
-            is CardIntent.CancelEditingTask -> TODO()
+            is CardIntent.StartEditingTask -> startEditingTask(intent.taskId)
+            is CardIntent.OnTaskDescriptionChange -> onTaskDescriptionChange(intent.description)
+            is CardIntent.ConfirmTaskEdit -> confirmTaskEdit()
+            is CardIntent.CancelEditingTask -> clearAllCreateAndEditStates()
 
-            is CardIntent.OnTaskCheckedChange -> TODO()
+            is CardIntent.OnTaskCheckedChange -> onTaskCheckedChange(intent.taskId, intent.isChecked)
             is CardIntent.RemoveTask -> TODO()
         }
     }
@@ -200,6 +199,116 @@ class CardViewModel @Inject constructor(
     }
 
 
+    // Edit task
+    private fun startEditingTask(taskId: Long) {
+        clearAllCreateAndEditStates()
+
+        val task = _uiState.value.card?.tasks?.find { it.id == taskId }
+
+        _uiState.update {
+            it.copy(
+                appBarType = CardAppBarType.EDIT_TASK,
+                editTaskState = EditTaskState(
+                    taskId = taskId,
+                    description = task?.description ?: ""
+                )
+            )
+        }
+    }
+
+    private fun onTaskDescriptionChange(description: String) {
+        _uiState.update {
+            it.copy(editTaskState = it.editTaskState.copy(description = description))
+        }
+    }
+
+    private fun confirmTaskEdit() {
+        val card = _uiState.value.card!!
+
+        val taskId = _uiState.value.editTaskState.taskId
+        val newDescription = _uiState.value.editTaskState.description
+        val task = card.tasks.find { it.id == taskId }
+
+        if (task == null) {
+            sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.card_snackbar_edit_task_error),
+                    withDismissAction = true,
+                )
+            )
+            clearAllCreateAndEditStates()
+            return
+        }
+
+        if (newDescription.isBlank()) {
+            sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.card_snackbar_edit_task_with_empty_description_error),
+                    withDismissAction = true,
+                )
+            )
+            return
+        }
+
+        val newTask = task.copy(description = newDescription)
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            updateTaskUseCase(task = newTask, cardId = card.id)
+        }
+
+        clearAllCreateAndEditStates()
+    }
+
+    private fun onTaskCheckedChange(taskId: Long, isChecked: Boolean) {
+        val card = _uiState.value.card!!
+        val task = card.tasks.find { it.id == taskId }
+
+        if (task == null) {
+            sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.card_snackbar_task_checked_change_error),
+                    withDismissAction = true,
+                )
+            )
+            return
+        }
+
+        val newTask = task.copy(isCompleted = isChecked)
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                card = card.copy(
+                    tasks = card.tasks.map { task ->
+                        if (task.id == taskId) newTask else task
+                    }
+                )
+            )
+        }
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val result = updateTaskUseCase(task = newTask, cardId = card.id)
+
+            if (result is Result.Error) {
+                sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.card_snackbar_task_checked_change_error),
+                        withDismissAction = true,
+                    )
+                )
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        card = card.copy(
+                            tasks = card.tasks.map { task ->
+                                if (task.id == taskId) task else task
+                            }
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+
     // Helper functions
     private fun sendSnackbar(snackbarEvent: SnackbarEvent) {
         viewModelScope.launch(dispatcherProvider.main) {
@@ -216,7 +325,8 @@ class CardViewModel @Inject constructor(
             it.copy(
                 appBarType = CardAppBarType.DEFAULT,
                 newDescription = null,
-                createTaskState = CreateTaskState()
+                createTaskState = CreateTaskState(),
+                editTaskState = EditTaskState()
             )
         }
     }
