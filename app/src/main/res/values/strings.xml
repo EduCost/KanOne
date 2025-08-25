@@ -82,6 +82,9 @@
     <string name="card_snackbar_edit_task_with_empty_description_error">Can not save task with empty description</string>
     <string name="card_snackbar_edit_task_error">Error editing task</string>
     <string name="card_snackbar_task_checked_change_error">Error while saving</string>
+    <string name="card_snackbar_delete_task_error">Error deleting task</string>
+    <string name="card_snackbar_delete_task_success">Task deleted</string>
+    <string name="card_snackbar_restore_task_error">Error restoring task</string>
 
     <!--  CARD SCREEN  -->
 

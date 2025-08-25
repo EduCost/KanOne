@@ -10,4 +10,6 @@ interface TaskRepository {
 
     suspend fun updateTask(task: Task, cardId: Long): Result<Unit, InsertDataError>
 
+    suspend fun deleteTask(task: Task, cardId: Long): Result<Unit, InsertDataError>
+
 }

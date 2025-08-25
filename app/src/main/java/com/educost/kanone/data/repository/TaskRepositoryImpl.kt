@@ -39,4 +39,19 @@ class TaskRepositoryImpl(val taskDao: TaskDao) : TaskRepository {
         }
     }
 
+    override suspend fun deleteTask(
+        task: Task,
+        cardId: Long
+    ): Result<Unit, InsertDataError> {
+        return try {
+            taskDao.deleteTask(task.toTaskEntity(cardId))
+            Result.Success(Unit)
+        } catch (_: IOException) {
+            Result.Error(InsertDataError.IO_ERROR)
+        } catch (e: Exception) {
+            Log.e(LogTags.TASK_REPO, e.stackTraceToString())
+            Result.Error(InsertDataError.UNKNOWN)
+        }
+    }
+
 }

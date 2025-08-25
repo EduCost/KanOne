@@ -7,11 +7,13 @@ import com.educost.kanone.R
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.domain.model.Task
 import com.educost.kanone.domain.usecase.CreateTaskUseCase
+import com.educost.kanone.domain.usecase.DeleteTaskUseCase
 import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveCardUseCase
 import com.educost.kanone.domain.usecase.UpdateCardUseCase
 import com.educost.kanone.domain.usecase.UpdateTaskUseCase
 import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
+import com.educost.kanone.presentation.util.SnackbarAction
 import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText
 import com.educost.kanone.utils.Result
@@ -31,7 +33,8 @@ class CardViewModel @Inject constructor(
     private val updateCardUseCase: UpdateCardUseCase,
     private val getCardColumnIdUseCase: GetCardColumnIdUseCase,
     private val createTaskUseCase: CreateTaskUseCase,
-    private val updateTaskUseCase: UpdateTaskUseCase
+    private val updateTaskUseCase: UpdateTaskUseCase,
+    private val deleteTaskUseCase: DeleteTaskUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CardUiState())
@@ -65,7 +68,7 @@ class CardViewModel @Inject constructor(
             is CardIntent.CancelEditingTask -> clearAllCreateAndEditStates()
 
             is CardIntent.OnTaskCheckedChange -> onTaskCheckedChange(intent.taskId, intent.isChecked)
-            is CardIntent.RemoveTask -> TODO()
+            is CardIntent.DeleteTask -> deleteTask(intent.taskId)
         }
     }
 
@@ -304,6 +307,66 @@ class CardViewModel @Inject constructor(
                         )
                     )
                 }
+            }
+        }
+    }
+
+
+    // Delete task
+    private fun deleteTask(taskId: Long) {
+        clearAllCreateAndEditStates()
+        val card = _uiState.value.card!!
+
+        val task = card.tasks.find { it.id == taskId }
+
+        if (task == null) {
+            sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.card_snackbar_delete_task_error),
+                    withDismissAction = true,
+                )
+            )
+            return
+        }
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val result = deleteTaskUseCase(task = task, cardId = card.id)
+
+            when (result) {
+
+                is Result.Success -> sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.card_snackbar_delete_task_success),
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Long,
+                        action = SnackbarAction(
+                            label = UiText.StringResource(R.string.undo_action),
+                            action = { restoreTask(task = task, cardId = card.id)}
+                        )
+                    )
+                )
+
+                is Result.Error -> sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.card_snackbar_delete_task_error),
+                        withDismissAction = true,
+                    )
+                )
+            }
+        }
+    }
+
+    private fun restoreTask(task: Task, cardId: Long) {
+        viewModelScope.launch(dispatcherProvider.main) {
+            val result = createTaskUseCase(task = task, cardId = cardId)
+
+            if (result is Result.Error) {
+                sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.card_snackbar_restore_task_error),
+                        withDismissAction = true,
+                    )
+                )
             }
         }
     }

@@ -22,6 +22,7 @@ import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.CreateTaskUseCase
 import com.educost.kanone.domain.usecase.DeleteColumnUseCase
+import com.educost.kanone.domain.usecase.DeleteTaskUseCase
 import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
 import com.educost.kanone.domain.usecase.ObserveCardUseCase
@@ -193,5 +194,12 @@ object AppModule {
     fun provideCreateTaskUseCase(taskRepository: TaskRepository): CreateTaskUseCase {
         return CreateTaskUseCase(taskRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideDeleteTaskUseCase(taskRepository: TaskRepository): DeleteTaskUseCase {
+        return DeleteTaskUseCase(taskRepository)
+    }
+
 
 }
