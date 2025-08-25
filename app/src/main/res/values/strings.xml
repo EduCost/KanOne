@@ -85,6 +85,7 @@
     <string name="card_snackbar_delete_task_error">Error deleting task</string>
     <string name="card_snackbar_delete_task_success">Task deleted</string>
     <string name="card_snackbar_restore_task_error">Error restoring task</string>
+    <string name="card_snackbar_save_date_error">Error saving date</string>
 
     <!--  CARD SCREEN  -->
 

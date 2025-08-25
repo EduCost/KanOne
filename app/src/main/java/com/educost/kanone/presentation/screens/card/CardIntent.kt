@@ -1,5 +1,7 @@
 package com.educost.kanone.presentation.screens.card
 
+import java.time.LocalDateTime
+
 sealed interface CardIntent {
 
     data class ObserveCard(val cardId: Long) : CardIntent
@@ -26,6 +28,13 @@ sealed interface CardIntent {
 
     data class OnTaskCheckedChange(val taskId: Long, val isChecked: Boolean) : CardIntent
     data class DeleteTask(val taskId: Long) : CardIntent
+
+
+    // Date Picker
+    data object ShowDatePicker : CardIntent
+    data object HideDatePicker : CardIntent
+    data class OnDateSelected(val date: LocalDateTime?) : CardIntent
+
 
 
 

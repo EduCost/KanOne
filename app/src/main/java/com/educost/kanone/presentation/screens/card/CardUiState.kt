@@ -8,7 +8,8 @@ data class CardUiState(
     val appBarType: CardAppBarType = CardAppBarType.DEFAULT,
     val newDescription: String? = null,
     val createTaskState: CreateTaskState = CreateTaskState(),
-    val editTaskState: EditTaskState = EditTaskState()
+    val editTaskState: EditTaskState = EditTaskState(),
+    val isPickingDate: Boolean = false,
 )
 
 data class CreateTaskState(

@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 @HiltViewModel
 class CardViewModel @Inject constructor(
@@ -67,8 +68,17 @@ class CardViewModel @Inject constructor(
             is CardIntent.ConfirmTaskEdit -> confirmTaskEdit()
             is CardIntent.CancelEditingTask -> clearAllCreateAndEditStates()
 
-            is CardIntent.OnTaskCheckedChange -> onTaskCheckedChange(intent.taskId, intent.isChecked)
+            is CardIntent.OnTaskCheckedChange -> onTaskCheckedChange(
+                intent.taskId,
+                intent.isChecked
+            )
+
             is CardIntent.DeleteTask -> deleteTask(intent.taskId)
+
+            // Date Picker
+            is CardIntent.ShowDatePicker -> showDatePicker()
+            is CardIntent.HideDatePicker -> clearAllCreateAndEditStates()
+            is CardIntent.OnDateSelected -> onDateSelected(intent.date)
         }
     }
 
@@ -341,7 +351,7 @@ class CardViewModel @Inject constructor(
                         duration = SnackbarDuration.Long,
                         action = SnackbarAction(
                             label = UiText.StringResource(R.string.undo_action),
-                            action = { restoreTask(task = task, cardId = card.id)}
+                            action = { restoreTask(task = task, cardId = card.id) }
                         )
                     )
                 )
@@ -372,6 +382,42 @@ class CardViewModel @Inject constructor(
     }
 
 
+    // Date Picker
+    private fun showDatePicker() {
+        _uiState.update { it.copy(isPickingDate = true) }
+    }
+
+    private fun onDateSelected(date: LocalDateTime?) {
+        clearAllCreateAndEditStates()
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val card = _uiState.value.card!!
+            val newCard = card.copy(dueDate = date)
+
+            val columnId = getColumnId(card.id)
+
+            if (columnId == null) {
+                sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.card_snackbar_save_date_error),
+                        withDismissAction = true,
+                    )
+                )
+                return@launch
+            }
+
+            val result = updateCardUseCase(newCard, columnId)
+
+            if (result is Result.Error) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.card_snackbar_save_date_error),
+                    withDismissAction = true,
+                )
+            )
+        }
+    }
+
+
     // Helper functions
     private fun sendSnackbar(snackbarEvent: SnackbarEvent) {
         viewModelScope.launch(dispatcherProvider.main) {
@@ -389,7 +435,8 @@ class CardViewModel @Inject constructor(
                 appBarType = CardAppBarType.DEFAULT,
                 newDescription = null,
                 createTaskState = CreateTaskState(),
-                editTaskState = EditTaskState()
+                editTaskState = EditTaskState(),
+                isPickingDate = false
             )
         }
     }

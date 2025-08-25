@@ -10,11 +10,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,7 +49,9 @@ import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -88,6 +97,7 @@ fun CardScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CardScreen(
     modifier: Modifier = Modifier,
@@ -97,6 +107,14 @@ private fun CardScreen(
 ) {
 
     val scrollState = rememberScrollState()
+    val datePickerState = rememberDatePickerState()
+    val selectedDate = datePickerState.selectedDateMillis?.let { millis ->
+        LocalDateTime
+            .ofInstant(
+                Instant.ofEpochMilli(millis),
+                ZoneOffset.UTC
+            )
+    }
 
     Scaffold(
         modifier = modifier,
@@ -121,7 +139,7 @@ private fun CardScreen(
                 )
             }
 
-            val dueDate by remember {
+            val dueDate by remember(state.card.dueDate) {
                 mutableStateOf(
                     state.card.dueDate
                         ?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
@@ -170,7 +188,8 @@ private fun CardScreen(
 
                     CardDueDate(
                         modifier = Modifier.weight(1f),
-                        dueDate = dueDate
+                        dueDate = dueDate,
+                        onClick = { onIntent(CardIntent.ShowDatePicker) }
                     )
                 }
 
@@ -184,6 +203,35 @@ private fun CardScreen(
 
             }
         }
+
+        if (state.isPickingDate) {
+
+            DatePickerDialog(
+                onDismissRequest = { onIntent(CardIntent.HideDatePicker) },
+                confirmButton = {
+                    FilledTonalButton(
+                        onClick = {
+                            onIntent(
+                                CardIntent.OnDateSelected(selectedDate)
+                            )
+                        },
+                        enabled = selectedDate != null
+                    ) {
+                        Text("Confirm")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { onIntent(CardIntent.HideDatePicker) }) {
+                        Text("Cancel")
+                    }
+                }
+            ) {
+                DatePicker(
+                    state = datePickerState
+                )
+            }
+        }
+
     }
 }
 

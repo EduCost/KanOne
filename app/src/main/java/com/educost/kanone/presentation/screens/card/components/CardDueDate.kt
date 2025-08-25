@@ -1,5 +1,6 @@
 package com.educost.kanone.presentation.screens.card.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,8 +24,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
 
+
 @Composable
-fun CardDueDate(modifier: Modifier = Modifier, dueDate: String?) {
+fun CardDueDate(modifier: Modifier = Modifier, dueDate: String?, onClick: () -> Unit) {
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -36,15 +38,15 @@ fun CardDueDate(modifier: Modifier = Modifier, dueDate: String?) {
 
         dueDate?.let { dueDate ->
 
-            DueDate(dueDate = dueDate)
+            DueDate(dueDate = dueDate, onClick = onClick)
 
-        } ?: AddDueDate()
+        } ?: AddDueDate(onClick = onClick)
 
     }
 }
 
 @Composable
-private fun DueDate(modifier: Modifier = Modifier, dueDate: String) {
+private fun DueDate(modifier: Modifier = Modifier, dueDate: String, onClick: () -> Unit) {
     Row(
         modifier = modifier.padding(vertical = 8.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -54,7 +56,9 @@ private fun DueDate(modifier: Modifier = Modifier, dueDate: String) {
             contentDescription = null
         )
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick() },
             text = stringResource(R.string.card_due_date) + ":\n$dueDate",
             textAlign = TextAlign.Center
         )
@@ -62,7 +66,8 @@ private fun DueDate(modifier: Modifier = Modifier, dueDate: String) {
 }
 
 @Composable
-private fun AddDueDate(modifier: Modifier = Modifier) {
+private fun AddDueDate(modifier: Modifier = Modifier, onClick: () -> Unit) {
+
     Row(
         modifier = modifier
             .padding(8.dp)
@@ -73,7 +78,7 @@ private fun AddDueDate(modifier: Modifier = Modifier) {
 
         Text(text = "\n")
 
-        TextButton(onClick = { /*TODO*/ }) {
+        TextButton(onClick = onClick) {
             Icon(
                 imageVector = Icons.Outlined.Event,
                 contentDescription = null
@@ -81,5 +86,6 @@ private fun AddDueDate(modifier: Modifier = Modifier) {
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.card_button_add_due_date))
         }
+
     }
 }
