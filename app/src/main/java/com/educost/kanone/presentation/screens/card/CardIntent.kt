@@ -6,6 +6,9 @@ sealed interface CardIntent {
 
     data class ObserveCard(val cardId: Long) : CardIntent
 
+    data object OnNavigateBack : CardIntent
+
+
     // Description
     data object StartEditingDescription : CardIntent
     data class OnDescriptionChanged(val description: String) : CardIntent

@@ -41,7 +41,7 @@ fun AppNavHost(
 
         composable<CardDestination> { backStackEntry ->
             val cardId = backStackEntry.toRoute<CardDestination>().cardId
-            CardScreen(cardId = cardId)
+            CardScreen(cardId = cardId, onNavigateBack = { navController.navigateUp() })
         }
 
     }

@@ -6,4 +6,6 @@ sealed interface CardSideEffect {
 
     data class ShowSnackBar(val snackbarEvent: SnackbarEvent) : CardSideEffect
 
+    data object OnNavigateBack : CardSideEffect
+
 }

@@ -58,7 +58,8 @@ import java.time.format.DateTimeFormatter
 fun CardScreen(
     modifier: Modifier = Modifier,
     viewModel: CardViewModel = hiltViewModel(),
-    cardId: Long
+    cardId: Long,
+    onNavigateBack: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         viewModel.onIntent(CardIntent.ObserveCard(cardId))
@@ -85,6 +86,10 @@ fun CardScreen(
                         event.snackbarEvent.action?.action?.invoke()
                     }
                 }
+            }
+
+            is CardSideEffect.OnNavigateBack -> {
+                onNavigateBack()
             }
         }
     }

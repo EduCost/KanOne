@@ -48,6 +48,7 @@ class CardViewModel @Inject constructor(
     fun onIntent(intent: CardIntent) {
         when (intent) {
             is CardIntent.ObserveCard -> observeCard(intent.cardId)
+            is CardIntent.OnNavigateBack -> onNavigateBack()
 
             // Description
             is CardIntent.StartEditingDescription -> startEditingDescription()
@@ -98,6 +99,12 @@ class CardViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    private fun onNavigateBack() {
+        viewModelScope.launch(dispatcherProvider.main) {
+            _sideEffectChannel.send(CardSideEffect.OnNavigateBack)
         }
     }
 

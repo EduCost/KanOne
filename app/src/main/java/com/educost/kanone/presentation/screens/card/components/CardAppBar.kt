@@ -40,7 +40,7 @@ fun CardAppBar(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { /*TODO*/ }
+                        onClick = { onIntent(CardIntent.OnNavigateBack) }
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
