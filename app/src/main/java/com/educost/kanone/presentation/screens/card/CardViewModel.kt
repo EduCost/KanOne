@@ -5,11 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.educost.kanone.R
 import com.educost.kanone.dispatchers.DispatcherProvider
+import com.educost.kanone.domain.model.Attachment
 import com.educost.kanone.domain.model.Task
+import com.educost.kanone.domain.usecase.CreateAttachmentUseCase
 import com.educost.kanone.domain.usecase.CreateTaskUseCase
 import com.educost.kanone.domain.usecase.DeleteTaskUseCase
 import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveCardUseCase
+import com.educost.kanone.domain.usecase.SaveImageUseCase
 import com.educost.kanone.domain.usecase.UpdateCardUseCase
 import com.educost.kanone.domain.usecase.UpdateTaskUseCase
 import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
@@ -35,7 +38,9 @@ class CardViewModel @Inject constructor(
     private val getCardColumnIdUseCase: GetCardColumnIdUseCase,
     private val createTaskUseCase: CreateTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
-    private val deleteTaskUseCase: DeleteTaskUseCase
+    private val deleteTaskUseCase: DeleteTaskUseCase,
+    private val saveImageUseCase: SaveImageUseCase,
+    private val createAttachmentUseCase: CreateAttachmentUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CardUiState())
@@ -68,13 +73,15 @@ class CardViewModel @Inject constructor(
             is CardIntent.OnTaskDescriptionChange -> onTaskDescriptionChange(intent.description)
             is CardIntent.ConfirmTaskEdit -> confirmTaskEdit()
             is CardIntent.CancelEditingTask -> clearAllCreateAndEditStates()
-
             is CardIntent.OnTaskCheckedChange -> onTaskCheckedChange(
                 intent.taskId,
                 intent.isChecked
             )
 
             is CardIntent.DeleteTask -> deleteTask(intent.taskId)
+
+            // Attachments
+            is CardIntent.SaveImage -> saveImage(intent.imageUri)
 
             // Date Picker
             is CardIntent.ShowDatePicker -> showDatePicker()
@@ -413,6 +420,7 @@ class CardViewModel @Inject constructor(
                 return@launch
             }
 
+
             val result = updateCardUseCase(newCard, columnId)
 
             if (result is Result.Error) sendSnackbar(
@@ -421,6 +429,32 @@ class CardViewModel @Inject constructor(
                     withDismissAction = true,
                 )
             )
+        }
+    }
+
+
+    // Attachments
+    private fun saveImage(uri: String) {
+        viewModelScope.launch(dispatcherProvider.main) {
+            val snackbarEvent = SnackbarEvent(
+                message = UiText.StringResource(R.string.card_snackbar_save_image_error),
+                withDismissAction = true,
+            )
+            val result = saveImageUseCase(uri)
+
+            when (result) {
+
+                is Result.Success -> {
+                    val cardId = _uiState.value.card!!.id
+                    val absolutePath = result.data
+                    val newAttachment = Attachment(id = 0, fileName = absolutePath)
+                    val result = createAttachmentUseCase(newAttachment, cardId)
+
+                    if (result is Result.Error) sendSnackbar(snackbarEvent)
+                }
+
+                is Result.Error -> sendSnackbar(snackbarEvent)
+            }
         }
     }
 

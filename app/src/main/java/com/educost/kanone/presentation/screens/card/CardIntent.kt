@@ -33,6 +33,10 @@ sealed interface CardIntent {
     data class DeleteTask(val taskId: Long) : CardIntent
 
 
+    // Attachments
+    data class SaveImage(val imageUri: String) : CardIntent
+
+
     // Date Picker
     data object ShowDatePicker : CardIntent
     data object HideDatePicker : CardIntent

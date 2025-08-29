@@ -2,21 +2,27 @@ package com.educost.kanone.di
 
 import android.content.Context
 import androidx.room.Room
+import com.educost.kanone.data.local.AttachmentDao
 import com.educost.kanone.data.local.BoardDao
 import com.educost.kanone.data.local.CardDao
 import com.educost.kanone.data.local.ColumnDao
 import com.educost.kanone.data.local.KanbanDatabase
 import com.educost.kanone.data.local.TaskDao
+import com.educost.kanone.data.repository.AttachmentRepositoryImpl
 import com.educost.kanone.data.repository.BoardRepositoryImpl
 import com.educost.kanone.data.repository.CardRepositoryImpl
 import com.educost.kanone.data.repository.ColumnRepositoryImpl
 import com.educost.kanone.data.repository.TaskRepositoryImpl
+import com.educost.kanone.data.util.DefaultImageCompressor
+import com.educost.kanone.data.util.DefaultInternalStorageManager
 import com.educost.kanone.dispatchers.DefaultDispatcherProvider
 import com.educost.kanone.dispatchers.DispatcherProvider
+import com.educost.kanone.domain.repository.AttachmentRepository
 import com.educost.kanone.domain.repository.BoardRepository
 import com.educost.kanone.domain.repository.CardRepository
 import com.educost.kanone.domain.repository.ColumnRepository
 import com.educost.kanone.domain.repository.TaskRepository
+import com.educost.kanone.domain.usecase.CreateAttachmentUseCase
 import com.educost.kanone.domain.usecase.CreateBoardUseCase
 import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
@@ -27,12 +33,15 @@ import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
 import com.educost.kanone.domain.usecase.ObserveCardUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
-import com.educost.kanone.domain.usecase.RestoreColumnUseCase
 import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
 import com.educost.kanone.domain.usecase.ReorderCardsUseCase
+import com.educost.kanone.domain.usecase.RestoreColumnUseCase
+import com.educost.kanone.domain.usecase.SaveImageUseCase
 import com.educost.kanone.domain.usecase.UpdateCardUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import com.educost.kanone.domain.usecase.UpdateTaskUseCase
+import com.educost.kanone.domain.util.ImageCompressor
+import com.educost.kanone.domain.util.InternalStorageManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,6 +58,20 @@ object AppModule {
     fun provideDispatcherProvider(): DispatcherProvider {
         return DefaultDispatcherProvider()
     }
+
+    @Provides
+    @Singleton
+    fun provideImageCompressor(@ApplicationContext context: Context): ImageCompressor {
+        return DefaultImageCompressor(context)
+
+    }
+
+    @Provides
+    @Singleton
+    fun provideInternalStorageManager(@ApplicationContext context: Context): InternalStorageManager {
+        return DefaultInternalStorageManager(context)
+    }
+
 
     // Database
     @Provides
@@ -93,7 +116,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideColumnRepository(columnDao: ColumnDao): ColumnRepository = ColumnRepositoryImpl(columnDao)
+    fun provideColumnRepository(columnDao: ColumnDao): ColumnRepository =
+        ColumnRepositoryImpl(columnDao)
 
     @Provides
     @Singleton
@@ -102,6 +126,12 @@ object AppModule {
     @Provides
     @Singleton
     fun provideTaskRepository(taskDao: TaskDao): TaskRepository = TaskRepositoryImpl(taskDao)
+
+    @Provides
+    @Singleton
+    fun provideAttachmentRepository(attachmentDao: AttachmentDao): AttachmentRepository {
+        return AttachmentRepositoryImpl(attachmentDao)
+    }
 
 
     // Use cases
@@ -201,5 +231,19 @@ object AppModule {
         return DeleteTaskUseCase(taskRepository)
     }
 
+    @Provides
+    @Singleton
+    fun provideSaveImageUseCase(
+        internalStorageManager: InternalStorageManager,
+        imageCompressor: ImageCompressor
+    ): SaveImageUseCase {
+        return SaveImageUseCase(internalStorageManager, imageCompressor)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCreateAttachmentUseCase(attachmentRepository: AttachmentRepository): CreateAttachmentUseCase {
+        return CreateAttachmentUseCase(attachmentRepository)
+    }
 
 }

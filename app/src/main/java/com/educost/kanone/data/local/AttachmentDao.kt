@@ -15,7 +15,7 @@ interface AttachmentDao {
     fun observeAttachments(cardIds: List<Long>): Flow<List<AttachmentEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAttachment(attachment: AttachmentEntity)
+    suspend fun createAttachment(attachment: AttachmentEntity)
 
     @Delete
     suspend fun deleteAttachment(attachment: AttachmentEntity)

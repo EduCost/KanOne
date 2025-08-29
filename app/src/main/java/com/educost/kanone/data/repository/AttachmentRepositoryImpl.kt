@@ -3,7 +3,9 @@ package com.educost.kanone.data.repository
 import android.util.Log
 import com.educost.kanone.data.local.AttachmentDao
 import com.educost.kanone.data.mapper.toAttachment
+import com.educost.kanone.data.mapper.toAttachmentEntity
 import com.educost.kanone.domain.error.FetchDataError
+import com.educost.kanone.domain.error.GenericError
 import com.educost.kanone.domain.model.Attachment
 import com.educost.kanone.domain.repository.AttachmentRepository
 import com.educost.kanone.utils.LogTags
@@ -16,17 +18,13 @@ import java.io.IOException
 
 class AttachmentRepositoryImpl @Inject constructor(val attachmentDao: AttachmentDao) : AttachmentRepository {
 
-    override fun observeAttachments(cardsIds: List<Long>): Flow<Result<List<Attachment>, FetchDataError>> {
-        return attachmentDao.observeAttachments(cardsIds).map { attachments ->
-            Result.Success(attachments.map { it.toAttachment() })
-        }.catch { e ->
-            when (e) {
-                is IOException -> Result.Error(FetchDataError.IO_ERROR)
-                else -> {
-                    Log.e(LogTags.ATTACHMENT_REPO, e.stackTraceToString())
-                    Result.Error(FetchDataError.UNKNOWN)
-                }
-            }
+    override suspend fun createAttachment(attachment: Attachment, cardId: Long): Result<Unit, GenericError> {
+        return try {
+            attachmentDao.createAttachment(attachment.toAttachmentEntity(cardId))
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.Error(GenericError)
         }
     }
 

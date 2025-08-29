@@ -1,5 +1,5 @@
 [versions]
-agp = "8.12.1"
+agp = "8.12.2"
 kotlin = "2.2.0"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -19,6 +19,7 @@ colorpicker = "1.1.2"
 truth = "1.4.4"
 turbine = "1.2.1"
 mockk = "1.14.5"
+coilCompose = "3.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -62,6 +63,9 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 
 # Color picker
 compose-colorpicker = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpicker" }
+
+# Coil
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 
 # testing
 truth = { module = "com.google.truth:truth", version.ref = "truth" }

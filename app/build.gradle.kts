@@ -78,6 +78,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.compose.colorpicker)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.coil.compose)
+
 
     testImplementation(libs.truth)
     testImplementation(libs.turbine)

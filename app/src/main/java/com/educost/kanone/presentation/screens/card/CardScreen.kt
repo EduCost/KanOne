@@ -200,7 +200,10 @@ private fun CardScreen(
 
                 Spacer(Modifier.height(24.dp))
 
-                CardAttachments()
+                CardAttachments(
+                    attachments = card.attachments,
+                    onPickImage = { onIntent(CardIntent.SaveImage(it)) }
+                )
 
                 Spacer(Modifier.height(24.dp))
 
