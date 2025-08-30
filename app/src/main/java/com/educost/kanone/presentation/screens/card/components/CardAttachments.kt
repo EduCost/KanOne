@@ -1,22 +1,22 @@
 package com.educost.kanone.presentation.screens.card.components
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.AttachFile
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.educost.kanone.R
 import com.educost.kanone.domain.model.Attachment
@@ -42,16 +43,11 @@ import com.educost.kanone.domain.model.Attachment
 fun CardAttachments(
     modifier: Modifier = Modifier,
     attachments: List<Attachment>,
-    onPickImage: (String) -> Unit
+    onCreateAttachment: () -> Unit,
+    onOpenImage: (Attachment) -> Unit
 ) {
 
     val context = LocalContext.current
-    val photoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri ->
-            if (uri != null) onPickImage(uri.toString())
-        }
-    )
 
     Card(
         modifier = modifier,
@@ -74,11 +70,7 @@ fun CardAttachments(
                 Spacer(Modifier.weight(1f))
 
                 IconButton(
-                    onClick = {
-                        photoPickerLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
-                    }
+                    onClick = onCreateAttachment
                 ) {
                     Icon(
                         imageVector = Icons.Default.AddPhotoAlternate,
@@ -90,20 +82,26 @@ fun CardAttachments(
 
             if (attachments.isNotEmpty()) {
                 LazyRow(
-                    contentPadding = PaddingValues(vertical = 8.dp)
+                    contentPadding = PaddingValues(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(attachments) { attachment ->
 
                         AsyncImage(
                             modifier = Modifier
-                                .size(150.dp)
-                                .clip(MaterialTheme.shapes.small),
-                            contentScale = ContentScale.Crop,
+                                .widthIn(max = 200.dp)
+                                .height(150.dp)
+                                .clip(MaterialTheme.shapes.small)
+                                .clickable {
+                                    onOpenImage(attachment)
+                                },
+                            contentScale = ContentScale.FillHeight,
                             model = ImageRequest.Builder(context)
+                                .diskCachePolicy(CachePolicy.DISABLED)
                                 .data(attachment.fileName)
                                 .build(),
                             contentDescription = null,
-                            placeholder = rememberVectorPainter(Icons.Default.Build),
+                            placeholder = rememberVectorPainter(Icons.Default.Image),
                             error = rememberVectorPainter(Icons.Default.Clear)
                         )
                     }

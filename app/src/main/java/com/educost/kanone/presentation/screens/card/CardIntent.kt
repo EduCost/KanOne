@@ -1,5 +1,6 @@
 package com.educost.kanone.presentation.screens.card
 
+import com.educost.kanone.domain.model.Attachment
 import java.time.LocalDateTime
 
 sealed interface CardIntent {
@@ -34,7 +35,12 @@ sealed interface CardIntent {
 
 
     // Attachments
-    data class SaveImage(val imageUri: String) : CardIntent
+    data object StartCreatingAttachment : CardIntent
+    data class SaveImage(val imageUri: String, val shouldAddToCover: Boolean) : CardIntent
+    data object CancelCreatingAttachment : CardIntent
+    data class OpenImage(val attachment: Attachment) : CardIntent
+    data class DeleteImage(val attachment: Attachment) : CardIntent
+    data object CloseImage : CardIntent
 
 
     // Date Picker

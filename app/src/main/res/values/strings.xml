@@ -63,6 +63,13 @@
     <string name="card_appbar_cancel_task_edit_content_description">Cancel Task Changes</string>
     <string name="card_appbar_create_task_content_description">Confirm Task Creation</string>
     <string name="card_appbar_cancel_task_creation_content_description">Cancel Task Creation</string>
+    <string name="card_dialog_create_attachment_title">Create Attachment</string>
+    <string name="card_dialog_create_attachment_add_photo">Add Photo</string>
+    <string name="card_dialog_create_attachment_add_to_cover">Add to Cover</string>
+    <string name="card_dialog_create_attachment_button_confirm">Create</string>
+    <string name="card_dialog_create_attachment_button_cancel">Cancel</string>
+    <string name="card_dialog_image_button_delete">Delete</string>
+    <string name="card_dialog_image_button_close">Close</string>
     <string name="card_description">Description</string>
     <string name="card_labels">Labels</string>
     <string name="card_attachments">Attachments</string>
@@ -87,6 +94,10 @@
     <string name="card_snackbar_restore_task_error">Error restoring task</string>
     <string name="card_snackbar_save_date_error">Error saving date</string>
     <string name="card_snackbar_save_image_error">Error saving image</string>
+    <string name="card_snackbar_create_attachment_error">Error saving attachment</string>
+    <string name="card_snackbar_add_cover_error">Error saving cover</string>
+    <string name="card_snackbar_delete_attachment_error">Error deleting attachment</string>
+    <string name="card_snackbar_delete_image_error">Error deleting image</string>
 
     <!--  CARD SCREEN  -->
 

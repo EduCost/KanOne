@@ -9,6 +9,8 @@ import com.educost.kanone.domain.model.Attachment
 import com.educost.kanone.domain.model.Task
 import com.educost.kanone.domain.usecase.CreateAttachmentUseCase
 import com.educost.kanone.domain.usecase.CreateTaskUseCase
+import com.educost.kanone.domain.usecase.DeleteAttachmentUseCase
+import com.educost.kanone.domain.usecase.DeleteImageUseCase
 import com.educost.kanone.domain.usecase.DeleteTaskUseCase
 import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveCardUseCase
@@ -40,7 +42,9 @@ class CardViewModel @Inject constructor(
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase,
     private val saveImageUseCase: SaveImageUseCase,
-    private val createAttachmentUseCase: CreateAttachmentUseCase
+    private val createAttachmentUseCase: CreateAttachmentUseCase,
+    private val deleteImageUseCase: DeleteImageUseCase,
+    private val deleteAttachmentUseCase: DeleteAttachmentUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CardUiState())
@@ -81,7 +85,12 @@ class CardViewModel @Inject constructor(
             is CardIntent.DeleteTask -> deleteTask(intent.taskId)
 
             // Attachments
-            is CardIntent.SaveImage -> saveImage(intent.imageUri)
+            is CardIntent.StartCreatingAttachment -> startCreatingAttachment()
+            is CardIntent.SaveImage -> saveImage(intent.imageUri, intent.shouldAddToCover)
+            is CardIntent.OpenImage -> openImage(intent.attachment)
+            is CardIntent.DeleteImage -> deleteImage(intent.attachment)
+            is CardIntent.CloseImage -> clearAllCreateAndEditStates()
+            is CardIntent.CancelCreatingAttachment -> clearAllCreateAndEditStates()
 
             // Date Picker
             is CardIntent.ShowDatePicker -> showDatePicker()
@@ -434,7 +443,16 @@ class CardViewModel @Inject constructor(
 
 
     // Attachments
-    private fun saveImage(uri: String) {
+    private fun startCreatingAttachment() {
+        clearAllCreateAndEditStates()
+        _uiState.update { it.copy(isCreatingAttachment = true) }
+    }
+
+    private fun openImage(attachment: Attachment) {
+        _uiState.update { it.copy(displayingAttachment = attachment) }
+    }
+
+    private fun saveImage(uri: String, shouldAddToCover: Boolean) {
         viewModelScope.launch(dispatcherProvider.main) {
             val snackbarEvent = SnackbarEvent(
                 message = UiText.StringResource(R.string.card_snackbar_save_image_error),
@@ -445,16 +463,85 @@ class CardViewModel @Inject constructor(
             when (result) {
 
                 is Result.Success -> {
-                    val cardId = _uiState.value.card!!.id
                     val absolutePath = result.data
                     val newAttachment = Attachment(id = 0, fileName = absolutePath)
-                    val result = createAttachmentUseCase(newAttachment, cardId)
+                    createAttachment(newAttachment)
 
-                    if (result is Result.Error) sendSnackbar(snackbarEvent)
+                    if (shouldAddToCover) {
+                        addCover(absolutePath)
+                    }
+
                 }
 
                 is Result.Error -> sendSnackbar(snackbarEvent)
             }
+
+            clearAllCreateAndEditStates()
+        }
+    }
+
+    private fun deleteImage(attachment: Attachment) {
+        clearAllCreateAndEditStates()
+        val cardId = _uiState.value.card!!.id
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val wasImageDeleted = deleteImageUseCase(attachment.fileName)
+
+            if (!wasImageDeleted) {
+                sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.card_snackbar_delete_image_error),
+                        withDismissAction = true,
+                    )
+                )
+                return@launch
+            }
+
+            val wasAttachmentDeleted = deleteAttachmentUseCase(attachment, cardId)
+
+            if (!wasAttachmentDeleted) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.card_snackbar_delete_attachment_error),
+                    withDismissAction = true,
+                )
+            )
+        }
+    }
+
+    private fun createAttachment(attachment: Attachment) {
+        val cardId = _uiState.value.card?.id ?: return
+        viewModelScope.launch(dispatcherProvider.main) {
+            val wasAttachmentCreated = createAttachmentUseCase(attachment, cardId)
+
+            if (!wasAttachmentCreated) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.card_snackbar_create_attachment_error),
+                    withDismissAction = true,
+                )
+            )
+        }
+
+    }
+
+    private fun addCover(absolutePath: String) {
+        val card = _uiState.value.card ?: return
+        val snackbarEvent = SnackbarEvent(
+            message = UiText.StringResource(R.string.card_snackbar_add_cover_error),
+            withDismissAction = true,
+        )
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val columnId = getColumnId(card.id)
+            val newCard = card.copy(thumbnailFileName = absolutePath)
+
+            if (columnId == null) {
+                sendSnackbar(snackbarEvent)
+                return@launch
+            }
+
+            val result = updateCardUseCase(newCard, columnId)
+
+            if (result is Result.Error) sendSnackbar(snackbarEvent)
         }
     }
 
@@ -477,7 +564,9 @@ class CardViewModel @Inject constructor(
                 newDescription = null,
                 createTaskState = CreateTaskState(),
                 editTaskState = EditTaskState(),
-                isPickingDate = false
+                isPickingDate = false,
+                isCreatingAttachment = false,
+                displayingAttachment = null
             )
         }
     }

@@ -13,8 +13,10 @@ import java.util.UUID
 
 class DefaultInternalStorageManager(private val context: Context) : InternalStorageManager {
 
-    val imageDirectory = File(context.filesDir, "images").apply {
-        if (!exists()) mkdirs()
+    val imageDirectory by lazy {
+        File(context.filesDir, "images").apply {
+            if (!exists()) mkdirs()
+        }
     }
 
     override suspend fun saveImage(uri: String, fileName: String): Result<String, GenericError> {
@@ -69,4 +71,15 @@ class DefaultInternalStorageManager(private val context: Context) : InternalStor
         return fileName
     }
 
+    override suspend fun deleteFile(absolutePath: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val file = File(absolutePath)
+                file.delete()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false
+            }
+        }
+    }
 }

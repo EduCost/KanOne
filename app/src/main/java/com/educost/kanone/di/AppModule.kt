@@ -27,7 +27,9 @@ import com.educost.kanone.domain.usecase.CreateBoardUseCase
 import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.CreateTaskUseCase
+import com.educost.kanone.domain.usecase.DeleteAttachmentUseCase
 import com.educost.kanone.domain.usecase.DeleteColumnUseCase
+import com.educost.kanone.domain.usecase.DeleteImageUseCase
 import com.educost.kanone.domain.usecase.DeleteTaskUseCase
 import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
@@ -244,6 +246,18 @@ object AppModule {
     @Singleton
     fun provideCreateAttachmentUseCase(attachmentRepository: AttachmentRepository): CreateAttachmentUseCase {
         return CreateAttachmentUseCase(attachmentRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteImageUseCase(internalStorageManager: InternalStorageManager): DeleteImageUseCase {
+        return DeleteImageUseCase(internalStorageManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteAttachmentUseCase(attachmentRepository: AttachmentRepository): DeleteAttachmentUseCase {
+        return DeleteAttachmentUseCase(attachmentRepository)
     }
 
 }

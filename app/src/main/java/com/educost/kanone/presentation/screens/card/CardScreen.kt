@@ -45,6 +45,8 @@ import com.educost.kanone.presentation.screens.card.components.CardDescription
 import com.educost.kanone.presentation.screens.card.components.CardDueDate
 import com.educost.kanone.presentation.screens.card.components.CardLabels
 import com.educost.kanone.presentation.screens.card.components.CardTasks
+import com.educost.kanone.presentation.screens.card.components.CreateAttachmentDialog
+import com.educost.kanone.presentation.screens.card.components.ImageDialog
 import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
@@ -202,7 +204,8 @@ private fun CardScreen(
 
                 CardAttachments(
                     attachments = card.attachments,
-                    onPickImage = { onIntent(CardIntent.SaveImage(it)) }
+                    onCreateAttachment = { onIntent(CardIntent.StartCreatingAttachment) },
+                    onOpenImage = { onIntent(CardIntent.OpenImage(it)) }
                 )
 
                 Spacer(Modifier.height(24.dp))
@@ -240,6 +243,27 @@ private fun CardScreen(
             }
         }
 
+        if (state.isCreatingAttachment) {
+            CreateAttachmentDialog(
+                onDismiss = { onIntent(CardIntent.CancelCreatingAttachment) },
+                onConfirm = { uri, shouldAddToCover ->
+                    onIntent(
+                        CardIntent.SaveImage(
+                            imageUri = uri,
+                            shouldAddToCover = shouldAddToCover
+                        )
+                    )
+                }
+            )
+        }
+
+        state.displayingAttachment?.let { attachment ->
+            ImageDialog(
+                attachment = attachment,
+                onDismiss = {onIntent(CardIntent.CloseImage)},
+                onDelete = {onIntent(CardIntent.DeleteImage(it))}
+            )
+        }
     }
 }
 

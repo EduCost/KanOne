@@ -1,5 +1,6 @@
 package com.educost.kanone.presentation.screens.card
 
+import com.educost.kanone.domain.model.Attachment
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 
@@ -10,6 +11,8 @@ data class CardUiState(
     val createTaskState: CreateTaskState = CreateTaskState(),
     val editTaskState: EditTaskState = EditTaskState(),
     val isPickingDate: Boolean = false,
+    val isCreatingAttachment: Boolean = false,
+    val displayingAttachment: Attachment? = null
 )
 
 data class CreateTaskState(
