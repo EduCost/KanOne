@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Label
+import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,9 +23,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
+import com.educost.kanone.domain.model.Label
+import com.educost.kanone.presentation.screens.card.CardIntent
 
 @Composable
-fun CardLabels(modifier: Modifier = Modifier) {
+fun CardLabels(
+    modifier: Modifier = Modifier,
+    labels: List<Label>,
+    boardLabels: List<Label>,
+    isMenuExpanded: Boolean,
+    onIntent: (CardIntent) -> Unit
+) {
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -36,7 +46,7 @@ fun CardLabels(modifier: Modifier = Modifier) {
             Row(verticalAlignment = Alignment.CenterVertically) {
 
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.Label,
+                    imageVector = Icons.AutoMirrored.Outlined.Label,
                     contentDescription = null
                 )
                 Spacer(Modifier.width(8.dp))
@@ -45,14 +55,30 @@ fun CardLabels(modifier: Modifier = Modifier) {
                 Spacer(Modifier.weight(1f))
 
                 IconButton(
-                    onClick = {}
+                    onClick = {
+                        onIntent(CardIntent.OpenLabelPicker)
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = stringResource(R.string.card_add_label_button_content_description)
                     )
+                    CardLabelPicker(
+                        labels = boardLabels,
+                        selectedLabels = labels,
+                        expanded = isMenuExpanded,
+                        onDismiss = {
+                            onIntent(CardIntent.CloseLabelPicker)
+                        },
+                    )
                 }
 
+            }
+
+            LazyRow {
+                items(labels) { label ->
+                    LabelChip(label = label)
+                }
             }
         }
     }

@@ -38,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.educost.kanone.R
 import com.educost.kanone.domain.model.CardItem
+import com.educost.kanone.domain.model.Label
 import com.educost.kanone.presentation.screens.card.components.CardAppBar
 import com.educost.kanone.presentation.screens.card.components.CardAttachments
 import com.educost.kanone.presentation.screens.card.components.CardDateCreated
@@ -210,7 +211,12 @@ private fun CardScreen(
 
                 Spacer(Modifier.height(24.dp))
 
-                CardLabels()
+                CardLabels(
+                    labels = card.labels,
+                    boardLabels = state.boardLabels,
+                    isMenuExpanded = state.isLabelMenuExpanded,
+                    onIntent = onIntent
+                )
 
             }
         }
@@ -284,7 +290,13 @@ private fun CardScreenPreview() {
                     thumbnailFileName = null,
                     tasks = emptyList(),
                     attachments = emptyList(),
-                    labels = emptyList(),
+                    labels = listOf(
+                        Label(
+                            id = 0,
+                            name = "Label",
+                            color = -25787
+                        ),
+                    ),
                 )
             ),
             onIntent = {},

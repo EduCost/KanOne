@@ -43,6 +43,11 @@ sealed interface CardIntent {
     data object CloseImage : CardIntent
 
 
+    // Labels
+    data object OpenLabelPicker : CardIntent
+    data object CloseLabelPicker : CardIntent
+
+
     // Date Picker
     data object ShowDatePicker : CardIntent
     data object HideDatePicker : CardIntent

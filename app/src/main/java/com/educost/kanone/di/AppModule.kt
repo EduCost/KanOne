@@ -7,11 +7,13 @@ import com.educost.kanone.data.local.BoardDao
 import com.educost.kanone.data.local.CardDao
 import com.educost.kanone.data.local.ColumnDao
 import com.educost.kanone.data.local.KanbanDatabase
+import com.educost.kanone.data.local.LabelDao
 import com.educost.kanone.data.local.TaskDao
 import com.educost.kanone.data.repository.AttachmentRepositoryImpl
 import com.educost.kanone.data.repository.BoardRepositoryImpl
 import com.educost.kanone.data.repository.CardRepositoryImpl
 import com.educost.kanone.data.repository.ColumnRepositoryImpl
+import com.educost.kanone.data.repository.LabelRepositoryImpl
 import com.educost.kanone.data.repository.TaskRepositoryImpl
 import com.educost.kanone.data.util.DefaultImageCompressor
 import com.educost.kanone.data.util.DefaultInternalStorageManager
@@ -21,6 +23,7 @@ import com.educost.kanone.domain.repository.AttachmentRepository
 import com.educost.kanone.domain.repository.BoardRepository
 import com.educost.kanone.domain.repository.CardRepository
 import com.educost.kanone.domain.repository.ColumnRepository
+import com.educost.kanone.domain.repository.LabelRepository
 import com.educost.kanone.domain.repository.TaskRepository
 import com.educost.kanone.domain.usecase.CreateAttachmentUseCase
 import com.educost.kanone.domain.usecase.CreateBoardUseCase
@@ -33,6 +36,7 @@ import com.educost.kanone.domain.usecase.DeleteImageUseCase
 import com.educost.kanone.domain.usecase.DeleteTaskUseCase
 import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
+import com.educost.kanone.domain.usecase.ObserveLabelsUseCase
 import com.educost.kanone.domain.usecase.ObserveCardUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
@@ -133,6 +137,12 @@ object AppModule {
     @Singleton
     fun provideAttachmentRepository(attachmentDao: AttachmentDao): AttachmentRepository {
         return AttachmentRepositoryImpl(attachmentDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLabelRepository(labelDao: LabelDao): LabelRepository {
+        return LabelRepositoryImpl(labelDao)
     }
 
 
@@ -259,5 +269,12 @@ object AppModule {
     fun provideDeleteAttachmentUseCase(attachmentRepository: AttachmentRepository): DeleteAttachmentUseCase {
         return DeleteAttachmentUseCase(attachmentRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideObserveLabelsUseCase(labelRepository: LabelRepository): ObserveLabelsUseCase {
+        return ObserveLabelsUseCase(labelRepository)
+    }
+
 
 }

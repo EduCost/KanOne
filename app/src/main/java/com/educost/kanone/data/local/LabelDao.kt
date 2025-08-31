@@ -13,17 +13,6 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface LabelDao {
 
-    @Query(
-        """
-        SELECT * FROM labels
-        WHERE id IN (
-            SELECT label_id FROM labels_and_cards
-            WHERE card_id IN (:cardIds)
-        )
-    """
-    )
-    fun observeLabels(cardIds: List<Long>): Flow<List<LabelEntity>>
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLabel(label: LabelEntity): Long
 
@@ -40,5 +29,22 @@ interface LabelDao {
 
     @Delete
     suspend fun deleteLabel(label: LabelEntity)
+
+    @Query(
+        """
+        SELECT *
+        FROM labels
+        WHERE board_id = (
+            SELECT board_id
+            FROM columns
+            WHERE id = (
+                SELECT column_id
+                FROM cards
+                WHERE id = :cardId
+            )
+        )
+        """
+    )
+    fun observeLabels(cardId: Long): Flow<List<LabelEntity>>
 
 }

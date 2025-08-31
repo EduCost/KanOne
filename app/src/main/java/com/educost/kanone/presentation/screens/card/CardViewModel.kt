@@ -14,6 +14,7 @@ import com.educost.kanone.domain.usecase.DeleteImageUseCase
 import com.educost.kanone.domain.usecase.DeleteTaskUseCase
 import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveCardUseCase
+import com.educost.kanone.domain.usecase.ObserveLabelsUseCase
 import com.educost.kanone.domain.usecase.SaveImageUseCase
 import com.educost.kanone.domain.usecase.UpdateCardUseCase
 import com.educost.kanone.domain.usecase.UpdateTaskUseCase
@@ -45,6 +46,7 @@ class CardViewModel @Inject constructor(
     private val createAttachmentUseCase: CreateAttachmentUseCase,
     private val deleteImageUseCase: DeleteImageUseCase,
     private val deleteAttachmentUseCase: DeleteAttachmentUseCase,
+    private val observeLabelsUseCase: ObserveLabelsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CardUiState())
@@ -52,7 +54,6 @@ class CardViewModel @Inject constructor(
 
     private val _sideEffectChannel = Channel<CardSideEffect>(Channel.BUFFERED)
     val sideEffectFlow = _sideEffectChannel.receiveAsFlow()
-
 
     fun onIntent(intent: CardIntent) {
         when (intent) {
@@ -92,6 +93,10 @@ class CardViewModel @Inject constructor(
             is CardIntent.CloseImage -> clearAllCreateAndEditStates()
             is CardIntent.CancelCreatingAttachment -> clearAllCreateAndEditStates()
 
+            // Labels
+            is CardIntent.OpenLabelPicker -> openLabelPicker()
+            is CardIntent.CloseLabelPicker -> clearAllCreateAndEditStates()
+
             // Date Picker
             is CardIntent.ShowDatePicker -> showDatePicker()
             is CardIntent.HideDatePicker -> clearAllCreateAndEditStates()
@@ -104,7 +109,10 @@ class CardViewModel @Inject constructor(
         viewModelScope.launch(dispatcherProvider.main) {
             observeCardUseCase(cardId).collect { result ->
                 when (result) {
-                    is Result.Success -> _uiState.value = _uiState.value.copy(card = result.data)
+                    is Result.Success -> {
+                        _uiState.value = _uiState.value.copy(card = result.data)
+                        observeBoardLabels(result.data.id)
+                    }
 
                     is Result.Error -> sendSnackbar(
                         SnackbarEvent(
@@ -113,6 +121,20 @@ class CardViewModel @Inject constructor(
                             duration = SnackbarDuration.Long
                         )
                     )
+                }
+            }
+        }
+    }
+
+    private fun observeBoardLabels(cardId: Long) {
+        viewModelScope.launch(dispatcherProvider.main) {
+            observeLabelsUseCase(cardId).collect { result ->
+                when (result) {
+                    is Result.Success -> {
+                        _uiState.update { it.copy(boardLabels = result.data) }
+                    }
+
+                    is Result.Error -> Unit
                 }
             }
         }
@@ -546,6 +568,12 @@ class CardViewModel @Inject constructor(
     }
 
 
+    // Labels
+    private fun openLabelPicker() {
+        _uiState.update { it.copy(isLabelMenuExpanded = true) }
+    }
+
+
     // Helper functions
     private fun sendSnackbar(snackbarEvent: SnackbarEvent) {
         viewModelScope.launch(dispatcherProvider.main) {
@@ -566,7 +594,8 @@ class CardViewModel @Inject constructor(
                 editTaskState = EditTaskState(),
                 isPickingDate = false,
                 isCreatingAttachment = false,
-                displayingAttachment = null
+                displayingAttachment = null,
+                isLabelMenuExpanded = false
             )
         }
     }
