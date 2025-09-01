@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ColorLens
+import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material.icons.outlined.NewLabel
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -41,31 +42,47 @@ import com.educost.kanone.presentation.components.ColorPickerDialog
 import com.educost.kanone.presentation.theme.KanOneTheme
 
 @Composable
-fun CreateLabelDialog(
+fun LabelDialog(
     modifier: Modifier = Modifier,
+    label: Label?,
     onDismiss: () -> Unit,
     onConfirm: (Label) -> Unit,
+    onUpdate: (Label) -> Unit
 ) {
 
-    var newName by rememberSaveable { mutableStateOf("") }
-    var newColorInt by rememberSaveable { mutableStateOf<Int?>(null) }
+    var newName by rememberSaveable {
+        if (label != null) mutableStateOf(label.name) else mutableStateOf("")
+    }
+    var newColorInt by rememberSaveable {
+        if (label != null) mutableStateOf(label.color) else mutableStateOf<Int?>(null)
+    }
     var isPickingColor by rememberSaveable { mutableStateOf(false) }
 
     AlertDialog(
         modifier = modifier,
         onDismissRequest = onDismiss,
         icon = {
-            Icon(Icons.Outlined.NewLabel, null)
+            if (label != null) {
+                Icon(Icons.Default.ModeEdit, null)
+            } else {
+                Icon(Icons.Outlined.NewLabel, null)
+            }
         },
         title = {
-            Text(stringResource(R.string.card_dialog_create_label_title))
+            Text(
+                text = if (label != null) {
+                    stringResource(R.string.card_dialog_edit_label_title)
+                } else {
+                    stringResource(R.string.card_dialog_create_label_title)
+                }
+            )
         },
         text = {
             Column {
                 OutlinedTextField(
                     value = newName,
                     onValueChange = { newName = it },
-                    label = { Text(stringResource(R.string.card_dialog_create_label_text_field_label)) },
+                    label = { Text(stringResource(R.string.card_dialog_label_text_field_label)) },
                     singleLine = true,
                 )
 
@@ -90,7 +107,7 @@ fun CreateLabelDialog(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Close,
-                                contentDescription = stringResource(R.string.card_dialog_create_label_button_remove_color_content_description)
+                                contentDescription = stringResource(R.string.card_dialog_label_button_remove_color_content_description)
                             )
                         }
 
@@ -105,7 +122,7 @@ fun CreateLabelDialog(
                                 contentDescription = null
                             )
                             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                            Text(stringResource(R.string.card_dialog_create_label_button_pick_color))
+                            Text(stringResource(R.string.card_dialog_label_button_pick_color))
                         }
 
                     }
@@ -117,22 +134,27 @@ fun CreateLabelDialog(
             FilledTonalButton(
                 enabled = newName.isNotBlank(),
                 onClick = {
-                    val newLabel = Label(
-                        id = 0,
-                        name = newName,
-                        color = newColorInt
-                    )
-                    onConfirm(newLabel)
+                    if (label != null) {
+                        val newLabel = label.copy(name = newName, color = newColorInt)
+                        onUpdate(newLabel)
+                    } else {
+                        val newLabel = Label(
+                            id = 0,
+                            name = newName,
+                            color = newColorInt
+                        )
+                        onConfirm(newLabel)
+                    }
                 }
             ) {
-                Text(stringResource(R.string.card_dialog_create_label_button_confirm))
+                Text(stringResource(R.string.card_dialog_label_button_confirm))
             }
         },
         dismissButton = {
             TextButton(
                 onClick = onDismiss
             ) {
-                Text(stringResource(R.string.card_dialog_create_label_button_cancel))
+                Text(stringResource(R.string.card_dialog_label_button_cancel))
             }
         }
 
@@ -152,7 +174,7 @@ fun CreateLabelDialog(
 private fun CreateLabelDialogPreview() {
     KanOneTheme {
         Surface {
-            CreateLabelDialog(onDismiss = {}, onConfirm = {})
+            LabelDialog(onDismiss = {}, onConfirm = {}, label = null, onUpdate = {})
         }
     }
 }

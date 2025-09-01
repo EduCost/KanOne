@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.educost.kanone.data.model.entity.LabelCardCrossRef
 import com.educost.kanone.data.model.entity.LabelEntity
 import kotlinx.coroutines.flow.Flow
@@ -29,6 +30,9 @@ interface LabelDao {
 
     @Delete
     suspend fun deleteLabel(label: LabelEntity)
+
+    @Update
+    suspend fun updateLabel(label: LabelEntity)
 
     @Query(
         """

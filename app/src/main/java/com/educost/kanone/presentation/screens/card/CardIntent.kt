@@ -50,7 +50,9 @@ sealed interface CardIntent {
     data object StartCreatingLabel : CardIntent
     data class CreateLabel(val label: Label) : CardIntent
     data class UpdateLabelAssociation(val label: Label) : CardIntent
-    data object CancelCreatingLabel : CardIntent
+    data class StartEditingLabel(val label: Label) : CardIntent
+    data class ConfirmLabelEdit(val label: Label) : CardIntent
+    data object CloseLabelDialog : CardIntent
 
 
     // Date Picker

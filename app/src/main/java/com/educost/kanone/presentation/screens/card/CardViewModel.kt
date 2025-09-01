@@ -20,6 +20,7 @@ import com.educost.kanone.domain.usecase.ObserveLabelsUseCase
 import com.educost.kanone.domain.usecase.SaveImageUseCase
 import com.educost.kanone.domain.usecase.UpdateCardUseCase
 import com.educost.kanone.domain.usecase.UpdateLabelAssociationUseCase
+import com.educost.kanone.domain.usecase.UpdateLabelUseCase
 import com.educost.kanone.domain.usecase.UpdateTaskUseCase
 import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 import com.educost.kanone.presentation.util.SnackbarAction
@@ -51,7 +52,8 @@ class CardViewModel @Inject constructor(
     private val deleteAttachmentUseCase: DeleteAttachmentUseCase,
     private val observeLabelsUseCase: ObserveLabelsUseCase,
     private val createLabelForCardUseCase: CreateLabelForCardUseCase,
-    private val updateLabelAssociationUseCase: UpdateLabelAssociationUseCase
+    private val updateLabelAssociationUseCase: UpdateLabelAssociationUseCase,
+    private val updateLabelUseCase: UpdateLabelUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CardUiState())
@@ -104,7 +106,9 @@ class CardViewModel @Inject constructor(
             is CardIntent.StartCreatingLabel -> startCreatingLabel()
             is CardIntent.CreateLabel -> createLabel(intent.label)
             is CardIntent.UpdateLabelAssociation -> updateLabelAssociation(intent.label)
-            is CardIntent.CancelCreatingLabel -> clearAllCreateAndEditStates()
+            is CardIntent.StartEditingLabel -> startEditingLabel(intent.label)
+            is CardIntent.ConfirmLabelEdit -> confirmLabelEdit(intent.label)
+            is CardIntent.CloseLabelDialog -> clearAllCreateAndEditStates()
 
 
             // Date Picker
@@ -585,7 +589,7 @@ class CardViewModel @Inject constructor(
 
     private fun startCreatingLabel() {
         clearAllCreateAndEditStates()
-        _uiState.update { it.copy(isShowingCreateLabelDialog = true) }
+        _uiState.update { it.copy(isShowingLabelDialog = true) }
     }
 
     private fun createLabel(label: Label) {
@@ -626,6 +630,34 @@ class CardViewModel @Inject constructor(
         }
     }
 
+    private fun startEditingLabel(label: Label) {
+        _uiState.update {
+            it.copy(
+                labelBeingEdited = label,
+                isShowingLabelDialog = true
+            )
+        }
+    }
+
+    private fun confirmLabelEdit(label: Label) {
+        clearAllCreateAndEditStates()
+        val cardId = uiState.value.card?.id ?: return
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val wasUpdatedSuccessfully = updateLabelUseCase(label, cardId)
+
+            if (!wasUpdatedSuccessfully) {
+                sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.card_snackbar_update_label_error),
+                        withDismissAction = true,
+                    )
+                )
+            }
+        }
+    }
+
+
     // Helper functions
     private fun sendSnackbar(snackbarEvent: SnackbarEvent) {
         viewModelScope.launch(dispatcherProvider.main) {
@@ -648,7 +680,8 @@ class CardViewModel @Inject constructor(
                 isCreatingAttachment = false,
                 displayingAttachment = null,
                 isLabelMenuExpanded = false,
-                isShowingCreateLabelDialog = false
+                isShowingLabelDialog = false,
+                labelBeingEdited = null
             )
         }
     }

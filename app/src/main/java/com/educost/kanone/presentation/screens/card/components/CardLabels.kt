@@ -88,7 +88,10 @@ fun CardLabels(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(labels) { label ->
-                    LabelChip(label = label)
+                    LabelChip(
+                        label = label,
+                        onClick = {onIntent(CardIntent.StartEditingLabel(label))}
+                    )
                 }
             }
         }

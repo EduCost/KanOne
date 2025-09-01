@@ -22,6 +22,7 @@ import com.educost.kanone.presentation.theme.KanOneTheme
 fun LabelChip(
     modifier: Modifier = Modifier,
     label: Label,
+    onClick: () -> Unit
 ) {
     label.color?.let { colorInt ->
 
@@ -33,7 +34,7 @@ fun LabelChip(
         FilterChip(
             modifier = modifier,
             selected = true,
-            onClick = {},
+            onClick = onClick,
             border = BorderStroke(
                 width = 1.dp,
                 color = color
@@ -69,7 +70,8 @@ private fun LabelChipPreview() {
                     id = 0,
                     name = "Label",
                     color = null
-                )
+                ),
+                onClick = {}
             )
         }
     }
@@ -86,7 +88,8 @@ private fun LabelChipColoredPreview() {
                     id = 0,
                     name = "Label",
                     color = -25787
-                )
+                ),
+                onClick = {}
             )
         }
     }

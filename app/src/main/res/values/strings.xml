@@ -73,11 +73,12 @@
     <string name="card_dialog_image_button_delete">Delete</string>
     <string name="card_dialog_image_button_close">Close</string>
     <string name="card_dialog_create_label_title">Create Label</string>
-    <string name="card_dialog_create_label_text_field_label">Label Name</string>
-    <string name="card_dialog_create_label_button_pick_color">Pick Color</string>
-    <string name="card_dialog_create_label_button_confirm">Confirm</string>
-    <string name="card_dialog_create_label_button_cancel">Cancel</string>
-    <string name="card_dialog_create_label_button_remove_color_content_description">Remove Color</string>
+    <string name="card_dialog_edit_label_title">Edit Label</string>
+    <string name="card_dialog_label_text_field_label">Label Name</string>
+    <string name="card_dialog_label_button_pick_color">Pick Color</string>
+    <string name="card_dialog_label_button_confirm">Confirm</string>
+    <string name="card_dialog_label_button_cancel">Cancel</string>
+    <string name="card_dialog_label_button_remove_color_content_description">Remove Color</string>
     <string name="card_description">Description</string>
     <string name="card_labels">Labels</string>
     <string name="card_attachments">Attachments</string>
@@ -108,6 +109,7 @@
     <string name="card_snackbar_delete_image_error">Error deleting image</string>
     <string name="card_snackbar_create_label_error">Error creating label</string>
     <string name="card_snackbar_update_label_association_error">Error updating label association</string>
+    <string name="card_snackbar_update_label_error">Error updating label</string>
 
     <!--  CARD SCREEN  -->
 

@@ -9,6 +9,8 @@ interface LabelRepository {
 
     fun observeLabels(cardId: Long): Flow<Result<List<Label>, GenericError>>
 
+    suspend fun updateLabel(label: Label, boardId: Long): Boolean
+
     suspend fun createLabelAndAssociateWithCard(label: Label, boardId: Long, cardId: Long): Boolean
 
     suspend fun associateLabelWithCard(labelId: Long, cardId: Long): Boolean

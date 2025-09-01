@@ -80,16 +80,6 @@ fun CardLabelPicker(
                             isSelected = selectedLabels.contains(label)
                         )
                     },
-                    trailingIcon = {
-                        IconButton(
-                            onClick = {}
-                        ) {
-                            Icon(Icons.Filled.Edit, contentDescription = null)
-                        }
-                    },
-                    colors = MenuDefaults.itemColors(
-                        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
                     enabled = false,
                     onClick = {}
                 )

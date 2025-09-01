@@ -47,7 +47,7 @@ import com.educost.kanone.presentation.screens.card.components.CardDueDate
 import com.educost.kanone.presentation.screens.card.components.CardLabels
 import com.educost.kanone.presentation.screens.card.components.CardTasks
 import com.educost.kanone.presentation.screens.card.components.CreateAttachmentDialog
-import com.educost.kanone.presentation.screens.card.components.CreateLabelDialog
+import com.educost.kanone.presentation.screens.card.components.LabelDialog
 import com.educost.kanone.presentation.screens.card.components.ImageDialog
 import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 import com.educost.kanone.presentation.theme.KanOneTheme
@@ -272,10 +272,12 @@ private fun CardScreen(
             )
         }
 
-        if (state.isShowingCreateLabelDialog) {
-            CreateLabelDialog(
+        if (state.isShowingLabelDialog) {
+            LabelDialog(
                 onDismiss = { onIntent(CardIntent.CloseLabelPicker) },
-                onConfirm = { onIntent(CardIntent.CreateLabel(it)) }
+                onConfirm = { onIntent(CardIntent.CreateLabel(it)) },
+                label = state.labelBeingEdited,
+                onUpdate = { onIntent(CardIntent.ConfirmLabelEdit(it)) }
             )
         }
     }

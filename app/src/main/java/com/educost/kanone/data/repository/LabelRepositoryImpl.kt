@@ -24,6 +24,16 @@ class LabelRepositoryImpl(val labelDao: LabelDao) : LabelRepository {
         }
     }
 
+    override suspend fun updateLabel(label: Label, boardId: Long): Boolean {
+        return try {
+            labelDao.updateLabel(label.toLabelEntity(boardId))
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
     override suspend fun createLabelAndAssociateWithCard(
         label: Label,
         boardId: Long,

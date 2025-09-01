@@ -47,6 +47,7 @@ import com.educost.kanone.domain.usecase.SaveImageUseCase
 import com.educost.kanone.domain.usecase.UpdateCardUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import com.educost.kanone.domain.usecase.UpdateLabelAssociationUseCase
+import com.educost.kanone.domain.usecase.UpdateLabelUseCase
 import com.educost.kanone.domain.usecase.UpdateTaskUseCase
 import com.educost.kanone.domain.util.ImageCompressor
 import com.educost.kanone.domain.util.InternalStorageManager
@@ -288,6 +289,12 @@ object AppModule {
     @Singleton
     fun provideUpdateLabelAssociationUseCase(labelRepository: LabelRepository): UpdateLabelAssociationUseCase {
         return UpdateLabelAssociationUseCase(labelRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateLabelUseCase(labelRepository: LabelRepository): UpdateLabelUseCase {
+        return UpdateLabelUseCase(labelRepository)
     }
 
 }
