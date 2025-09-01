@@ -47,6 +47,7 @@ import com.educost.kanone.presentation.screens.card.components.CardDueDate
 import com.educost.kanone.presentation.screens.card.components.CardLabels
 import com.educost.kanone.presentation.screens.card.components.CardTasks
 import com.educost.kanone.presentation.screens.card.components.CreateAttachmentDialog
+import com.educost.kanone.presentation.screens.card.components.CreateLabelDialog
 import com.educost.kanone.presentation.screens.card.components.ImageDialog
 import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 import com.educost.kanone.presentation.theme.KanOneTheme
@@ -268,6 +269,13 @@ private fun CardScreen(
                 attachment = attachment,
                 onDismiss = {onIntent(CardIntent.CloseImage)},
                 onDelete = {onIntent(CardIntent.DeleteImage(it))}
+            )
+        }
+
+        if (state.isShowingCreateLabelDialog) {
+            CreateLabelDialog(
+                onDismiss = { onIntent(CardIntent.CloseLabelPicker) },
+                onConfirm = {  }
             )
         }
     }

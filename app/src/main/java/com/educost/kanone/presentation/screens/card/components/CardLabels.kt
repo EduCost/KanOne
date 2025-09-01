@@ -70,6 +70,9 @@ fun CardLabels(
                         onDismiss = {
                             onIntent(CardIntent.CloseLabelPicker)
                         },
+                        onCreateLabel = {
+                            onIntent(CardIntent.StartCreatingLabel)
+                        }
                     )
                 }
 

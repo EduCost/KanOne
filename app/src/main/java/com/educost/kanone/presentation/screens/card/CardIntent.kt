@@ -1,6 +1,7 @@
 package com.educost.kanone.presentation.screens.card
 
 import com.educost.kanone.domain.model.Attachment
+import com.educost.kanone.domain.model.Label
 import java.time.LocalDateTime
 
 sealed interface CardIntent {
@@ -46,6 +47,9 @@ sealed interface CardIntent {
     // Labels
     data object OpenLabelPicker : CardIntent
     data object CloseLabelPicker : CardIntent
+    data object StartCreatingLabel : CardIntent
+    data class CreateLabel(val label: Label) : CardIntent
+    data object CancelCreatingLabel : CardIntent
 
 
     // Date Picker

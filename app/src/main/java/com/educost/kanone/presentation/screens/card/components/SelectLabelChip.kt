@@ -10,6 +10,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
@@ -27,8 +30,10 @@ fun SelectLabelChip(
 ) {
     label.color?.let { colorInt ->
 
-        val color = Color(colorInt)
-        val selectedLabelColor = if (color.luminance() > 0.5f) Color.Black else Color.White
+        val color by remember { mutableStateOf(Color(colorInt)) }
+        val selectedLabelColor by remember {
+            mutableStateOf(if (color.luminance() > 0.5f) Color.Black else Color.White)
+        }
 
         FilterChip(
             modifier = modifier,
@@ -49,7 +54,10 @@ fun SelectLabelChip(
                 selectedTrailingIconColor = selectedLabelColor
             ),
             label = {
-                Text(text = label.name)
+                Text(
+                    text = label.name,
+                    maxLines = 1
+                )
             }
         )
 

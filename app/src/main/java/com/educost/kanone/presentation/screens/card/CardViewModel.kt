@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.educost.kanone.R
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.domain.model.Attachment
+import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.model.Task
 import com.educost.kanone.domain.usecase.CreateAttachmentUseCase
 import com.educost.kanone.domain.usecase.CreateTaskUseCase
@@ -96,6 +97,10 @@ class CardViewModel @Inject constructor(
             // Labels
             is CardIntent.OpenLabelPicker -> openLabelPicker()
             is CardIntent.CloseLabelPicker -> clearAllCreateAndEditStates()
+            is CardIntent.StartCreatingLabel -> startCreatingLabel()
+            is CardIntent.CreateLabel -> createLabel(intent.label)
+            is CardIntent.CancelCreatingLabel -> clearAllCreateAndEditStates()
+
 
             // Date Picker
             is CardIntent.ShowDatePicker -> showDatePicker()
@@ -573,6 +578,14 @@ class CardViewModel @Inject constructor(
         _uiState.update { it.copy(isLabelMenuExpanded = true) }
     }
 
+    private fun startCreatingLabel() {
+        _uiState.update { it.copy(isShowingCreateLabelDialog = true) }
+    }
+
+    private fun createLabel(label: Label) {
+
+    }
+
 
     // Helper functions
     private fun sendSnackbar(snackbarEvent: SnackbarEvent) {
@@ -595,7 +608,8 @@ class CardViewModel @Inject constructor(
                 isPickingDate = false,
                 isCreatingAttachment = false,
                 displayingAttachment = null,
-                isLabelMenuExpanded = false
+                isLabelMenuExpanded = false,
+                isShowingCreateLabelDialog = false
             )
         }
     }

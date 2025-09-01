@@ -16,6 +16,7 @@ data class CardUiState(
     val displayingAttachment: Attachment? = null,
     val boardLabels: List<Label> = emptyList(),
     val isLabelMenuExpanded: Boolean = false,
+    val isShowingCreateLabelDialog: Boolean = false,
 )
 
 data class CreateTaskState(

@@ -63,6 +63,8 @@
     <string name="card_appbar_cancel_task_edit_content_description">Cancel Task Changes</string>
     <string name="card_appbar_create_task_content_description">Confirm Task Creation</string>
     <string name="card_appbar_cancel_task_creation_content_description">Cancel Task Creation</string>
+    <string name="card_dropdown_menu_label_title">Labels</string>
+    <string name="card_dropdown_menu_add_label">Add Label</string>
     <string name="card_dialog_create_attachment_title">Create Attachment</string>
     <string name="card_dialog_create_attachment_add_photo">Add Photo</string>
     <string name="card_dialog_create_attachment_add_to_cover">Add to Cover</string>
@@ -70,6 +72,12 @@
     <string name="card_dialog_create_attachment_button_cancel">Cancel</string>
     <string name="card_dialog_image_button_delete">Delete</string>
     <string name="card_dialog_image_button_close">Close</string>
+    <string name="card_dialog_create_label_title">Create Label</string>
+    <string name="card_dialog_create_label_text_field_label">Label Name</string>
+    <string name="card_dialog_create_label_button_pick_color">Pick Color</string>
+    <string name="card_dialog_create_label_button_confirm">Confirm</string>
+    <string name="card_dialog_create_label_button_cancel">Cancel</string>
+    <string name="card_dialog_create_label_button_remove_color_content_description">Remove Color</string>
     <string name="card_description">Description</string>
     <string name="card_labels">Labels</string>
     <string name="card_attachments">Attachments</string>

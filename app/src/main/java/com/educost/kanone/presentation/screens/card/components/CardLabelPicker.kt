@@ -19,8 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.educost.kanone.R
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.presentation.theme.KanOneTheme
 
@@ -31,7 +33,8 @@ fun CardLabelPicker(
     labels: List<Label>,
     selectedLabels: List<Label>,
     expanded: Boolean,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onCreateLabel: () -> Unit
 ) {
 
     DropdownMenu(
@@ -47,7 +50,7 @@ fun CardLabelPicker(
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "Labels")
+                        Text(text = stringResource(R.string.card_dropdown_menu_label_title))
                     }
                 },
                 leadingIcon = {
@@ -82,98 +85,15 @@ fun CardLabelPicker(
 
         DropdownMenuItem(
             text = {
-                Text(text = "Create new label")
+                Text(text = stringResource(R.string.card_dropdown_menu_add_label))
             },
-            onClick = {},
+            onClick = onCreateLabel,
             leadingIcon = {
                 Icon(Icons.Outlined.NewLabel, contentDescription = null)
             }
         )
 
-
     }
-
-    /*AlertDialog(
-        modifier = modifier,
-        onDismissRequest = onDismiss,
-
-        title = {
-            Text(text = "Add Label")
-        },
-        text = {
-            Column {
-                HorizontalDivider()
-
-                LazyColumn {
-                    items(boardLabels) { label ->
-
-                        val color =
-                            if (label.color != null) Color(label.color).copy(alpha = 0.2f) else null
-
-                        var selected by remember { mutableStateOf(false) }
-
-                        LabelChip(
-                            modifier = Modifier.padding(start = 12.dp),
-                            label = label,
-                            isSelected = selected,
-                            onClick = { selected = !selected }
-                        )
-
-                        FilterChip(
-                            modifier = Modifier.padding(start = 12.dp),
-                            selected = true,
-                            onClick = {},
-                            label = {
-                                Text(text = label.name)
-                            },
-                            colors = if (color != null) {
-                                FilterChipDefaults.filterChipColors(
-                                    containerColor = color,
-                                    disabledContainerColor = color,
-                                    selectedContainerColor = color,
-                                )
-                            } else {
-                                FilterChipDefaults.filterChipColors()
-                            },
-                            border = BorderStroke(
-                                width = 1.dp,
-                                color = color ?: MaterialTheme.colorScheme.outline
-                            )
-                        )
-                    }
-
-                    item {
-                        TextButton(
-                            onClick = {}
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.NewLabel,
-                                contentDescription = null
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(text = "Create new label")
-                        }
-                    }
-                }
-
-                HorizontalDivider()
-            }
-        },
-        confirmButton = {
-            FilledTonalButton(
-                onClick = {}
-            ) {
-                Text(text = "Add")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss
-            ) {
-                Text(text = "Cancel")
-            }
-        }
-    )*/
 }
 
 @Preview
@@ -192,7 +112,8 @@ private fun AddLabelDialogPreview() {
                         )
                     ),
                     selectedLabels = emptyList(),
-                    expanded = true
+                    expanded = true,
+                    onCreateLabel = {}
                 )
             }
         }
