@@ -2,6 +2,7 @@ package com.educost.kanone.data.repository
 
 import com.educost.kanone.data.local.LabelDao
 import com.educost.kanone.data.mapper.toLabel
+import com.educost.kanone.data.mapper.toLabelEntity
 import com.educost.kanone.domain.error.GenericError
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.repository.LabelRepository
@@ -17,6 +18,35 @@ class LabelRepositoryImpl(val labelDao: LabelDao) : LabelRepository {
             Result.Success(labels.map { it.toLabel() })
 
         }.catch { e ->
+            e.printStackTrace()
+            Result.Error(GenericError)
+        }
+    }
+
+    override suspend fun createLabelAndAssociateWithCard(
+        label: Label,
+        boardId: Long,
+        cardId: Long
+    ): Boolean {
+        return try {
+            labelDao.createLabelAndAssociateWithCard(
+                label = label.toLabelEntity(boardId),
+                cardId = cardId
+            )
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+
+    }
+
+
+    override suspend fun getBoardId(cardId: Long): Result<Long, GenericError> {
+        return try {
+            val boardId = labelDao.getCardBoardId(cardId)
+            Result.Success(boardId)
+        } catch (e: Exception) {
             e.printStackTrace()
             Result.Error(GenericError)
         }

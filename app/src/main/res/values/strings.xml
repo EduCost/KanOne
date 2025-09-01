@@ -106,6 +106,7 @@
     <string name="card_snackbar_add_cover_error">Error saving cover</string>
     <string name="card_snackbar_delete_attachment_error">Error deleting attachment</string>
     <string name="card_snackbar_delete_image_error">Error deleting image</string>
+    <string name="card_snackbar_create_label_error">Error creating label</string>
 
     <!--  CARD SCREEN  -->
 

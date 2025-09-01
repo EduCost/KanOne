@@ -275,7 +275,7 @@ private fun CardScreen(
         if (state.isShowingCreateLabelDialog) {
             CreateLabelDialog(
                 onDismiss = { onIntent(CardIntent.CloseLabelPicker) },
-                onConfirm = {  }
+                onConfirm = { onIntent(CardIntent.CreateLabel(it)) }
             )
         }
     }

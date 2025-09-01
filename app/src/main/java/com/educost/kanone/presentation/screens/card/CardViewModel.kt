@@ -9,6 +9,7 @@ import com.educost.kanone.domain.model.Attachment
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.model.Task
 import com.educost.kanone.domain.usecase.CreateAttachmentUseCase
+import com.educost.kanone.domain.usecase.CreateLabelForCardUseCase
 import com.educost.kanone.domain.usecase.CreateTaskUseCase
 import com.educost.kanone.domain.usecase.DeleteAttachmentUseCase
 import com.educost.kanone.domain.usecase.DeleteImageUseCase
@@ -47,7 +48,8 @@ class CardViewModel @Inject constructor(
     private val createAttachmentUseCase: CreateAttachmentUseCase,
     private val deleteImageUseCase: DeleteImageUseCase,
     private val deleteAttachmentUseCase: DeleteAttachmentUseCase,
-    private val observeLabelsUseCase: ObserveLabelsUseCase
+    private val observeLabelsUseCase: ObserveLabelsUseCase,
+    private val createLabelForCardUseCase: CreateLabelForCardUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CardUiState())
@@ -579,11 +581,27 @@ class CardViewModel @Inject constructor(
     }
 
     private fun startCreatingLabel() {
+        clearAllCreateAndEditStates()
         _uiState.update { it.copy(isShowingCreateLabelDialog = true) }
     }
 
     private fun createLabel(label: Label) {
+        val cardId = _uiState.value.card?.id ?: return
 
+        viewModelScope.launch(dispatcherProvider.main) {
+            val wasSuccessful = createLabelForCardUseCase(label, cardId)
+
+            if (!wasSuccessful) {
+                sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.card_snackbar_create_label_error),
+                        withDismissAction = true,
+                    )
+                )
+            }
+
+            clearAllCreateAndEditStates()
+        }
     }
 
 

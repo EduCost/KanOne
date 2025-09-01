@@ -29,6 +29,7 @@ import com.educost.kanone.domain.usecase.CreateAttachmentUseCase
 import com.educost.kanone.domain.usecase.CreateBoardUseCase
 import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
+import com.educost.kanone.domain.usecase.CreateLabelForCardUseCase
 import com.educost.kanone.domain.usecase.CreateTaskUseCase
 import com.educost.kanone.domain.usecase.DeleteAttachmentUseCase
 import com.educost.kanone.domain.usecase.DeleteColumnUseCase
@@ -36,9 +37,9 @@ import com.educost.kanone.domain.usecase.DeleteImageUseCase
 import com.educost.kanone.domain.usecase.DeleteTaskUseCase
 import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
-import com.educost.kanone.domain.usecase.ObserveLabelsUseCase
 import com.educost.kanone.domain.usecase.ObserveCardUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
+import com.educost.kanone.domain.usecase.ObserveLabelsUseCase
 import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
 import com.educost.kanone.domain.usecase.ReorderCardsUseCase
 import com.educost.kanone.domain.usecase.RestoreColumnUseCase
@@ -276,5 +277,10 @@ object AppModule {
         return ObserveLabelsUseCase(labelRepository)
     }
 
+    @Provides
+    @Singleton
+    fun provideCreateLabelForCardUseCase(labelRepository: LabelRepository): CreateLabelForCardUseCase {
+        return CreateLabelForCardUseCase(labelRepository)
+    }
 
 }

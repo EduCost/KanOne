@@ -179,7 +179,7 @@ class BoardDaoTest {
             assertThat(awaitItem().columns[0].cards[0].card).isEqualTo(expectedCard)
 
             val labelToInsert = getTestLabel(insertedBoardId)
-            val insertedLabelId = labelDao.insertLabelWithCard(labelToInsert, insertedCardId)
+            val insertedLabelId = labelDao.createLabelAndAssociateWithCard(labelToInsert, insertedCardId)
             val expectedLabel = labelToInsert.copy(id = insertedLabelId)
 
             val expected = BoardWithColumns(

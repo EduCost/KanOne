@@ -14,16 +14,16 @@ import kotlinx.coroutines.flow.Flow
 interface LabelDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLabel(label: LabelEntity): Long
+    suspend fun createLabel(label: LabelEntity): Long
 
-    @Insert
-    suspend fun insertLabelCrossRef(labelCrossRef: LabelCardCrossRef)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createLabelCrossRef(labelCrossRef: LabelCardCrossRef)
 
     @Transaction
-    @Insert
-    suspend fun insertLabelWithCard(label: LabelEntity, cardId: Long): Long {
-        val labelId = insertLabel(label)
-        insertLabelCrossRef(LabelCardCrossRef(labelId, cardId))
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createLabelAndAssociateWithCard(label: LabelEntity, cardId: Long): Long {
+        val labelId = createLabel(label)
+        createLabelCrossRef(LabelCardCrossRef(labelId, cardId))
         return labelId
     }
 
@@ -46,5 +46,18 @@ interface LabelDao {
         """
     )
     fun observeLabels(cardId: Long): Flow<List<LabelEntity>>
+
+    @Query(
+        """
+        SELECT board_id
+            FROM columns
+            WHERE id = (
+                SELECT column_id
+                FROM cards
+                WHERE id = :cardId
+            )
+    """
+    )
+    suspend fun getCardBoardId(cardId: Long): Long
 
 }

@@ -1,6 +1,8 @@
 package com.educost.kanone.presentation.screens.card.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -9,7 +11,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Label
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -60,7 +62,7 @@ fun CardLabels(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Add,
+                        imageVector = Icons.Default.Edit,
                         contentDescription = stringResource(R.string.card_add_label_button_content_description)
                     )
                     CardLabelPicker(
@@ -78,7 +80,10 @@ fun CardLabels(
 
             }
 
-            LazyRow {
+            LazyRow(
+                contentPadding = PaddingValues(bottom = 8.dp, start = 4.dp, end = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 items(labels) { label ->
                     LabelChip(label = label)
                 }
