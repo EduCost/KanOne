@@ -74,6 +74,9 @@ fun CardLabels(
                         },
                         onCreateLabel = {
                             onIntent(CardIntent.StartCreatingLabel)
+                        },
+                        onLabelSelected = {
+                            onIntent(CardIntent.UpdateLabelAssociation(it))
                         }
                     )
                 }

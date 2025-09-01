@@ -19,6 +19,7 @@ import com.educost.kanone.domain.usecase.ObserveCardUseCase
 import com.educost.kanone.domain.usecase.ObserveLabelsUseCase
 import com.educost.kanone.domain.usecase.SaveImageUseCase
 import com.educost.kanone.domain.usecase.UpdateCardUseCase
+import com.educost.kanone.domain.usecase.UpdateLabelAssociationUseCase
 import com.educost.kanone.domain.usecase.UpdateTaskUseCase
 import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 import com.educost.kanone.presentation.util.SnackbarAction
@@ -49,7 +50,8 @@ class CardViewModel @Inject constructor(
     private val deleteImageUseCase: DeleteImageUseCase,
     private val deleteAttachmentUseCase: DeleteAttachmentUseCase,
     private val observeLabelsUseCase: ObserveLabelsUseCase,
-    private val createLabelForCardUseCase: CreateLabelForCardUseCase
+    private val createLabelForCardUseCase: CreateLabelForCardUseCase,
+    private val updateLabelAssociationUseCase: UpdateLabelAssociationUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CardUiState())
@@ -101,6 +103,7 @@ class CardViewModel @Inject constructor(
             is CardIntent.CloseLabelPicker -> clearAllCreateAndEditStates()
             is CardIntent.StartCreatingLabel -> startCreatingLabel()
             is CardIntent.CreateLabel -> createLabel(intent.label)
+            is CardIntent.UpdateLabelAssociation -> updateLabelAssociation(intent.label)
             is CardIntent.CancelCreatingLabel -> clearAllCreateAndEditStates()
 
 
@@ -604,6 +607,24 @@ class CardViewModel @Inject constructor(
         }
     }
 
+    private fun updateLabelAssociation(label: Label) {
+        val cardId = uiState.value.card?.id ?: return
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            println("vm being called")
+            val wasSuccessful = updateLabelAssociationUseCase(label.id, cardId)
+            println("vm called")
+
+            if (!wasSuccessful) {
+                sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.card_snackbar_update_label_association_error),
+                        withDismissAction = true,
+                    )
+                )
+            }
+        }
+    }
 
     // Helper functions
     private fun sendSnackbar(snackbarEvent: SnackbarEvent) {

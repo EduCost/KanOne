@@ -17,13 +17,13 @@ interface LabelDao {
     suspend fun createLabel(label: LabelEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun createLabelCrossRef(labelCrossRef: LabelCardCrossRef)
+    suspend fun associateLabelWithCard(labelCrossRef: LabelCardCrossRef)
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createLabelAndAssociateWithCard(label: LabelEntity, cardId: Long): Long {
         val labelId = createLabel(label)
-        createLabelCrossRef(LabelCardCrossRef(labelId, cardId))
+        associateLabelWithCard(LabelCardCrossRef(labelId, cardId))
         return labelId
     }
 
@@ -46,6 +46,12 @@ interface LabelDao {
         """
     )
     fun observeLabels(cardId: Long): Flow<List<LabelEntity>>
+
+    @Delete
+    suspend fun deleteLabelAssociation(labelCrossRef: LabelCardCrossRef)
+
+    @Query("SELECT * FROM labels_and_cards WHERE label_id = :labelId AND card_id = :cardId")
+    suspend fun getLabelAssociation(labelId: Long, cardId: Long): LabelCardCrossRef?
 
     @Query(
         """

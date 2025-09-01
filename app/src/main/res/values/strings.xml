@@ -107,6 +107,7 @@
     <string name="card_snackbar_delete_attachment_error">Error deleting attachment</string>
     <string name="card_snackbar_delete_image_error">Error deleting image</string>
     <string name="card_snackbar_create_label_error">Error creating label</string>
+    <string name="card_snackbar_update_label_association_error">Error updating label association</string>
 
     <!--  CARD SCREEN  -->
 

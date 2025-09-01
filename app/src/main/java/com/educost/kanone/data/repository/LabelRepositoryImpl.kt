@@ -3,6 +3,7 @@ package com.educost.kanone.data.repository
 import com.educost.kanone.data.local.LabelDao
 import com.educost.kanone.data.mapper.toLabel
 import com.educost.kanone.data.mapper.toLabelEntity
+import com.educost.kanone.data.model.entity.LabelCardCrossRef
 import com.educost.kanone.domain.error.GenericError
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.repository.LabelRepository
@@ -39,6 +40,50 @@ class LabelRepositoryImpl(val labelDao: LabelDao) : LabelRepository {
             false
         }
 
+    }
+
+    override suspend fun associateLabelWithCard(labelId: Long, cardId: Long): Boolean {
+        return try {
+            labelDao.associateLabelWithCard(
+                LabelCardCrossRef(
+                    labelId = labelId,
+                    cardId = cardId
+                )
+            )
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+
+    }
+
+    override suspend fun deleteLabelAssociation(labelId: Long, cardId: Long): Boolean {
+        return try {
+            labelDao.deleteLabelAssociation(
+                LabelCardCrossRef(
+                    labelId = labelId,
+                    cardId = cardId
+                )
+            )
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    override suspend fun hasLabelAssociation(labelId: Long, cardId: Long): Boolean {
+        return try {
+            val labelAssociation = labelDao.getLabelAssociation(
+                labelId = labelId,
+                cardId = cardId
+            )
+            labelAssociation != null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
 

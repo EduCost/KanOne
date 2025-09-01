@@ -25,8 +25,8 @@ fun LabelChip(
 ) {
     label.color?.let { colorInt ->
 
-        val color by remember { mutableStateOf(Color(colorInt)) }
-        val selectedLabelColor by remember {
+        val color by remember(colorInt) { mutableStateOf(Color(colorInt)) }
+        val selectedLabelColor by remember(colorInt) {
             mutableStateOf(if (color.luminance() > 0.5f) Color.Black else Color.White)
         }
 

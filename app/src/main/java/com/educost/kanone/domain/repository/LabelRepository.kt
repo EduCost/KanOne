@@ -11,5 +11,11 @@ interface LabelRepository {
 
     suspend fun createLabelAndAssociateWithCard(label: Label, boardId: Long, cardId: Long): Boolean
 
+    suspend fun associateLabelWithCard(labelId: Long, cardId: Long): Boolean
+
+    suspend fun deleteLabelAssociation(labelId: Long, cardId: Long): Boolean
+
+    suspend fun hasLabelAssociation(labelId: Long, cardId: Long): Boolean
+
     suspend fun getBoardId(cardId: Long): Result<Long, GenericError>
 }

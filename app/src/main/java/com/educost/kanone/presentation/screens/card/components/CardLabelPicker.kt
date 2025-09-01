@@ -7,14 +7,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Label
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.NewLabel
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,7 +37,8 @@ fun CardLabelPicker(
     selectedLabels: List<Label>,
     expanded: Boolean,
     onDismiss: () -> Unit,
-    onCreateLabel: () -> Unit
+    onCreateLabel: () -> Unit,
+    onLabelSelected: (Label) -> Unit
 ) {
 
     DropdownMenu(
@@ -72,10 +76,22 @@ fun CardLabelPicker(
                     text = {
                         SelectLabelChip(
                             label = label,
+                            onClick = { onLabelSelected(label) },
                             isSelected = selectedLabels.contains(label)
                         )
                     },
-                    onClick = { /*TODO*/ },
+                    trailingIcon = {
+                        IconButton(
+                            onClick = {}
+                        ) {
+                            Icon(Icons.Filled.Edit, contentDescription = null)
+                        }
+                    },
+                    colors = MenuDefaults.itemColors(
+                        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    enabled = false,
+                    onClick = {}
                 )
             }
 
@@ -113,7 +129,8 @@ private fun AddLabelDialogPreview() {
                     ),
                     selectedLabels = emptyList(),
                     expanded = true,
-                    onCreateLabel = {}
+                    onCreateLabel = {},
+                    onLabelSelected = {}
                 )
             }
         }
