@@ -54,6 +54,7 @@
     <!--  BOARD SCREEN  -->
 
     <!--  CARD SCREEN  -->
+    <string name="card_appbar_dropdown_menu_delete_card">Delete Card</string>
     <string name="card_appbar_save_description">Save</string>
     <string name="card_appbar_create_task">Create Task</string>
     <string name="card_appbar_edit_task">Rename Task</string>
@@ -80,6 +81,10 @@
     <string name="card_dialog_label_button_confirm">Confirm</string>
     <string name="card_dialog_label_button_cancel">Cancel</string>
     <string name="card_dialog_label_button_remove_color_content_description">Remove Color</string>
+    <string name="card_dialog_delete_card_title">Delete card?</string>
+    <string name="card_dialog_delete_card_confirm_button">Delete</string>
+    <string name="card_dialog_delete_card_cancel_button">Cancel</string>
+    <string name="card_dialog_delete_card_text">This card will be permanently deleted.</string>
     <string name="card_description">Description</string>
     <string name="card_labels">Labels</string>
     <string name="card_attachments">Attachments</string>
@@ -114,6 +119,7 @@
     <string name="card_snackbar_update_label_error">Error updating label</string>
     <string name="card_snackbar_remove_cover_error">Error removing cover</string>
     <string name="card_snackbar_add_to_cover_error">Error adding image to cover</string>
+    <string name="card_snackbar_delete_card_error">Could not delete card</string>
 
     <!--  CARD SCREEN  -->
 

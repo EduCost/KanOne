@@ -16,4 +16,6 @@ interface CardRepository {
     suspend fun updateCard(card: CardItem, columnId: Long): Boolean
 
     suspend fun getCardColumnId(cardId: Long): Result<Long, GenericError>
+
+    suspend fun deleteCard(card: CardItem, columnId: Long): Boolean
 }

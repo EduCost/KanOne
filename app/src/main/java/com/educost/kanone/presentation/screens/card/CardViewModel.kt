@@ -12,6 +12,7 @@ import com.educost.kanone.domain.usecase.CreateAttachmentUseCase
 import com.educost.kanone.domain.usecase.CreateLabelForCardUseCase
 import com.educost.kanone.domain.usecase.CreateTaskUseCase
 import com.educost.kanone.domain.usecase.DeleteAttachmentUseCase
+import com.educost.kanone.domain.usecase.DeleteCardUseCase
 import com.educost.kanone.domain.usecase.DeleteImageUseCase
 import com.educost.kanone.domain.usecase.DeleteTaskUseCase
 import com.educost.kanone.domain.usecase.ObserveCardUseCase
@@ -51,7 +52,8 @@ class CardViewModel @Inject constructor(
     private val observeLabelsUseCase: ObserveLabelsUseCase,
     private val createLabelForCardUseCase: CreateLabelForCardUseCase,
     private val updateLabelAssociationUseCase: UpdateLabelAssociationUseCase,
-    private val updateLabelUseCase: UpdateLabelUseCase
+    private val updateLabelUseCase: UpdateLabelUseCase,
+    private val deleteCardUseCase: DeleteCardUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CardUiState())
@@ -64,6 +66,11 @@ class CardViewModel @Inject constructor(
         when (intent) {
             is CardIntent.ObserveCard -> observeCard(intent.cardId)
             is CardIntent.OnNavigateBack -> onNavigateBack()
+
+            // Delete Card
+            is CardIntent.DeleteCard -> deleteCard()
+            is CardIntent.ConfirmCardDeletion -> confirmCardDeletion()
+            is CardIntent.CancelCardDeletion -> clearAllCreateAndEditStates()
 
             // Description
             is CardIntent.StartEditingDescription -> startEditingDescription()
@@ -157,6 +164,33 @@ class CardViewModel @Inject constructor(
     private fun onNavigateBack() {
         viewModelScope.launch(dispatcherProvider.main) {
             _sideEffectChannel.send(CardSideEffect.OnNavigateBack)
+        }
+    }
+
+
+    // Delete Card
+    private fun deleteCard() {
+        clearAllCreateAndEditStates()
+        _uiState.update { it.copy(isShowingCardDeletionDialog = true) }
+    }
+
+    private fun confirmCardDeletion() {
+        clearAllCreateAndEditStates()
+        val card = _uiState.value.card ?: return
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val wasCardDeleted = deleteCardUseCase(card)
+
+            if (wasCardDeleted) {
+                _sideEffectChannel.send(CardSideEffect.OnNavigateBack)
+            } else {
+                sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.card_snackbar_delete_card_error),
+                        withDismissAction = true,
+                    )
+                )
+            }
         }
     }
 
@@ -697,7 +731,8 @@ class CardViewModel @Inject constructor(
                 displayingAttachment = null,
                 isLabelMenuExpanded = false,
                 isShowingLabelDialog = false,
-                labelBeingEdited = null
+                labelBeingEdited = null,
+                isShowingCardDeletionDialog = false
             )
         }
     }

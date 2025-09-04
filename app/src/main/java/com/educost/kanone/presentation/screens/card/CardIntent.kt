@@ -11,6 +11,12 @@ sealed interface CardIntent {
     data object OnNavigateBack : CardIntent
 
 
+    // Delete Card
+    data object DeleteCard : CardIntent
+    data object ConfirmCardDeletion : CardIntent
+    data object CancelCardDeletion : CardIntent
+
+
     // Description
     data object StartEditingDescription : CardIntent
     data class OnDescriptionChanged(val description: String) : CardIntent

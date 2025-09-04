@@ -74,4 +74,17 @@ class CardRepositoryImpl(val cardDao: CardDao) : CardRepository {
         }
 
     }
+
+    override suspend fun deleteCard(
+        card: CardItem,
+        columnId: Long
+    ): Boolean {
+        return try {
+            cardDao.deleteCard(card.toCardEntity(columnId))
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
 }

@@ -44,6 +44,7 @@ import com.educost.kanone.domain.model.Label
 import com.educost.kanone.presentation.screens.card.components.CardAppBar
 import com.educost.kanone.presentation.screens.card.components.CardAttachments
 import com.educost.kanone.presentation.screens.card.components.CardCover
+import com.educost.kanone.presentation.screens.card.components.CardDeletionDialog
 import com.educost.kanone.presentation.screens.card.components.CardDescription
 import com.educost.kanone.presentation.screens.card.components.CardDueDate
 import com.educost.kanone.presentation.screens.card.components.CardLabels
@@ -117,7 +118,6 @@ private fun CardScreen(
     snackBarHostState: SnackbarHostState
 ) {
 
-    val context = LocalContext.current
     val scrollState = rememberScrollState()
     val datePickerState = rememberDatePickerState()
     val selectedDate = datePickerState.selectedDateMillis?.let { millis ->
@@ -297,6 +297,13 @@ private fun CardScreen(
                     onConfirm = { onIntent(CardIntent.CreateLabel(it)) },
                     label = state.labelBeingEdited,
                     onUpdate = { onIntent(CardIntent.ConfirmLabelEdit(it)) }
+                )
+            }
+
+            if (state.isShowingCardDeletionDialog) {
+                CardDeletionDialog(
+                    onDismiss = { onIntent(CardIntent.CancelCardDeletion) },
+                    onConfirm = { onIntent(CardIntent.ConfirmCardDeletion) }
                 )
             }
         }

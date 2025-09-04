@@ -18,6 +18,7 @@ data class CardUiState(
     val isLabelMenuExpanded: Boolean = false,
     val isShowingLabelDialog: Boolean = false,
     val labelBeingEdited: Label? = null,
+    val isShowingCardDeletionDialog: Boolean = false,
 )
 
 data class CreateTaskState(
