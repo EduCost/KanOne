@@ -248,19 +248,15 @@ class BoardViewModel @Inject constructor(
                     labels = emptyList()
                 )
                 viewModelScope.launch(dispatcherProvider.main) {
-                    val result = createCardUseCase(card = card, columnId = it.columnId)
+                    val wasCardCreated = createCardUseCase(card = card, columnId = it.columnId)
 
-                    when (result) {
-                        is Result.Error -> sendSnackbar(
-                            SnackbarEvent(
-                                message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
-                                duration = SnackbarDuration.Long,
-                                withDismissAction = true
-                            )
+                    if (!wasCardCreated) sendSnackbar(
+                        SnackbarEvent(
+                            message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
+                            duration = SnackbarDuration.Long,
+                            withDismissAction = true
                         )
-
-                        is Result.Success -> Unit
-                    }
+                    )
                 }
             }
             cancelCardCreation()
@@ -688,16 +684,18 @@ class BoardViewModel @Inject constructor(
 
         if (column != null) {
             viewModelScope.launch(dispatcherProvider.main) {
-                val result = reorderCardsUseCase(column.toKanbanColumn(), orderType, cardOrder)
+                val wasCardsReordered = reorderCardsUseCase(
+                    column = column.toKanbanColumn(),
+                    orderType = orderType,
+                    cardOrder = cardOrder
+                )
 
-                if (result is Result.Error) {
-                    sendSnackbar(
-                        SnackbarEvent(
-                            message = UiText.StringResource(R.string.board_snackbar_reorder_cards_error),
-                            withDismissAction = true
-                        )
+                if (!wasCardsReordered) sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.board_snackbar_reorder_cards_error),
+                        withDismissAction = true
                     )
-                }
+                )
             }
         } else {
             sendSnackbar(

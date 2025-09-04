@@ -1,20 +1,19 @@
 package com.educost.kanone.domain.repository
 
-import com.educost.kanone.domain.error.FetchDataError
-import com.educost.kanone.domain.error.InsertDataError
+import com.educost.kanone.domain.error.GenericError
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.utils.Result
 import kotlinx.coroutines.flow.Flow
 
 interface CardRepository {
 
-    fun observeCard(cardId: Long): Flow<Result<CardItem, FetchDataError>>
+    fun observeCard(cardId: Long): Flow<Result<CardItem, GenericError>>
 
-    suspend fun createCard(card: CardItem, columnId: Long): Result<Long, InsertDataError>
+    suspend fun createCard(card: CardItem, columnId: Long): Boolean
 
-    suspend fun updateCards(cards: List<CardItem>, columnId: Long): Result<Unit, InsertDataError>
+    suspend fun updateCards(cards: List<CardItem>, columnId: Long): Boolean
 
-    suspend fun updateCard(card: CardItem, columnId: Long): Result<Unit, InsertDataError>
+    suspend fun updateCard(card: CardItem, columnId: Long): Boolean
 
-    suspend fun getCardColumnId(cardId: Long): Result<Long, FetchDataError>
+    suspend fun getCardColumnId(cardId: Long): Result<Long, GenericError>
 }

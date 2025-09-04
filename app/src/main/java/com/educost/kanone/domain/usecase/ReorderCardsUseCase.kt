@@ -1,11 +1,9 @@
 package com.educost.kanone.domain.usecase
 
-import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.repository.CardRepository
 import com.educost.kanone.presentation.screens.board.utils.CardOrder
 import com.educost.kanone.presentation.screens.board.utils.OrderType
-import com.educost.kanone.utils.Result
 
 class ReorderCardsUseCase(val cardRepository: CardRepository) {
 
@@ -13,13 +11,12 @@ class ReorderCardsUseCase(val cardRepository: CardRepository) {
         column: KanbanColumn,
         orderType: OrderType,
         cardOrder: CardOrder
-    ): Result<Unit, InsertDataError> {
+    ): Boolean {
 
         val cards = column.cards
 
-        if (cards.isEmpty()) {
-            return Result.Success(Unit)
-        }
+        if (cards.isEmpty()) return true
+
 
         val sortedCards = when (orderType) {
             OrderType.ASCENDING -> {

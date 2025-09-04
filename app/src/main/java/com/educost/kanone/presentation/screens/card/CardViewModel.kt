@@ -14,7 +14,6 @@ import com.educost.kanone.domain.usecase.CreateTaskUseCase
 import com.educost.kanone.domain.usecase.DeleteAttachmentUseCase
 import com.educost.kanone.domain.usecase.DeleteImageUseCase
 import com.educost.kanone.domain.usecase.DeleteTaskUseCase
-import com.educost.kanone.domain.usecase.GetCardColumnIdUseCase
 import com.educost.kanone.domain.usecase.ObserveCardUseCase
 import com.educost.kanone.domain.usecase.ObserveLabelsUseCase
 import com.educost.kanone.domain.usecase.SaveImageUseCase
@@ -42,7 +41,6 @@ class CardViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
     private val observeCardUseCase: ObserveCardUseCase,
     private val updateCardUseCase: UpdateCardUseCase,
-    private val getCardColumnIdUseCase: GetCardColumnIdUseCase,
     private val createTaskUseCase: CreateTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase,
@@ -177,18 +175,17 @@ class CardViewModel @Inject constructor(
     }
 
     private fun saveDescription() {
+        val card = _uiState.value.card ?: return
         viewModelScope.launch(dispatcherProvider.main) {
-            val card = _uiState.value.card!!
 
             val newDescription = _uiState.value.newDescription
-            val columnId = getColumnId(card.id)
 
-            if (newDescription != null && columnId != null) {
-
+            if (newDescription != null) {
                 val newCard = card.copy(description = newDescription)
-                val result = updateCardUseCase(newCard, columnId)
 
-                if (result is Result.Error) sendSnackbar(
+                val wasCardUpdated = updateCardUseCase(newCard)
+
+                if (!wasCardUpdated) sendSnackbar(
                     SnackbarEvent(
                         message = UiText.StringResource(R.string.card_snackbar_save_description_error),
                         withDismissAction = true,
@@ -231,7 +228,7 @@ class CardViewModel @Inject constructor(
     }
 
     private fun confirmTaskCreation() {
-        val card = _uiState.value.card!!
+        val card = _uiState.value.card ?: return
 
         viewModelScope.launch(dispatcherProvider.main) {
 
@@ -257,9 +254,9 @@ class CardViewModel @Inject constructor(
                 position = card.tasks.size
             )
 
-            val result = createTaskUseCase(task = task, cardId = card.id)
+            val wasTaskCreated = createTaskUseCase(task = task, cardId = card.id)
 
-            if (result is Result.Error) sendSnackbar(
+            if (!wasTaskCreated) sendSnackbar(
                 SnackbarEvent(
                     message = UiText.StringResource(R.string.card_snackbar_create_task_error),
                     withDismissAction = true,
@@ -332,7 +329,7 @@ class CardViewModel @Inject constructor(
     }
 
     private fun onTaskCheckedChange(taskId: Long, isChecked: Boolean) {
-        val card = _uiState.value.card!!
+        val card = _uiState.value.card ?: return
         val task = card.tasks.find { it.id == taskId }
 
         if (task == null) {
@@ -358,9 +355,9 @@ class CardViewModel @Inject constructor(
         }
 
         viewModelScope.launch(dispatcherProvider.main) {
-            val result = updateTaskUseCase(task = newTask, cardId = card.id)
+            val wasTaskUpdated = updateTaskUseCase(task = newTask, cardId = card.id)
 
-            if (result is Result.Error) {
+            if (!wasTaskUpdated) {
                 sendSnackbar(
                     SnackbarEvent(
                         message = UiText.StringResource(R.string.card_snackbar_task_checked_change_error),
@@ -383,8 +380,8 @@ class CardViewModel @Inject constructor(
 
     // Delete task
     private fun deleteTask(taskId: Long) {
+        val card = _uiState.value.card ?: return
         clearAllCreateAndEditStates()
-        val card = _uiState.value.card!!
 
         val task = card.tasks.find { it.id == taskId }
 
@@ -399,11 +396,11 @@ class CardViewModel @Inject constructor(
         }
 
         viewModelScope.launch(dispatcherProvider.main) {
-            val result = deleteTaskUseCase(task = task, cardId = card.id)
+            val wasTaskDeleted = deleteTaskUseCase(task = task, cardId = card.id)
 
-            when (result) {
+            if (wasTaskDeleted) {
 
-                is Result.Success -> sendSnackbar(
+                sendSnackbar(
                     SnackbarEvent(
                         message = UiText.StringResource(R.string.card_snackbar_delete_task_success),
                         withDismissAction = true,
@@ -415,28 +412,29 @@ class CardViewModel @Inject constructor(
                     )
                 )
 
-                is Result.Error -> sendSnackbar(
+            } else {
+
+                sendSnackbar(
                     SnackbarEvent(
                         message = UiText.StringResource(R.string.card_snackbar_delete_task_error),
                         withDismissAction = true,
                     )
                 )
+
             }
         }
     }
 
     private fun restoreTask(task: Task, cardId: Long) {
         viewModelScope.launch(dispatcherProvider.main) {
-            val result = createTaskUseCase(task = task, cardId = cardId)
+            val wasTaskRestored = createTaskUseCase(task = task, cardId = cardId)
 
-            if (result is Result.Error) {
-                sendSnackbar(
-                    SnackbarEvent(
-                        message = UiText.StringResource(R.string.card_snackbar_restore_task_error),
-                        withDismissAction = true,
-                    )
+            if (!wasTaskRestored) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.card_snackbar_restore_task_error),
+                    withDismissAction = true,
                 )
-            }
+            )
         }
     }
 
@@ -448,27 +446,14 @@ class CardViewModel @Inject constructor(
 
     private fun onDateSelected(date: LocalDateTime?) {
         clearAllCreateAndEditStates()
+        val card = _uiState.value.card ?: return
 
         viewModelScope.launch(dispatcherProvider.main) {
-            val card = _uiState.value.card!!
             val newCard = card.copy(dueDate = date)
 
-            val columnId = getColumnId(card.id)
+            val wasCardUpdated = updateCardUseCase(newCard)
 
-            if (columnId == null) {
-                sendSnackbar(
-                    SnackbarEvent(
-                        message = UiText.StringResource(R.string.card_snackbar_save_date_error),
-                        withDismissAction = true,
-                    )
-                )
-                return@launch
-            }
-
-
-            val result = updateCardUseCase(newCard, columnId)
-
-            if (result is Result.Error) sendSnackbar(
+            if (!wasCardUpdated) sendSnackbar(
                 SnackbarEvent(
                     message = UiText.StringResource(R.string.card_snackbar_save_date_error),
                     withDismissAction = true,
@@ -561,23 +546,18 @@ class CardViewModel @Inject constructor(
 
     private fun addCover(absolutePath: String) {
         val card = _uiState.value.card ?: return
-        val snackbarEvent = SnackbarEvent(
-            message = UiText.StringResource(R.string.card_snackbar_add_cover_error),
-            withDismissAction = true,
-        )
 
         viewModelScope.launch(dispatcherProvider.main) {
-            val columnId = getColumnId(card.id)
             val newCard = card.copy(thumbnailFileName = absolutePath)
 
-            if (columnId == null) {
-                sendSnackbar(snackbarEvent)
-                return@launch
-            }
+            val wasCardUpdated = updateCardUseCase(newCard)
 
-            val result = updateCardUseCase(newCard, columnId)
-
-            if (result is Result.Error) sendSnackbar(snackbarEvent)
+            if (!wasCardUpdated) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.card_snackbar_add_cover_error),
+                    withDismissAction = true,
+                )
+            )
         }
     }
 
@@ -684,13 +664,6 @@ class CardViewModel @Inject constructor(
                 labelBeingEdited = null
             )
         }
-    }
-
-    private suspend fun getColumnId(cardId: Long): Long? {
-
-        val result = getCardColumnIdUseCase(cardId)
-
-        return if (result is Result.Success) result.data else null
     }
 
 }

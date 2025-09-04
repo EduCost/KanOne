@@ -224,12 +224,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGetCardColumnIdUseCase(cardRepository: CardRepository): GetCardColumnIdUseCase {
-        return GetCardColumnIdUseCase(cardRepository)
-    }
-
-    @Provides
-    @Singleton
     fun provideUpdateTaskUseCase(taskRepository: TaskRepository): UpdateTaskUseCase {
         return UpdateTaskUseCase(taskRepository)
     }
