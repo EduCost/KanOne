@@ -94,7 +94,6 @@ fun CardDescription(
                 placeholder = { Text(stringResource(R.string.card_description_text_field_placeholder)) },
                 enabled = isEditing,
                 minLines = 2,
-                maxLines = 6,
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
                 ),
