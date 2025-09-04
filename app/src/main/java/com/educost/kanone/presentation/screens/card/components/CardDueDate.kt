@@ -1,17 +1,20 @@
 package com.educost.kanone.presentation.screens.card.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -20,13 +23,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
 
 
 @Composable
-fun CardDueDate(modifier: Modifier = Modifier, dueDate: String?, onClick: () -> Unit) {
+fun CardDueDate(
+    modifier: Modifier = Modifier,
+    dueDate: String?,
+    onDueDateClick: () -> Unit,
+    onRemoveDueDate: () -> Unit
+) {
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -36,55 +43,89 @@ fun CardDueDate(modifier: Modifier = Modifier, dueDate: String?, onClick: () -> 
         )
     ) {
 
-        dueDate?.let { dueDate ->
+        Box(
+            modifier = Modifier.padding(horizontal = 8.dp),
+        ) {
 
-            DueDate(dueDate = dueDate, onClick = onClick)
 
-        } ?: AddDueDate(onClick = onClick)
+            dueDate?.let { dueDate ->
+
+                DueDate(
+                    dueDate = dueDate,
+                    onDueDateClick = onDueDateClick,
+                    onRemoveDueDate = onRemoveDueDate
+                )
+
+            } ?: AddDueDate(onDueDateClick = onDueDateClick)
+
+        }
+
 
     }
 }
 
 @Composable
-private fun DueDate(modifier: Modifier = Modifier, dueDate: String, onClick: () -> Unit) {
+fun DueDate(
+    modifier: Modifier = Modifier,
+    dueDate: String,
+    onDueDateClick: () -> Unit,
+    onRemoveDueDate: () -> Unit
+) {
     Row(
-        modifier = modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
+
         Icon(
             imageVector = Icons.Outlined.Event,
             contentDescription = null
         )
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onClick() },
-            text = stringResource(R.string.card_due_date) + ":\n$dueDate",
-            textAlign = TextAlign.Center
-        )
+
+        TextButton(
+            onClick = onDueDateClick,
+        ) {
+            Text(text = dueDate, style = MaterialTheme.typography.bodyLarge)
+        }
+
+        Spacer(Modifier.weight(1f))
+
+        IconButton(
+            onClick = onRemoveDueDate
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Clear,
+                contentDescription = stringResource(R.string.card_button_remove_due_date)
+            )
+        }
     }
 }
 
 @Composable
-private fun AddDueDate(modifier: Modifier = Modifier, onClick: () -> Unit) {
+private fun AddDueDate(modifier: Modifier = Modifier, onDueDateClick: () -> Unit) {
 
     Row(
         modifier = modifier
-            .padding(8.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
 
-        Text(text = "\n")
+        Icon(
+            imageVector = Icons.Outlined.Event,
+            contentDescription = null
+        )
 
-        TextButton(onClick = onClick) {
+        Spacer(Modifier.width(8.dp))
+        Text(text = stringResource(R.string.card_text_add_due_date))
+
+        Spacer(Modifier.weight(1f))
+        IconButton(
+            onClick = onDueDateClick
+        ) {
             Icon(
-                imageVector = Icons.Outlined.Event,
-                contentDescription = null
+                imageVector = Icons.Filled.Add,
+                contentDescription = stringResource(R.string.card_button_add_due_date)
             )
-            Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.card_button_add_due_date))
         }
 
     }

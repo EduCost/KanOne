@@ -83,10 +83,11 @@
     <string name="card_labels">Labels</string>
     <string name="card_attachments">Attachments</string>
     <string name="card_created_at">Created at</string>
-    <string name="card_due_date">Due date</string>
     <string name="card_tasks">Tasks</string>
     <string name="card_description_text_field_placeholder">Add a description</string>
+    <string name="card_text_add_due_date">Add due date</string>
     <string name="card_button_add_due_date">Add due date</string>
+    <string name="card_button_remove_due_date">Remove due date</string>
     <string name="card_edit_description_button_content_description">Edit Description</string>
     <string name="card_add_task_button_content_description">Add Task</string>
     <string name="card_add_attachment_button_content_description">Add Attachment</string>

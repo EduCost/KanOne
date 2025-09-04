@@ -7,13 +7,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.HistoryToggleOff
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -28,10 +31,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,14 +46,13 @@ import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.presentation.screens.card.components.CardAppBar
 import com.educost.kanone.presentation.screens.card.components.CardAttachments
-import com.educost.kanone.presentation.screens.card.components.CardDateCreated
 import com.educost.kanone.presentation.screens.card.components.CardDescription
 import com.educost.kanone.presentation.screens.card.components.CardDueDate
 import com.educost.kanone.presentation.screens.card.components.CardLabels
 import com.educost.kanone.presentation.screens.card.components.CardTasks
 import com.educost.kanone.presentation.screens.card.components.CreateAttachmentDialog
-import com.educost.kanone.presentation.screens.card.components.LabelDialog
 import com.educost.kanone.presentation.screens.card.components.ImageDialog
+import com.educost.kanone.presentation.screens.card.components.LabelDialog
 import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
@@ -171,6 +175,20 @@ private fun CardScreen(
 
                 Spacer(Modifier.height(24.dp))
 
+                CardDueDate(
+                    modifier = Modifier.fillMaxWidth(),
+                    dueDate = dueDate,
+                    onDueDateClick = { onIntent(CardIntent.ShowDatePicker) },
+                    onRemoveDueDate = { onIntent(CardIntent.OnDateSelected(null)) }
+                )
+
+                Spacer(Modifier.height(24.dp))
+
+                CardTasks(tasks = card.tasks, state = state, onIntent = onIntent)
+
+                Spacer(Modifier.height(24.dp))
+
+
 
                 CardDescription(
                     cardDescription = card.description ?: "",
@@ -183,24 +201,13 @@ private fun CardScreen(
 
                 Spacer(Modifier.height(24.dp))
 
-                CardTasks(tasks = card.tasks, state = state, onIntent = onIntent)
 
-                Spacer(Modifier.height(24.dp))
-
-                Row {
-                    CardDateCreated(
-                        modifier = Modifier.weight(1f),
-                        createdAt = createdAt
-                    )
-
-                    Spacer(Modifier.width(8.dp))
-
-                    CardDueDate(
-                        modifier = Modifier.weight(1f),
-                        dueDate = dueDate,
-                        onClick = { onIntent(CardIntent.ShowDatePicker) }
-                    )
-                }
+                CardLabels(
+                    labels = card.labels,
+                    boardLabels = state.boardLabels,
+                    isMenuExpanded = state.isLabelMenuExpanded,
+                    onIntent = onIntent
+                )
 
                 Spacer(Modifier.height(24.dp))
 
@@ -210,14 +217,25 @@ private fun CardScreen(
                     onOpenImage = { onIntent(CardIntent.OpenImage(it)) }
                 )
 
-                Spacer(Modifier.height(24.dp))
+                Row(
+                    modifier = Modifier.padding(top = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
-                CardLabels(
-                    labels = card.labels,
-                    boardLabels = state.boardLabels,
-                    isMenuExpanded = state.isLabelMenuExpanded,
-                    onIntent = onIntent
-                )
+                    Spacer(Modifier.weight(1f))
+                    Icon(
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .size(16.dp),
+                        imageVector = Icons.Outlined.HistoryToggleOff,
+                        contentDescription = null
+                    )
+                    Text(
+                        text = stringResource(R.string.card_created_at) + ": $createdAt",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+
+                }
 
             }
         }
@@ -267,8 +285,8 @@ private fun CardScreen(
         state.displayingAttachment?.let { attachment ->
             ImageDialog(
                 attachment = attachment,
-                onDismiss = {onIntent(CardIntent.CloseImage)},
-                onDelete = {onIntent(CardIntent.DeleteImage(it))}
+                onDismiss = { onIntent(CardIntent.CloseImage) },
+                onDelete = { onIntent(CardIntent.DeleteImage(it)) }
             )
         }
 
