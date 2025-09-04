@@ -72,6 +72,7 @@
     <string name="card_dialog_create_attachment_button_cancel">Cancel</string>
     <string name="card_dialog_image_button_delete">Delete</string>
     <string name="card_dialog_image_button_close">Close</string>
+    <string name="card_dialog_image_checkbox_card_cover">Card Cover</string>
     <string name="card_dialog_create_label_title">Create Label</string>
     <string name="card_dialog_edit_label_title">Edit Label</string>
     <string name="card_dialog_label_text_field_label">Label Name</string>
@@ -111,6 +112,8 @@
     <string name="card_snackbar_create_label_error">Error creating label</string>
     <string name="card_snackbar_update_label_association_error">Error updating label association</string>
     <string name="card_snackbar_update_label_error">Error updating label</string>
+    <string name="card_snackbar_remove_cover_error">Error removing cover</string>
+    <string name="card_snackbar_add_to_cover_error">Error adding image to cover</string>
 
     <!--  CARD SCREEN  -->
 

@@ -42,6 +42,8 @@ sealed interface CardIntent {
     data class OpenImage(val attachment: Attachment) : CardIntent
     data class DeleteImage(val attachment: Attachment) : CardIntent
     data object CloseImage : CardIntent
+    data object RemoveCover : CardIntent
+    data class AddToCover(val cover: String) : CardIntent
 
 
     // Labels
@@ -59,8 +61,6 @@ sealed interface CardIntent {
     data object ShowDatePicker : CardIntent
     data object HideDatePicker : CardIntent
     data class OnDateSelected(val date: LocalDateTime?) : CardIntent
-
-
 
 
 }

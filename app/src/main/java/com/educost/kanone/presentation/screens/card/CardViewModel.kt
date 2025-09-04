@@ -97,6 +97,8 @@ class CardViewModel @Inject constructor(
             is CardIntent.DeleteImage -> deleteImage(intent.attachment)
             is CardIntent.CloseImage -> clearAllCreateAndEditStates()
             is CardIntent.CancelCreatingAttachment -> clearAllCreateAndEditStates()
+            is CardIntent.RemoveCover -> removeCover()
+            is CardIntent.AddToCover -> addToCover(intent.cover)
 
             // Labels
             is CardIntent.OpenLabelPicker -> openLabelPicker()
@@ -555,6 +557,40 @@ class CardViewModel @Inject constructor(
             if (!wasCardUpdated) sendSnackbar(
                 SnackbarEvent(
                     message = UiText.StringResource(R.string.card_snackbar_add_cover_error),
+                    withDismissAction = true,
+                )
+            )
+        }
+    }
+
+    private fun removeCover() {
+        val card = _uiState.value.card ?: return
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val newCard = card.copy(thumbnailFileName = null)
+
+            val wasCardUpdated = updateCardUseCase(newCard)
+
+            if (!wasCardUpdated) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.card_snackbar_remove_cover_error),
+                    withDismissAction = true,
+                )
+            )
+        }
+    }
+
+    private fun addToCover(cover: String) {
+        val card = _uiState.value.card ?: return
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val newCard = card.copy(thumbnailFileName = cover)
+
+            val wasCardUpdated = updateCardUseCase(newCard)
+
+            if (!wasCardUpdated) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.card_snackbar_add_to_cover_error),
                     withDismissAction = true,
                 )
             )

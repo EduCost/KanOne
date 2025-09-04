@@ -1,18 +1,24 @@
 package com.educost.kanone.presentation.screens.card.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,10 +37,16 @@ fun ImageDialog(
     modifier: Modifier = Modifier,
     attachment: Attachment,
     onDismiss: () -> Unit,
-    onDelete: (Attachment) -> Unit,
+    onDeleteImage: (Attachment) -> Unit,
+    cardCover: String?,
+    onSetCover: (String) -> Unit,
+    onRemoveCover: () -> Unit
 ) {
 
     val context = LocalContext.current
+    val isCover by remember(cardCover) {
+        mutableStateOf(attachment.fileName == cardCover)
+    }
 
     AlertDialog(
         modifier = modifier,
@@ -43,28 +55,46 @@ fun ImageDialog(
             Icon(Icons.Filled.Image, contentDescription = null)
         },
         text = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 300.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
+            Column {
+                Box(
                     modifier = Modifier
-                        .clip(MaterialTheme.shapes.medium),
-                    model = ImageRequest.Builder(context)
-                        .diskCachePolicy(CachePolicy.DISABLED)
-                        .data(attachment.fileName)
-                        .build(),
-                    contentDescription = null,
-                    error = rememberVectorPainter(Icons.Filled.Error),
-                    placeholder = rememberVectorPainter(Icons.Filled.Image)
-                )
+                        .fillMaxWidth()
+                        .heightIn(max = 300.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .clip(MaterialTheme.shapes.medium),
+                        model = ImageRequest.Builder(context)
+                            .diskCachePolicy(CachePolicy.DISABLED)
+                            .data(attachment.fileName)
+                            .build(),
+                        contentDescription = null,
+                        error = rememberVectorPainter(Icons.Filled.Error),
+                        placeholder = rememberVectorPainter(Icons.Filled.Image)
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = isCover,
+                        onCheckedChange = {
+                            if (isCover) {
+                                onRemoveCover()
+                            } else {
+                                onSetCover(attachment.fileName)
+                            }
+                        }
+                    )
+                    Text(text = stringResource(R.string.card_dialog_image_checkbox_card_cover))
+                }
             }
         },
         confirmButton = {
             FilledTonalButton(
-                onClick = { onDelete(attachment) }
+                onClick = { onDeleteImage(attachment) }
             ) {
                 Text(text = stringResource(R.string.card_dialog_image_button_delete))
             }

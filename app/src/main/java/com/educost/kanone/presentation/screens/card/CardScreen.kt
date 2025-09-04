@@ -1,22 +1,15 @@
 package com.educost.kanone.presentation.screens.card
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.outlined.HistoryToggleOff
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -39,24 +32,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import coil3.request.CachePolicy
-import coil3.request.ImageRequest
 import com.educost.kanone.R
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.presentation.screens.card.components.CardAppBar
 import com.educost.kanone.presentation.screens.card.components.CardAttachments
+import com.educost.kanone.presentation.screens.card.components.CardCover
 import com.educost.kanone.presentation.screens.card.components.CardDescription
 import com.educost.kanone.presentation.screens.card.components.CardDueDate
 import com.educost.kanone.presentation.screens.card.components.CardLabels
@@ -177,37 +164,15 @@ private fun CardScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 8.dp, vertical = 16.dp)
             ) {
+
                 card.thumbnailFileName?.let { cover ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = 400.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        AsyncImage(
-                            modifier = Modifier
-                                .clip(MaterialTheme.shapes.small),
-                            contentScale = ContentScale.Crop,
-                            model = ImageRequest.Builder(context)
-                                .diskCachePolicy(CachePolicy.DISABLED)
-                                .data(cover)
-                                .build(),
-                            contentDescription = null,
-                            placeholder = rememberVectorPainter(Icons.Default.Image),
-                            error = rememberVectorPainter(Icons.Default.Clear)
-                        )
-                    }
+                    CardCover(
+                        cover = cover,
+                        onRemoveCover = { onIntent(CardIntent.RemoveCover) }
+                    )
 
                     Spacer(Modifier.height(24.dp))
                 }
-//                Image(
-//                    painter = painterResource(R.drawable.sample_image),
-//                    contentDescription = null,
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .clip(MaterialTheme.shapes.small)
-//                )
-
 
                 CardDueDate(
                     modifier = Modifier.fillMaxWidth(),
@@ -272,65 +237,68 @@ private fun CardScreen(
                 }
 
             }
-        }
 
-        if (state.isPickingDate) {
+            if (state.isPickingDate) {
 
-            DatePickerDialog(
-                onDismissRequest = { onIntent(CardIntent.HideDatePicker) },
-                confirmButton = {
-                    FilledTonalButton(
-                        onClick = {
-                            onIntent(
-                                CardIntent.OnDateSelected(selectedDate)
-                            )
-                        },
-                        enabled = selectedDate != null
-                    ) {
-                        Text("Confirm")
+                DatePickerDialog(
+                    onDismissRequest = { onIntent(CardIntent.HideDatePicker) },
+                    confirmButton = {
+                        FilledTonalButton(
+                            onClick = {
+                                onIntent(
+                                    CardIntent.OnDateSelected(selectedDate)
+                                )
+                            },
+                            enabled = selectedDate != null
+                        ) {
+                            Text("Confirm")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { onIntent(CardIntent.HideDatePicker) }) {
+                            Text("Cancel")
+                        }
                     }
-                },
-                dismissButton = {
-                    TextButton(onClick = { onIntent(CardIntent.HideDatePicker) }) {
-                        Text("Cancel")
-                    }
-                }
-            ) {
-                DatePicker(
-                    state = datePickerState
-                )
-            }
-        }
-
-        if (state.isCreatingAttachment) {
-            CreateAttachmentDialog(
-                onDismiss = { onIntent(CardIntent.CancelCreatingAttachment) },
-                onConfirm = { uri, shouldAddToCover ->
-                    onIntent(
-                        CardIntent.SaveImage(
-                            imageUri = uri,
-                            shouldAddToCover = shouldAddToCover
-                        )
+                ) {
+                    DatePicker(
+                        state = datePickerState
                     )
                 }
-            )
-        }
+            }
 
-        state.displayingAttachment?.let { attachment ->
-            ImageDialog(
-                attachment = attachment,
-                onDismiss = { onIntent(CardIntent.CloseImage) },
-                onDelete = { onIntent(CardIntent.DeleteImage(it)) }
-            )
-        }
+            if (state.isCreatingAttachment) {
+                CreateAttachmentDialog(
+                    onDismiss = { onIntent(CardIntent.CancelCreatingAttachment) },
+                    onConfirm = { uri, shouldAddToCover ->
+                        onIntent(
+                            CardIntent.SaveImage(
+                                imageUri = uri,
+                                shouldAddToCover = shouldAddToCover
+                            )
+                        )
+                    }
+                )
+            }
 
-        if (state.isShowingLabelDialog) {
-            LabelDialog(
-                onDismiss = { onIntent(CardIntent.CloseLabelPicker) },
-                onConfirm = { onIntent(CardIntent.CreateLabel(it)) },
-                label = state.labelBeingEdited,
-                onUpdate = { onIntent(CardIntent.ConfirmLabelEdit(it)) }
-            )
+            state.displayingAttachment?.let { attachment ->
+                ImageDialog(
+                    attachment = attachment,
+                    onDismiss = { onIntent(CardIntent.CloseImage) },
+                    onDeleteImage = { onIntent(CardIntent.DeleteImage(it)) },
+                    cardCover = card.thumbnailFileName,
+                    onSetCover = { onIntent(CardIntent.AddToCover(it)) },
+                    onRemoveCover = { onIntent(CardIntent.RemoveCover) }
+                )
+            }
+
+            if (state.isShowingLabelDialog) {
+                LabelDialog(
+                    onDismiss = { onIntent(CardIntent.CloseLabelPicker) },
+                    onConfirm = { onIntent(CardIntent.CreateLabel(it)) },
+                    label = state.labelBeingEdited,
+                    onUpdate = { onIntent(CardIntent.ConfirmLabelEdit(it)) }
+                )
+            }
         }
     }
 }
