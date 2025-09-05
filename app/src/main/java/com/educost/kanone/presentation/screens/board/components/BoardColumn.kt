@@ -16,6 +16,7 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -105,6 +106,7 @@ fun BoardColumn(
 
             itemsIndexed(
                 items = column.cards,
+                key = { index, card -> card.id }
             ) { index, card ->
 
                 val isDraggingCard = state.dragState.draggingCardIndex == index &&
@@ -112,6 +114,7 @@ fun BoardColumn(
 
                 ColumnCard(
                     modifier = Modifier
+                        .animateItem()
                         .onGloballyPositioned { layoutCoordinates ->
                             onIntent(
                                 BoardIntent.SetCardCoordinates(
@@ -136,7 +139,7 @@ fun BoardColumn(
                             }
                         )
                         .fillMaxWidth()
-                        .clickable { onIntent(BoardIntent.OnCardClick(card.id))},
+                        .clickable { onIntent(BoardIntent.OnCardClick(card.id)) },
                     card = card,
                 )
             }

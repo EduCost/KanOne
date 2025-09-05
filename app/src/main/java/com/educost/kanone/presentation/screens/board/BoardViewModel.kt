@@ -774,8 +774,9 @@ class BoardViewModel @Inject constructor(
                         y = position.y - column.headerCoordinates.height / 2
                     )
                 } else state.dragState.itemOffset
-                val newState =
-                    state.copy(dragState = state.dragState.copy(itemOffset = newPosition))
+                val newState = state.copy(
+                    dragState = state.dragState.copy(itemOffset = newPosition)
+                )
 
                 val columnCenterX = newPosition.x + column.headerCoordinates.width / 2
 
@@ -1000,7 +1001,7 @@ class BoardViewModel @Inject constructor(
     }
 
 
-// Auto scroll
+    // Auto scroll
 
     private fun handleVerticalScroll(
         selectedCard: CardUi,

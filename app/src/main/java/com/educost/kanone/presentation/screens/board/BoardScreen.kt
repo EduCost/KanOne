@@ -156,7 +156,10 @@ fun BoardScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 state = state.board.listState
             ) {
-                itemsIndexed(board.columns) { index, column ->
+                itemsIndexed(
+                    items = board.columns,
+                    key = { index, column -> index }
+                ) { index, column ->
                     val isDraggingColumn = state.dragState.draggingColumn?.id == column.id
                     BoardColumn(
                         modifier = Modifier
