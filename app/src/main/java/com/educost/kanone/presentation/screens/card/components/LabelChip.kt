@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +23,8 @@ import com.educost.kanone.presentation.theme.KanOneTheme
 fun LabelChip(
     modifier: Modifier = Modifier,
     label: Label,
-    onClick: () -> Unit
+    isClickable: Boolean = true,
+    onClick: () -> Unit = {}
 ) {
     label.color?.let { colorInt ->
 
@@ -34,6 +36,7 @@ fun LabelChip(
         FilterChip(
             modifier = modifier,
             selected = true,
+            enabled = isClickable,
             onClick = onClick,
             border = BorderStroke(
                 width = 1.dp,
@@ -42,7 +45,10 @@ fun LabelChip(
             colors = FilterChipDefaults.filterChipColors(
                 selectedContainerColor = color,
                 selectedLabelColor = selectedLabelColor,
-                selectedTrailingIconColor = selectedLabelColor
+                selectedTrailingIconColor = selectedLabelColor,
+                disabledSelectedContainerColor = color,
+                disabledLabelColor = selectedLabelColor,
+                disabledTrailingIconColor = selectedLabelColor
             ),
             label = {
                 Text(text = label.name)
@@ -51,11 +57,17 @@ fun LabelChip(
 
     } ?: FilterChip(
         modifier = modifier,
+        enabled = isClickable,
         selected = true,
         onClick = {},
         label = {
             Text(text = label.name)
         },
+        colors = FilterChipDefaults.filterChipColors(
+            disabledSelectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            disabledLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            disabledLeadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer
+        )
     )
 }
 

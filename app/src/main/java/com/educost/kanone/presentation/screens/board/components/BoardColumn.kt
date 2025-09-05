@@ -138,7 +138,6 @@ fun BoardColumn(
                         .fillMaxWidth()
                         .clickable { onIntent(BoardIntent.OnCardClick(card.id))},
                     card = card,
-                    onIntent = onIntent
                 )
             }
 

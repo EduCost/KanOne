@@ -30,6 +30,8 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.educost.kanone.domain.model.Label
+import com.educost.kanone.domain.model.Task
 import com.educost.kanone.presentation.components.ColorPickerDialog
 import com.educost.kanone.presentation.screens.board.components.AddColumn
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
@@ -224,7 +226,6 @@ fun BoardScreen(
                 .width(with(localDensity) { card.coordinates.width.toDp() })
                 .height(with(localDensity) { card.coordinates.height.toDp() }),
             card = card,
-            onIntent = {}
         )
     }
     state.dragState.draggingColumn?.let { column ->
@@ -267,13 +268,37 @@ private fun BoardScreenPreview() {
                                     title = "Card title",
                                     position = 0,
                                     color = null,
-                                    description = null,
-                                    dueDate = null,
+                                    description = "Some description",
+                                    dueDate = LocalDateTime.now().plusDays(3),
                                     createdAt = LocalDateTime.now(),
                                     thumbnailFileName = null,
-                                    tasks = emptyList(),
+                                    tasks = listOf(
+                                        Task(
+                                            id = 0,
+                                            description = "Example",
+                                            isCompleted = false,
+                                            position = 0
+                                        ),
+                                        Task(
+                                            id = 1,
+                                            description = "Completed task",
+                                            isCompleted = true,
+                                            position = 1
+                                        )
+                                    ),
                                     attachments = emptyList(),
-                                    labels = emptyList(),
+                                    labels = listOf(
+                                        Label(
+                                            id = 0,
+                                            name = "Label",
+                                            color = null
+                                        ),
+                                        Label(
+                                            id = 1,
+                                            name = "Another label",
+                                            color = -4221
+                                        )
+                                    ),
                                     coordinates = Coordinates()
                                 )
                             )

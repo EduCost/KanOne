@@ -12,7 +12,7 @@ class SaveImageUseCase(
 
     suspend operator fun invoke(uri: String): Result<String, GenericError> {
 
-        val compressThreshold = 500 * 1024L
+        val compressThreshold = 200 * 1024L
         val imageCompressionResult = imageCompressor.compressImage(uri, compressThreshold)
         val imageName = internalStorageManager.generateFileName(uri)
 

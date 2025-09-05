@@ -65,6 +65,7 @@ fun CardCover(
         }
         AsyncImage(
             modifier = Modifier
+                .fillMaxWidth()
                 .clip(MaterialTheme.shapes.small)
                 .pointerInput(Unit) {
                     detectTapGestures(

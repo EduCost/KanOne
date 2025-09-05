@@ -539,7 +539,7 @@ class CardViewModel @Inject constructor(
 
     private fun deleteImage(attachment: Attachment) {
         clearAllCreateAndEditStates()
-        val cardId = _uiState.value.card!!.id
+        val card = _uiState.value.card ?: return
 
         viewModelScope.launch(dispatcherProvider.main) {
             val wasImageDeleted = deleteImageUseCase(attachment.fileName)
@@ -554,7 +554,7 @@ class CardViewModel @Inject constructor(
                 return@launch
             }
 
-            val wasAttachmentDeleted = deleteAttachmentUseCase(attachment, cardId)
+            val wasAttachmentDeleted = deleteAttachmentUseCase(attachment, card.id)
 
             if (!wasAttachmentDeleted) sendSnackbar(
                 SnackbarEvent(
@@ -562,6 +562,9 @@ class CardViewModel @Inject constructor(
                     withDismissAction = true,
                 )
             )
+
+            val isCover = card.thumbnailFileName == attachment.fileName
+            if (isCover) removeCover()
         }
     }
 
