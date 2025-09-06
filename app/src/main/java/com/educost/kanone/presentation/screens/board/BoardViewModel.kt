@@ -763,11 +763,6 @@ class BoardViewModel @Inject constructor(
             ) ?: return@update newState
 
 
-            val targetCard = findCardWithIndex(
-                column = targetColumn.second,
-                offsetY = cardCenterY
-            ) ?: return@update newState
-
 
             // Move card to another column
             val shouldTransferCardToAnotherColumn = currentColumnIndex != targetColumn.first
@@ -800,6 +795,12 @@ class BoardViewModel @Inject constructor(
                     )
                 )
             }
+
+
+            val targetCard = findCardWithIndex(
+                column = targetColumn.second,
+                offsetY = cardCenterY
+            ) ?: return@update newState
 
 
             // Reorder card
@@ -1363,5 +1364,9 @@ class BoardViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         cancelAutoScroll()
+        columnHeaderCoordinatesUpdateJob?.cancel()
+        columnCoordinatesUpdateJob?.cancel()
+        columnListCoordinatesUpdateJob?.cancel()
+        cardCoordinatesUpdateJob?.cancel()
     }
 }
