@@ -90,22 +90,22 @@ class BoardViewModel @Inject constructor(
             )
 
             is BoardIntent.OnCardTitleChange -> onCardTitleChange(intent.title)
-            is BoardIntent.CancelCardCreation -> cancelCardCreation()
+            is BoardIntent.CancelCardCreation -> clearEditAndCreationStates()
             is BoardIntent.ConfirmCardCreation -> confirmCardCreation()
 
             // Create column
             is BoardIntent.StartCreatingColumn -> startCreatingColumn()
             is BoardIntent.OnColumnNameChanged -> onColumnNameChanged(intent.name)
-            is BoardIntent.CancelColumnCreation -> cancelColumnCreation()
+            is BoardIntent.CancelColumnCreation -> clearEditAndCreationStates()
             is BoardIntent.ConfirmColumnCreation -> confirmColumnCreation()
 
             // Edit column
             is BoardIntent.OnEditColumnNameChange -> onEditColumnNameChange(intent.name)
-            is BoardIntent.CancelColumnRename -> cancelColumnEdit()
+            is BoardIntent.CancelColumnRename -> clearEditAndCreationStates()
             is BoardIntent.ConfirmColumnRename -> confirmColumnRename()
 
             is BoardIntent.StartEditingColumnColor -> startEditingColumnColor(intent.columnId)
-            is BoardIntent.CancelColumnColorEdit -> cancelColumnEdit()
+            is BoardIntent.CancelColumnColorEdit -> clearEditAndCreationStates()
             is BoardIntent.ConfirmColumnColorEdit -> confirmColorEdit(intent.newColor)
 
 
@@ -203,15 +203,6 @@ class BoardViewModel @Inject constructor(
         _uiState.update { it.copy(cardCreationState = it.cardCreationState.copy(title = newTitle)) }
     }
 
-    private fun cancelCardCreation() {
-        _uiState.update {
-            it.copy(
-                cardCreationState = CardCreationState(),
-                topBarType = BoardAppBarType.DEFAULT
-            )
-        }
-    }
-
     private fun confirmCardCreation() {
         uiState.value.cardCreationState.let { cardCreationState ->
 
@@ -248,7 +239,7 @@ class BoardViewModel @Inject constructor(
                     )
                 )
             }
-            cancelCardCreation()
+            clearEditAndCreationStates()
         }
     }
 
@@ -262,15 +253,6 @@ class BoardViewModel @Inject constructor(
 
     private fun onColumnNameChanged(name: String) {
         _uiState.update { it.copy(creatingColumnName = name) }
-    }
-
-    private fun cancelColumnCreation() {
-        _uiState.update {
-            it.copy(
-                topBarType = BoardAppBarType.DEFAULT,
-                creatingColumnName = null
-            )
-        }
     }
 
     private fun confirmColumnCreation() {
@@ -295,7 +277,7 @@ class BoardViewModel @Inject constructor(
                     withDismissAction = true
                 )
             )
-            cancelColumnCreation()
+            clearEditAndCreationStates()
         }
     }
 
@@ -305,15 +287,6 @@ class BoardViewModel @Inject constructor(
     private fun onEditColumnNameChange(name: String) {
         _uiState.update {
             it.copy(columnEditState = it.columnEditState.copy(newColumnName = name))
-        }
-    }
-
-    private fun cancelColumnEdit() {
-        _uiState.update {
-            it.copy(
-                topBarType = BoardAppBarType.DEFAULT,
-                columnEditState = ColumnEditState()
-            )
         }
     }
 
@@ -357,7 +330,7 @@ class BoardViewModel @Inject constructor(
             )
 
         }
-        cancelColumnEdit()
+        clearEditAndCreationStates()
     }
 
     private fun startEditingColumnColor(columnId: Long) {
@@ -399,7 +372,7 @@ class BoardViewModel @Inject constructor(
             )
         }
 
-        cancelColumnEdit()
+        clearEditAndCreationStates()
     }
 
 
