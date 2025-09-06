@@ -36,6 +36,7 @@
     <string name="board_snackbar_column_empty_name_error">Column name is required</string> <!-- Shows when user tries to rename or create a column with empty name -->
     <string name="board_snackbar_fetch_board_error">Error fetching board data</string>
     <string name="board_snackbar_card_creation_error">Error creating card</string>
+    <string name="board_snackbar_card_creation_empty_name_error">Card name is required</string>
     <string name="board_snackbar_column_rename_error">Error renaming column</string>
     <string name="board_snackbar_column_delete_error">Error deleting column</string>
     <string name="board_snackbar_column_restore_error">Could not restore column</string>

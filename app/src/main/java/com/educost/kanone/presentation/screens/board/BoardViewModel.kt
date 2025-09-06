@@ -9,9 +9,9 @@ import androidx.lifecycle.viewModelScope
 import com.educost.kanone.R
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.domain.model.Board
-import com.educost.kanone.domain.model.CardItem
-import com.educost.kanone.domain.model.KanbanColumn
+import com.educost.kanone.domain.usecase.CreateCardResult
 import com.educost.kanone.domain.usecase.CreateCardUseCase
+import com.educost.kanone.domain.usecase.CreateColumnResult
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.DeleteColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
@@ -48,7 +48,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -186,6 +185,7 @@ class BoardViewModel @Inject constructor(
 
 
     // Create card
+
     private fun startCreatingCard(columnId: Long, isAppendingToEnd: Boolean) {
         clearEditAndCreationStates()
         _uiState.update {
@@ -213,51 +213,40 @@ class BoardViewModel @Inject constructor(
     }
 
     private fun confirmCardCreation() {
-        uiState.value.cardCreationState.let {
+        uiState.value.cardCreationState.let { cardCreationState ->
 
-            val position = if (it.isAppendingToEnd) {
-                uiState.value.board?.columns?.find { column ->
-                    column.id == it.columnId
-                }?.cards?.size
-            } else {
-                -1 // ensures first position
-            }
+            val cardTitle = cardCreationState.title
+            val columnId = cardCreationState.columnId
+            val isAppendingToEnd = cardCreationState.isAppendingToEnd
 
-            if (it.title == null || it.columnId == null || position == null) {
-                viewModelScope.launch(dispatcherProvider.main) {
-                    sendSnackbar(
-                        SnackbarEvent(
-                            message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
-                            duration = SnackbarDuration.Long,
-                            withDismissAction = true
-                        )
-                    )
+            val position = if (isAppendingToEnd) {
+                val targetColumn = uiState.value.board?.columns?.find { column ->
+                    column.id == columnId
                 }
-            } else {
-                val card = CardItem(
-                    id = 0,
-                    title = it.title,
-                    description = null,
+                targetColumn?.cards?.size
+
+            } else -1 // ensure card will be appended at first position
+
+
+            viewModelScope.launch(dispatcherProvider.main) {
+                val cardCreationResult = createCardUseCase(
+                    title = cardTitle,
                     position = position,
-                    color = null,
-                    createdAt = LocalDateTime.now(),
-                    dueDate = null,
-                    thumbnailFileName = null,
-                    tasks = emptyList(),
-                    attachments = emptyList(),
-                    labels = emptyList()
+                    columnId = columnId
                 )
-                viewModelScope.launch(dispatcherProvider.main) {
-                    val wasCardCreated = createCardUseCase(card = card, columnId = it.columnId)
 
-                    if (!wasCardCreated) sendSnackbar(
-                        SnackbarEvent(
-                            message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
-                            duration = SnackbarDuration.Long,
-                            withDismissAction = true
-                        )
+                if (cardCreationResult == CreateCardResult.EMPTY_TITLE) sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.board_snackbar_card_creation_empty_name_error),
+                        withDismissAction = true
                     )
-                }
+                )
+                if (cardCreationResult == CreateCardResult.GENERIC_ERROR) sendSnackbar(
+                    SnackbarEvent(
+                        message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
+                        withDismissAction = true
+                    )
+                )
             }
             cancelCardCreation()
         }
@@ -265,6 +254,7 @@ class BoardViewModel @Inject constructor(
 
 
     // Create column
+
     private fun startCreatingColumn() {
         clearEditAndCreationStates()
         _uiState.update { it.copy(topBarType = BoardAppBarType.ADD_COLUMN) }
@@ -284,40 +274,29 @@ class BoardViewModel @Inject constructor(
     }
 
     private fun confirmColumnCreation() {
-
+        val board = uiState.value.board ?: return
         val newName = uiState.value.creatingColumnName
-        if (newName.isNullOrBlank()) {
-            sendSnackbar(
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val result = createColumnUseCase(
+                columnName = newName,
+                position = board.columns.size,
+                boardId = board.id
+            )
+            if (result == CreateColumnResult.EMPTY_NAME) sendSnackbar(
                 SnackbarEvent(
                     message = UiText.StringResource(R.string.board_snackbar_column_empty_name_error),
                     withDismissAction = true
                 )
             )
-            return
-        }
-
-        val board = uiState.value.board!!
-        val column = KanbanColumn(
-            id = 0,
-            name = newName,
-            position = board.columns.size,
-            color = null,
-            cards = emptyList()
-        )
-        viewModelScope.launch(dispatcherProvider.main) {
-            when (createColumnUseCase(column = column, boardId = board.id)) {
-                is Result.Error -> sendSnackbar(
-                    SnackbarEvent(
-                        message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
-                        withDismissAction = true
-                    )
+            if (result == CreateColumnResult.GENERIC_ERROR) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.board_snackbar_column_creation_error),
+                    withDismissAction = true
                 )
-
-                is Result.Success -> Unit
-            }
+            )
+            cancelColumnCreation()
         }
-
-        cancelColumnCreation()
     }
 
 
@@ -340,9 +319,10 @@ class BoardViewModel @Inject constructor(
 
     private fun confirmColumnRename() {
 
+        val boardId = uiState.value.board?.id ?: return
         val newName = uiState.value.columnEditState.newColumnName
         val columnId = uiState.value.columnEditState.editingColumnId
-        val columnBeingRenamed = uiState.value.board!!.columns.find { it.id == columnId }
+        val column = uiState.value.board!!.columns.find { it.id == columnId }
 
         if (newName.isNullOrBlank()) {
             sendSnackbar(
@@ -353,33 +333,29 @@ class BoardViewModel @Inject constructor(
             )
             return
         }
-        if (columnId == null || columnBeingRenamed == null) {
+        if (column == null) {
             sendSnackbar(
                 SnackbarEvent(
                     message = UiText.StringResource(R.string.board_snackbar_column_rename_error),
                     withDismissAction = true
                 )
             )
+            clearEditAndCreationStates()
             return
         }
 
-        val newColumn = columnBeingRenamed.copy(name = newName).toKanbanColumn()
+        val newColumn = column.copy(name = newName).toKanbanColumn()
 
         viewModelScope.launch(dispatcherProvider.main) {
-            val result = updateColumnUseCase(newColumn, uiState.value.board!!.id)
+            val wasColumnUpdated = updateColumnUseCase(newColumn, boardId)
 
-            when (result) {
-                is Result.Error -> {
-                    sendSnackbar(
-                        SnackbarEvent(
-                            message = UiText.StringResource(R.string.board_snackbar_column_rename_error),
-                            withDismissAction = true
-                        )
-                    )
-                }
+            if (!wasColumnUpdated) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.board_snackbar_column_rename_error),
+                    withDismissAction = true
+                )
+            )
 
-                is Result.Success -> Unit
-            }
         }
         cancelColumnEdit()
     }
@@ -396,27 +372,26 @@ class BoardViewModel @Inject constructor(
     }
 
     private fun confirmColorEdit(newColor: Int) {
+        val boardId = uiState.value.board?.id ?: return
         val columnId = uiState.value.columnEditState.editingColumnId
         val column = uiState.value.board!!.columns.find { it.id == columnId }
 
-        if (column != null) {
-            val updateColumn = column.copy(color = newColor).toKanbanColumn()
-
-            viewModelScope.launch(dispatcherProvider.main) {
-                val result = updateColumnUseCase(updateColumn, uiState.value.board!!.id)
-
-                if (result is Result.Error) {
-                    sendSnackbar(
-                        SnackbarEvent(
-                            message = UiText.StringResource(R.string.board_snackbar_edit_column_color_error),
-                            withDismissAction = true
-                        )
-                    )
-                }
-            }
-
-        } else {
+        if (column == null) {
             sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.board_snackbar_edit_column_color_error),
+                    withDismissAction = true
+                )
+            )
+            return
+        }
+
+        val updatedColumn = column.copy(color = newColor).toKanbanColumn()
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val wasColumnUpdated = updateColumnUseCase(updatedColumn, boardId)
+
+            if (!wasColumnUpdated) sendSnackbar(
                 SnackbarEvent(
                     message = UiText.StringResource(R.string.board_snackbar_edit_column_color_error),
                     withDismissAction = true
@@ -454,40 +429,38 @@ class BoardViewModel @Inject constructor(
 
     private fun onDeleteColumnClicked(columnId: Long) {
 
+        val boardId = uiState.value.board?.id ?: return
         val column = uiState.value.board!!.columns.find { it.id == columnId }
-        if (column != null) {
-            viewModelScope.launch(dispatcherProvider.main) {
-                val result = deleteColumnUseCase(
-                    column = column.toKanbanColumn(),
-                    boardId = uiState.value.board!!.id
-                )
-
-                when (result) {
-
-                    is Result.Error -> sendSnackbar(
-                        SnackbarEvent(
-                            message = UiText.StringResource(R.string.board_snackbar_column_delete_error),
-                            withDismissAction = true
-                        )
-                    )
-
-                    is Result.Success -> sendSnackbar(
-                        SnackbarEvent(
-                            message = UiText.StringResource(R.string.board_snackbar_column_deleted),
-                            withDismissAction = true,
-                            duration = SnackbarDuration.Long,
-                            action = SnackbarAction(
-                                label = UiText.StringResource(R.string.undo_action),
-                                action = {
-                                    restoreDeletedColumn(column)
-                                }
-                            ),
-                        )
-                    )
-                }
-            }
-        } else {
+        if (column == null) {
             sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.board_snackbar_column_delete_error),
+                    withDismissAction = true
+                )
+            )
+            return
+        }
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val wasColumnDeleted = deleteColumnUseCase(
+                column = column.toKanbanColumn(),
+                boardId = boardId
+            )
+
+            if (wasColumnDeleted) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.board_snackbar_column_deleted),
+                    withDismissAction = true,
+                    duration = SnackbarDuration.Long,
+                    action = SnackbarAction(
+                        label = UiText.StringResource(R.string.undo_action),
+                        action = {
+                            restoreDeletedColumn(column)
+                        }
+                    ),
+                )
+            )
+            else sendSnackbar(
                 SnackbarEvent(
                     message = UiText.StringResource(R.string.board_snackbar_column_delete_error),
                     withDismissAction = true
@@ -500,9 +473,10 @@ class BoardViewModel @Inject constructor(
     // Helper functions
 
     private fun restoreDeletedColumn(column: ColumnUi) {
+        val boardId = uiState.value.board?.id ?: return
         viewModelScope.launch(dispatcherProvider.main) {
-            val result = restoreColumnUseCase(column.toKanbanColumn(), uiState.value.board!!.id)
-            if (result is Result.Error) {
+            val wasColumnRestored = restoreColumnUseCase(column.toKanbanColumn(), boardId)
+            if (!wasColumnRestored) {
                 sendSnackbar(
                     SnackbarEvent(
                         message = UiText.StringResource(R.string.board_snackbar_column_restore_error),
@@ -600,27 +574,18 @@ class BoardViewModel @Inject constructor(
     }
 
     private fun reorderCardsInColumn(columnId: Long, orderType: OrderType, cardOrder: CardOrder) {
-        val board = uiState.value.board ?: return
 
+        val board = uiState.value.board ?: return
         val column = board.columns.find { it.id == columnId }
 
-        if (column != null) {
-            viewModelScope.launch(dispatcherProvider.main) {
-                val wasCardsReordered = reorderCardsUseCase(
-                    column = column.toKanbanColumn(),
-                    orderType = orderType,
-                    cardOrder = cardOrder
-                )
+        viewModelScope.launch(dispatcherProvider.main) {
+            val wasCardsReordered = reorderCardsUseCase(
+                column = column?.toKanbanColumn(),
+                orderType = orderType,
+                cardOrder = cardOrder
+            )
 
-                if (!wasCardsReordered) sendSnackbar(
-                    SnackbarEvent(
-                        message = UiText.StringResource(R.string.board_snackbar_reorder_cards_error),
-                        withDismissAction = true
-                    )
-                )
-            }
-        } else {
-            sendSnackbar(
+            if (!wasCardsReordered) sendSnackbar(
                 SnackbarEvent(
                     message = UiText.StringResource(R.string.board_snackbar_reorder_cards_error),
                     withDismissAction = true
@@ -631,6 +596,7 @@ class BoardViewModel @Inject constructor(
 
 
     // Drag and drop
+
     fun onDragStart(offset: Offset) {
         clearEditAndCreationStates()
         _uiState.update { currentState ->
@@ -761,7 +727,6 @@ class BoardViewModel @Inject constructor(
                 columns = state.board.columns,
                 lazyRowState = state.board.listState
             ) ?: return@update newState
-
 
 
             // Move card to another column
@@ -1205,28 +1170,28 @@ class BoardViewModel @Inject constructor(
 
     }
 
-    
+
     private val pendingColCoordsUpdates = mutableMapOf<Long, Coordinates>()
     private var columnCoordinatesUpdateJob: Job? = null
     private var lastTimeColCoordUpdateCalled = 0L
     private fun setColumnCoordinates(columnId: Long, coordinates: Coordinates) {
-        
+
         pendingColCoordsUpdates[columnId] = coordinates
-        
+
         if (uiState.value.dragState != DragState()) {
-            
+
             if (System.currentTimeMillis() - throttleTime < lastTimeColCoordUpdateCalled) return
-            
+
             lastTimeColCoordUpdateCalled = System.currentTimeMillis()
             if (pendingColCoordsUpdates.isEmpty()) return
-            
+
             val updatesToProcess = HashMap(pendingColCoordsUpdates)
             pendingColCoordsUpdates.clear()
 
             _uiState.update { currentState ->
-                
+
                 var updatedBoard = currentState.board ?: return@update currentState
-                
+
                 updatesToProcess.forEach { (columnId, coordinates) ->
                     updatedBoard = updatedBoard.copy(
                         columns = updatedBoard.columns.map { column ->
@@ -1240,15 +1205,15 @@ class BoardViewModel @Inject constructor(
                 }
                 currentState.copy(board = updatedBoard)
             }
-            
+
         } else {
-            
+
             columnCoordinatesUpdateJob?.cancel()
             columnCoordinatesUpdateJob = viewModelScope.launch(dispatcherProvider.main) {
                 delay(debounceTime)
 
                 if (pendingColCoordsUpdates.isEmpty()) return@launch
-                
+
                 val updatesToProcess = HashMap(pendingColCoordsUpdates)
                 pendingColCoordsUpdates.clear()
 
@@ -1274,9 +1239,8 @@ class BoardViewModel @Inject constructor(
 
 
     }
-        
-        
-    
+
+
     private val pendingCardCoordsUpdates = mutableMapOf<Long, Pair<Long, Coordinates>>()
     private var cardCoordinatesUpdateJob: Job? = null
     private var lastTimeCardCoordUpdateCalled = 0L

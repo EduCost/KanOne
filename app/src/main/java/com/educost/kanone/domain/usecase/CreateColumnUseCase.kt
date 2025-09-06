@@ -1,13 +1,34 @@
 package com.educost.kanone.domain.usecase
 
-import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.repository.ColumnRepository
-import com.educost.kanone.utils.Result
 
 class CreateColumnUseCase(private val columnRepository: ColumnRepository) {
 
-    suspend operator fun invoke(column: KanbanColumn, boardId: Long): Result<Long, InsertDataError> {
-        return columnRepository.createColumn(column, boardId)
+    suspend operator fun invoke(
+        columnName: String?,
+        position: Int,
+        boardId: Long
+    ): CreateColumnResult {
+
+        if (columnName.isNullOrBlank()) return CreateColumnResult.EMPTY_NAME
+
+        val newColumn = KanbanColumn(
+            id = 0,
+            name = columnName,
+            position = position
+        )
+
+        val wasColumnCreated = columnRepository.createColumn(newColumn, boardId)
+
+        if (!wasColumnCreated) return CreateColumnResult.GENERIC_ERROR
+
+        return CreateColumnResult.SUCCESS
     }
+}
+
+enum class CreateColumnResult {
+    SUCCESS,
+    EMPTY_NAME,
+    GENERIC_ERROR
 }

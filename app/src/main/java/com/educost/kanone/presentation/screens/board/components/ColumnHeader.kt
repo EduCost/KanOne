@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -53,6 +54,8 @@ fun ColumnHeader(
     state: BoardState,
     onIntent: (BoardIntent) -> Unit,
 ) {
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val isDropdownMenuExpanded by remember(state.activeDropdownColumnId) {
         mutableStateOf(state.activeDropdownColumnId == column.id)
@@ -122,7 +125,10 @@ fun ColumnHeader(
                         imeAction = ImeAction.Done
                     ),
                     keyboardActions = KeyboardActions(
-                        onDone = { onIntent(BoardIntent.ConfirmColumnRename) }
+                        onDone = {
+                            keyboardController?.hide()
+                            onIntent(BoardIntent.ConfirmColumnRename)
+                        }
                     ),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()

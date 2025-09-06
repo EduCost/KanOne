@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 
@@ -23,6 +24,9 @@ fun AddCardTextField(
     onTitleChange: (String) -> Unit,
     onConfirmCreateCard: () -> Unit,
 ) {
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Row(
         modifier = modifier
             .clip(MaterialTheme.shapes.small)
@@ -40,7 +44,10 @@ fun AddCardTextField(
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
-                onDone = { onConfirmCreateCard() }
+                onDone = {
+                    keyboardController?.hide()
+                    onConfirmCreateCard()
+                }
             ),
             modifier = Modifier.fillMaxWidth()
         )

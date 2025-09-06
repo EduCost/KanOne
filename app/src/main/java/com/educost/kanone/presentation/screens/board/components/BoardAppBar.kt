@@ -13,6 +13,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import com.educost.kanone.R
 import com.educost.kanone.presentation.components.ActionTopBar
@@ -26,6 +27,9 @@ fun BoardAppBar(
     type: BoardAppBarType = BoardAppBarType.DEFAULT,
     onIntent: (BoardIntent) -> Unit
 ) {
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     when (type) {
         BoardAppBarType.DEFAULT -> {
             TopAppBar(
@@ -54,7 +58,10 @@ fun BoardAppBar(
             leftIconContentDescription = stringResource(R.string.board_appbar_content_description_cancel_column_creation),
             onLeftIconClick = { onIntent(BoardIntent.CancelColumnCreation) },
             rightIconContentDescription = stringResource(R.string.board_appbar_content_description_confirm_column_creation),
-            onRightIconClick = { onIntent(BoardIntent.ConfirmColumnCreation) }
+            onRightIconClick = {
+                keyboardController?.hide()
+                onIntent(BoardIntent.ConfirmColumnCreation)
+            }
         )
 
         BoardAppBarType.ADD_CARD -> ActionTopBar(
@@ -62,7 +69,10 @@ fun BoardAppBar(
             leftIconContentDescription = stringResource(R.string.board_appbar_content_description_cancel_card_creation),
             onLeftIconClick = { onIntent(BoardIntent.CancelCardCreation) },
             rightIconContentDescription = stringResource(R.string.board_appbar_content_description_confirm_card_creation),
-            onRightIconClick = { onIntent(BoardIntent.ConfirmCardCreation) }
+            onRightIconClick = {
+                keyboardController?.hide()
+                onIntent(BoardIntent.ConfirmCardCreation)
+            }
         )
 
         BoardAppBarType.RENAME_COLUMN -> ActionTopBar(
@@ -70,7 +80,10 @@ fun BoardAppBar(
             leftIconContentDescription = stringResource(R.string.board_appbar_content_description_cancel_column_rename),
             onLeftIconClick = { onIntent(BoardIntent.CancelColumnRename) },
             rightIconContentDescription = stringResource(R.string.board_appbar_content_description_confirm_column_rename),
-            onRightIconClick = { onIntent(BoardIntent.ConfirmColumnRename) }
+            onRightIconClick = {
+                keyboardController?.hide()
+                onIntent(BoardIntent.ConfirmColumnRename)
+            }
         )
     }
 }

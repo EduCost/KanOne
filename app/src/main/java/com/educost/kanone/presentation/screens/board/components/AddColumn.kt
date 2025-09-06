@@ -34,6 +34,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -50,6 +51,8 @@ fun AddColumn(
     state: BoardState,
     onIntent: (BoardIntent) -> Unit,
 ) {
+
+    val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val isAddingNewColumn by remember(state.topBarType) {
         mutableStateOf(state.topBarType == BoardAppBarType.ADD_COLUMN)
@@ -94,7 +97,10 @@ fun AddColumn(
                             imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(
-                            onDone = { onIntent(BoardIntent.ConfirmColumnCreation) }
+                            onDone = {
+                                keyboardController?.hide()
+                                onIntent(BoardIntent.ConfirmColumnCreation)
+                            }
                         ),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()

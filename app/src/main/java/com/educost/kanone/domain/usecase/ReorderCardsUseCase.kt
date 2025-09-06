@@ -8,10 +8,12 @@ import com.educost.kanone.presentation.screens.board.utils.OrderType
 class ReorderCardsUseCase(val cardRepository: CardRepository) {
 
     suspend operator fun invoke(
-        column: KanbanColumn,
+        column: KanbanColumn?,
         orderType: OrderType,
         cardOrder: CardOrder
     ): Boolean {
+
+        if (column == null) return false
 
         val cards = column.cards
 
