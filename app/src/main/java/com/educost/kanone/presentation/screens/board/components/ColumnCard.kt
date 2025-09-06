@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Subject
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.Error
@@ -40,9 +41,9 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.model.Task
+import com.educost.kanone.presentation.components.LabelChip
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
-import com.educost.kanone.presentation.screens.card.components.LabelChip
 import com.educost.kanone.presentation.theme.KanOneTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -94,20 +95,22 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
         ) {
             Column {
 
-                if (card.labels.isNotEmpty()) {
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        card.labels.forEach { label ->
-                            LabelChip(label = label, isClickable = false)
-                        }
-                    }
-                }
-
                 Text(
                     text = card.title,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+
+                if (card.labels.isNotEmpty()) {
+                    FlowRow(
+                        modifier = Modifier.padding(top = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        card.labels.forEach { label ->
+                            LabelChip(label = label, smallVersion = true)
+                        }
+                    }
+                }
 
                 if (card.tasks.isNotEmpty()) {
                     val taskAmount = remember { card.tasks.size }
@@ -143,7 +146,8 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
                 }
 
                 val shouldShowBottomItems = remember {
-                    card.dueDate != null || card.attachments.isNotEmpty()
+                    card.dueDate != null || card.attachments.isNotEmpty() ||
+                            card.description != null && card.description.isNotBlank()
                 }
 
                 if (shouldShowBottomItems) {
@@ -162,6 +166,7 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
                             }
                             Box(
                                 modifier = Modifier
+                                    .padding(end = 8.dp)
                                     .clip(MaterialTheme.shapes.small)
                                     .background(MaterialTheme.colorScheme.surfaceVariant)
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -172,6 +177,14 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
                                     style = MaterialTheme.typography.labelLarge
                                 )
                             }
+                        }
+
+                        if (card.description != null && card.description.isNotBlank()) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Subject,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
 
                         Spacer(modifier = Modifier.weight(1f))

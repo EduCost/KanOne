@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
 import com.educost.kanone.domain.model.Label
+import com.educost.kanone.presentation.components.LabelChip
 import com.educost.kanone.presentation.screens.card.CardIntent
 
 @Composable
@@ -83,17 +84,21 @@ fun CardLabels(
 
             }
 
-            LazyRow(
-                contentPadding = PaddingValues(bottom = 8.dp, start = 4.dp, end = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(labels) { label ->
-                    LabelChip(
-                        label = label,
-                        onClick = {onIntent(CardIntent.StartEditingLabel(label))}
-                    )
+            if (labels.isNotEmpty()) {
+                LazyRow(
+                    contentPadding = PaddingValues(bottom = 8.dp, start = 4.dp, end = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(labels) { label ->
+                        LabelChip(
+                            label = label,
+                            isClickable = true,
+                            onClick = { onIntent(CardIntent.StartEditingLabel(label)) }
+                        )
+                    }
                 }
             }
+
         }
     }
 }
