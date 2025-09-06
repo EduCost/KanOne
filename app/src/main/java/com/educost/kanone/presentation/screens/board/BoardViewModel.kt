@@ -416,10 +416,13 @@ class BoardViewModel @Inject constructor(
 
     private fun onRenameColumnClicked(columnId: Long) {
         clearEditAndCreationStates()
+        val currentColumnName = uiState.value.board?.columns?.find { it.id == columnId }?.name
+
         _uiState.update {
             it.copy(
                 topBarType = BoardAppBarType.RENAME_COLUMN,
                 columnEditState = it.columnEditState.copy(
+                    newColumnName = currentColumnName,
                     editingColumnId = columnId,
                     isRenaming = true
                 )
