@@ -168,12 +168,12 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
                                 modifier = Modifier
                                     .padding(end = 8.dp)
                                     .clip(MaterialTheme.shapes.small)
-                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    .background(MaterialTheme.colorScheme.tertiaryContainer)
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
                             ) {
                                 Text(
                                     text = formatedDate,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = MaterialTheme.colorScheme.onTertiaryContainer,
                                     style = MaterialTheme.typography.labelLarge
                                 )
                             }
