@@ -158,7 +158,7 @@ fun BoardScreen(
             ) {
                 itemsIndexed(
                     items = board.columns,
-                    key = { index, column -> index }
+                    key = { index, column -> "${column.id}_$index" }
                 ) { index, column ->
                     val isDraggingColumn = state.dragState.draggingColumn?.id == column.id
                     BoardColumn(

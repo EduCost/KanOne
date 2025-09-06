@@ -59,7 +59,6 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
     ) {
         card.thumbnailFileName?.let { cover ->
             val imageRequest = remember(cover, context) {
-                println("rebuilding")
                 ImageRequest.Builder(context)
                     .diskCachePolicy(CachePolicy.DISABLED)
                     .memoryCachePolicy(CachePolicy.DISABLED)

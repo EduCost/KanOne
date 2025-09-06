@@ -668,9 +668,7 @@ class CardViewModel @Inject constructor(
         val cardId = uiState.value.card?.id ?: return
 
         viewModelScope.launch(dispatcherProvider.main) {
-            println("vm being called")
             val wasSuccessful = updateLabelAssociationUseCase(label.id, cardId)
-            println("vm called")
 
             if (!wasSuccessful) {
                 sendSnackbar(
