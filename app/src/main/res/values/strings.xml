@@ -12,6 +12,7 @@
 
     <!--  HOME SCREEN  -->
     <string name="home_screen_no_boards_found">No boards found</string>
+    <string name="home_fab_create_board">Create new board</string>
     <string name="home_dialog_title_create_board">Create Board</string>
     <string name="home_dialog_textfield_label_board_name">Board Name</string>
     <string name="home_dialog_button_create">Create</string>
