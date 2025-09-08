@@ -79,7 +79,7 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
 
                 Text(
                     text = card.title,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
 
                 if (cardProperties.hasLabels) {
@@ -120,7 +120,6 @@ private fun CardImage(modifier: Modifier = Modifier, cover: String) {
     val imageRequest = remember {
         ImageRequest.Builder(context)
             .diskCachePolicy(CachePolicy.DISABLED)
-            .memoryCachePolicy(CachePolicy.DISABLED)
             .data(cover)
             .build()
     }
@@ -174,14 +173,16 @@ private fun CardTasks(modifier: Modifier = Modifier, taskAmount: Int, completedT
         Icon(
             modifier = Modifier.size(12.dp),
             imageVector = Icons.Filled.DoneAll,
-            contentDescription = null
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.width(4.dp))
 
         Text(
             text = "$completedTasksAmount/$taskAmount",
-            style = MaterialTheme.typography.labelSmall
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -212,7 +213,8 @@ private fun CardDescriptionIcon(modifier: Modifier = Modifier) {
     Icon(
         imageVector = Icons.AutoMirrored.Filled.Subject,
         contentDescription = null,
-        modifier = modifier.size(20.dp)
+        modifier = modifier.size(20.dp),
+        tint = MaterialTheme.colorScheme.onSurface
     )
 }
 
@@ -225,9 +227,13 @@ private fun CardAttachments(modifier: Modifier = Modifier, attachmentAmount: Str
         Icon(
             modifier = Modifier.size(18.dp),
             imageVector = Icons.Filled.AttachFile,
-            contentDescription = null
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurface
         )
-        Text(attachmentAmount)
+        Text(
+            text = attachmentAmount,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 
