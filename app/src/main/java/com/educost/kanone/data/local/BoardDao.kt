@@ -20,7 +20,7 @@ interface BoardDao {
     suspend fun getBoard(boardId: Long): BoardEntity
 
     @Query("SELECT * FROM boards")
-    fun observeAllBoards(): Flow<List<BoardEntity>>
+    fun observeAllBoards(): Flow<List<BoardWithColumns>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createBoard(board: BoardEntity): Long

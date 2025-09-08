@@ -34,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.educost.kanone.R
 import com.educost.kanone.domain.model.Board
+import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.presentation.screens.home.components.BoardCard
 import com.educost.kanone.presentation.screens.home.components.CreateBoardDialog
@@ -41,6 +42,7 @@ import com.educost.kanone.presentation.screens.home.components.HomeTopBar
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 @Composable
 fun HomeScreen(
@@ -168,7 +170,52 @@ private fun HomeScreenPreview() {
                             KanbanColumn(
                                 id = 0,
                                 name = "Column 1",
-                                position = 0
+                                position = 0,
+                                cards = listOf(
+                                    CardItem(
+                                        id = 0,
+                                        title = "Card 1",
+                                        position = 0,
+                                        createdAt = LocalDateTime.now()
+                                    ),
+                                    CardItem(
+                                        id = 1,
+                                        title = "Card 2",
+                                        position = 1,
+                                        createdAt = LocalDateTime.now()
+                                    ),
+                                    CardItem(
+                                        id = 2,
+                                        title = "Card 3",
+                                        position = 2,
+                                        createdAt = LocalDateTime.now()
+                                    ),
+                                    CardItem(
+                                        id = 3,
+                                        title = "Card 4",
+                                        position = 3,
+                                        createdAt = LocalDateTime.now()
+                                    ),
+                                )
+                            ),
+                            KanbanColumn(
+                                id = 0,
+                                name = "Column 1",
+                                position = 0,
+                                cards = listOf(
+                                    CardItem(
+                                        id = 0,
+                                        title = "Card 1",
+                                        position = 0,
+                                        createdAt = LocalDateTime.now()
+                                    ),
+                                    CardItem(
+                                        id = 1,
+                                        title = "Card 2",
+                                        position = 1,
+                                        createdAt = LocalDateTime.now()
+                                    )
+                                )
                             ),
                         )
                     )
