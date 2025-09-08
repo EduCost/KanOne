@@ -92,9 +92,12 @@ private fun LabelChip(
             .height(height)
             .clip(MaterialTheme.shapes.small)
             .background(containerColor)
-            .clickable(
-                enabled = isClickable,
-                onClick = onClick
+            .then(
+                if (isClickable) {
+                    Modifier.clickable { onClick() }
+                } else {
+                    Modifier
+                }
             ),
         contentAlignment = Alignment.Center
     ) {
