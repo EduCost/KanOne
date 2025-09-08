@@ -52,6 +52,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
 
+    val cardProperties = remember { getCardProperties(card) }
+
     Column(
         modifier = modifier
             .clip(MaterialTheme.shapes.small)
@@ -80,15 +82,15 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-                if (card.labels.isNotEmpty()) {
+                if (cardProperties.hasLabels) {
                     CardLabels(
-                        modifier = Modifier.padding(top = 8.dp),
+                        modifier = Modifier.padding(top = 12.dp),
                         labels = card.labels
                     )
                 }
 
 
-                if (card.tasks.isNotEmpty()) {
+                if (cardProperties.hasTasks) {
                     val taskAmount = remember { card.tasks.size }
                     val completedTasksAmount = remember { card.tasks.count { it.isCompleted } }
 
@@ -99,37 +101,14 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
                     )
                 }
 
-                val shouldShowBottomItems = remember {
-                    card.dueDate != null || card.attachments.isNotEmpty() ||
-                            card.description != null && card.description.isNotBlank()
-                }
-
-                if (shouldShowBottomItems) {
-
-
+                if (cardProperties.hasHorizontalDivider) {
                     HorizontalDivider(Modifier.padding(top = 8.dp, bottom = 12.dp))
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-
-                        card.dueDate?.let { dueDate ->
-                            CardDueDate(
-                                modifier = Modifier.padding(end = 8.dp),
-                                dueDate = dueDate
-                            )
-                        }
-
-                        if (card.description != null && card.description.isNotBlank()) {
-                            CardDescriptionIcon()
-                        }
-
-                        Spacer(modifier = Modifier.weight(1f))
-
-                        if (card.attachments.isNotEmpty()) {
-                            val attachmentAmount = remember { card.attachments.size.toString() }
-                            CardAttachments(attachmentAmount = attachmentAmount)
-                        }
-                    }
                 }
+
+                CardBottomRow(
+                    cardProperties = cardProperties,
+                    card = card
+                )
             }
         }
     }
@@ -252,6 +231,48 @@ private fun CardAttachments(modifier: Modifier = Modifier, attachmentAmount: Str
     }
 }
 
+@Composable
+private fun CardBottomRow(
+    modifier: Modifier = Modifier,
+    cardProperties: CardProperties,
+    card: CardUi
+) {
+
+    val paddingTop = remember {
+        if (cardProperties.hasHorizontalDivider || cardProperties.cardIsEmpty) {
+            0.dp
+        } else if (cardProperties.hasLabels) {
+            12.dp
+        } else {
+            8.dp
+        }
+    }
+
+    Row(
+        modifier = modifier.padding(top = paddingTop),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        if (cardProperties.hasDescription) {
+            CardDescriptionIcon()
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+
+        if (cardProperties.hasAttachments) {
+            val attachmentAmount = remember { card.attachments.size.toString() }
+            CardAttachments(attachmentAmount = attachmentAmount)
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        card.dueDate?.let { dueDate ->
+            CardDueDate(
+                dueDate = dueDate
+            )
+        }
+
+    }
+}
 
 @PreviewLightDark
 @Composable
@@ -306,4 +327,28 @@ private fun ColumnCardPreview() {
             )
         }
     }
+}
+
+
+private data class CardProperties(
+    val hasDescription: Boolean,
+    val hasDueDate: Boolean,
+    val hasLabels: Boolean,
+    val hasTasks: Boolean,
+    val hasAttachments: Boolean,
+) {
+    val hasHorizontalDivider = hasTasks && hasLabels &&
+            (hasDescription || hasDueDate || hasAttachments)
+
+    val cardIsEmpty = !hasDescription && !hasDueDate && !hasLabels && !hasTasks && !hasAttachments
+}
+
+private fun getCardProperties(card: CardUi): CardProperties {
+    return CardProperties(
+        hasDescription = card.description != null && card.description.isNotBlank(),
+        hasDueDate = card.dueDate != null,
+        hasLabels = card.labels.isNotEmpty(),
+        hasTasks = card.tasks.isNotEmpty(),
+        hasAttachments = card.attachments.isNotEmpty()
+    )
 }
