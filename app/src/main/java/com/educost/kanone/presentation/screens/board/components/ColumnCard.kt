@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
+import com.educost.kanone.domain.model.Attachment
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.model.Task
 import com.educost.kanone.presentation.components.LabelChip
@@ -51,39 +52,18 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
 
-    val context = LocalContext.current
-
     Column(
         modifier = modifier
             .clip(MaterialTheme.shapes.small)
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(7.dp))
     ) {
         card.thumbnailFileName?.let { cover ->
-            val imageRequest = remember(cover, context) {
-                ImageRequest.Builder(context)
-                    .diskCachePolicy(CachePolicy.DISABLED)
-                    .memoryCachePolicy(CachePolicy.DISABLED)
-                    .data(cover)
-                    .build()
-            }
-
-            Box(
+            CardImage(
+                cover = cover,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = 150.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.small),
-                    model = imageRequest,
-                    contentDescription = null,
-                    contentScale = ContentScale.FillWidth,
-                    error = rememberVectorPainter(Icons.Filled.Error),
-                    placeholder = rememberVectorPainter(Icons.Filled.Image)
-                )
-            }
+                    .heightIn(max = 150.dp)
+            )
         }
 
 
@@ -101,48 +81,22 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
                 )
 
                 if (card.labels.isNotEmpty()) {
-                    FlowRow(
+                    CardLabels(
                         modifier = Modifier.padding(top = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        card.labels.forEach { label ->
-                            LabelChip(label = label, smallVersion = true)
-                        }
-                    }
+                        labels = card.labels
+                    )
                 }
+
 
                 if (card.tasks.isNotEmpty()) {
                     val taskAmount = remember { card.tasks.size }
                     val completedTasksAmount = remember { card.tasks.count { it.isCompleted } }
 
-                    Row(
+                    CardTasks(
                         modifier = Modifier.padding(top = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        LinearProgressIndicator(
-                            progress = { completedTasksAmount.toFloat() / taskAmount },
-                            modifier = Modifier.weight(1f),
-                            color = MaterialTheme.colorScheme.secondary,
-                            trackColor = MaterialTheme.colorScheme.secondaryContainer,
-                            strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
-                        )
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Icon(
-                            modifier = Modifier.size(12.dp),
-                            imageVector = Icons.Filled.DoneAll,
-                            contentDescription = null
-                        )
-
-                        Spacer(modifier = Modifier.width(4.dp))
-
-                        Text(
-                            text = "$completedTasksAmount/$taskAmount",
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
+                        taskAmount = taskAmount,
+                        completedTasksAmount = completedTasksAmount
+                    )
                 }
 
                 val shouldShowBottomItems = remember {
@@ -152,53 +106,149 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
 
                 if (shouldShowBottomItems) {
 
-                    val attachmentAmount = remember { card.attachments.size }
 
                     HorizontalDivider(Modifier.padding(top = 8.dp, bottom = 12.dp))
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
 
                         card.dueDate?.let { dueDate ->
-                            val formatedDate = remember {
-                                dueDate.format(
-                                    DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .clip(MaterialTheme.shapes.small)
-                                    .background(MaterialTheme.colorScheme.tertiaryContainer)
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                            ) {
-                                Text(
-                                    text = formatedDate,
-                                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                    style = MaterialTheme.typography.labelLarge
-                                )
-                            }
+                            CardDueDate(
+                                modifier = Modifier.padding(end = 8.dp),
+                                dueDate = dueDate
+                            )
                         }
 
                         if (card.description != null && card.description.isNotBlank()) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Subject,
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
+                            CardDescriptionIcon()
                         }
 
                         Spacer(modifier = Modifier.weight(1f))
 
-                        Icon(
-                            modifier = Modifier.size(18.dp),
-                            imageVector = Icons.Filled.AttachFile,
-                            contentDescription = null
-                        )
-                        Text(attachmentAmount.toString())
+                        if (card.attachments.isNotEmpty()) {
+                            val attachmentAmount = remember { card.attachments.size.toString() }
+                            CardAttachments(attachmentAmount = attachmentAmount)
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun CardImage(modifier: Modifier = Modifier, cover: String) {
+    val context = LocalContext.current
+    val imageRequest = remember {
+        ImageRequest.Builder(context)
+            .diskCachePolicy(CachePolicy.DISABLED)
+            .memoryCachePolicy(CachePolicy.DISABLED)
+            .data(cover)
+            .build()
+    }
+
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        AsyncImage(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.small),
+            model = imageRequest,
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            error = rememberVectorPainter(Icons.Filled.Error),
+            placeholder = rememberVectorPainter(Icons.Filled.Image)
+        )
+    }
+}
+
+@Composable
+private fun CardLabels(modifier: Modifier = Modifier, labels: List<Label>) {
+    FlowRow(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        labels.forEach { label ->
+            LabelChip(label = label, smallVersion = true)
+        }
+    }
+}
+
+@Composable
+private fun CardTasks(modifier: Modifier = Modifier, taskAmount: Int, completedTasksAmount: Int) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        LinearProgressIndicator(
+            progress = { completedTasksAmount.toFloat() / taskAmount },
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.secondary,
+            trackColor = MaterialTheme.colorScheme.secondaryContainer,
+            strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Icon(
+            modifier = Modifier.size(12.dp),
+            imageVector = Icons.Filled.DoneAll,
+            contentDescription = null
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Text(
+            text = "$completedTasksAmount/$taskAmount",
+            style = MaterialTheme.typography.labelSmall
+        )
+    }
+}
+
+@Composable
+private fun CardDueDate(modifier: Modifier = Modifier, dueDate: LocalDateTime) {
+    val formatedDate = remember {
+        dueDate.format(
+            DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        )
+    }
+    Box(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.small)
+            .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+    ) {
+        Text(
+            text = formatedDate,
+            color = MaterialTheme.colorScheme.onTertiaryContainer,
+            style = MaterialTheme.typography.labelLarge
+        )
+    }
+}
+
+@Composable
+private fun CardDescriptionIcon(modifier: Modifier = Modifier) {
+    Icon(
+        imageVector = Icons.AutoMirrored.Filled.Subject,
+        contentDescription = null,
+        modifier = modifier.size(20.dp)
+    )
+}
+
+@Composable
+private fun CardAttachments(modifier: Modifier = Modifier, attachmentAmount: String) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            modifier = Modifier.size(18.dp),
+            imageVector = Icons.Filled.AttachFile,
+            contentDescription = null
+        )
+        Text(attachmentAmount)
     }
 }
 
@@ -233,7 +283,12 @@ private fun ColumnCardPreview() {
                             position = 1
                         )
                     ),
-                    attachments = emptyList(),
+                    attachments = listOf(
+                        Attachment(
+                            id = 0,
+                            fileName = ""
+                        )
+                    ),
                     labels = listOf(
                         Label(
                             id = 0,
