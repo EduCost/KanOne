@@ -22,6 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -132,7 +134,8 @@ fun BoardColumn(
                             if (isDraggingCard) {
                                 Modifier
                                     .graphicsLayer {
-                                        alpha = 0f
+                                        colorFilter = ColorFilter.tint(Color.Gray)
+                                        alpha = 0.1f
                                     }
                             } else {
                                 Modifier

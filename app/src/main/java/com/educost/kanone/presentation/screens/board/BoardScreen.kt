@@ -20,6 +20,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -179,7 +181,8 @@ fun BoardScreen(
                                 if (isDraggingColumn) {
                                     Modifier
                                         .graphicsLayer {
-                                            alpha = 0f
+                                            colorFilter = ColorFilter.tint(Color.Gray)
+                                            alpha = 0.1f
                                         }
                                 } else {
                                     Modifier
