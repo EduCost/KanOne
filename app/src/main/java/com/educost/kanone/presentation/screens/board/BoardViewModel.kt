@@ -584,13 +584,13 @@ class BoardViewModel @Inject constructor(
                 lazyRowState = currentState.board.listState
             ) ?: return
 
-            val newOffset = Offset(
-                x = offset.x - targetColumn.second.headerCoordinates.width / 2,
-                y = offset.y - targetColumn.second.headerCoordinates.height / 2
-            )
 
             val isSelectingHeader = isHeaderPressed(targetColumn.second, offset.y)
             if (isSelectingHeader) {
+                val newOffset = Offset(
+                    x = offset.x - targetColumn.second.headerCoordinates.width / 2,
+                    y = offset.y - targetColumn.second.headerCoordinates.height / 2
+                )
                 return@update currentState.copy(
                     dragState = currentState.dragState.copy(
                         draggingColumn = targetColumn.second,
@@ -600,11 +600,16 @@ class BoardViewModel @Inject constructor(
                 )
             }
 
+
             val targetCard = findCardWithIndex(
                 column = targetColumn.second,
                 offsetY = offset.y,
             ) ?: return
 
+            val newOffset = Offset(
+                x = offset.x - targetCard.second.coordinates.width / 2,
+                y = offset.y - targetCard.second.coordinates.height / 2
+            )
 
             currentState.copy(
                 dragState = currentState.dragState.copy(

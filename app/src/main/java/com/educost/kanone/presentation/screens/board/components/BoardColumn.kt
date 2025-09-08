@@ -2,6 +2,7 @@ package com.educost.kanone.presentation.screens.board.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalFocusManager
@@ -139,7 +141,11 @@ fun BoardColumn(
                             }
                         )
                         .fillMaxWidth()
-                        .clickable { onIntent(BoardIntent.OnCardClick(card.id)) },
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onTap = { onIntent(BoardIntent.OnCardClick(card.id)) }
+                            )
+                        },
                     card = card,
                 )
             }
