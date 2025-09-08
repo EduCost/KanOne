@@ -3,6 +3,7 @@ package com.educost.kanone.presentation.screens.card.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.DropdownMenu
@@ -83,6 +84,21 @@ fun CardAppBar(
                             expanded = isShowingDropdownMenu,
                             onDismissRequest = { isShowingDropdownMenu = false }
                         ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(stringResource(R.string.card_appbar_dropdown_menu_rename_card))
+                                },
+                                onClick = {
+                                    isShowingDropdownMenu = false
+                                    onIntent(CardIntent.StartRenamingCard)
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Filled.ModeEdit,
+                                        contentDescription = null
+                                    )
+                                }
+                            )
                             DropdownMenuItem(
                                 text = {
                                     Text(stringResource(R.string.card_appbar_dropdown_menu_delete_card))

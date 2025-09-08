@@ -50,6 +50,7 @@ import com.educost.kanone.presentation.screens.card.components.CardDeletionDialo
 import com.educost.kanone.presentation.screens.card.components.CardDescription
 import com.educost.kanone.presentation.screens.card.components.CardDueDate
 import com.educost.kanone.presentation.screens.card.components.CardLabels
+import com.educost.kanone.presentation.screens.card.components.CardRenameDialog
 import com.educost.kanone.presentation.screens.card.components.CardTasks
 import com.educost.kanone.presentation.screens.card.components.CreateAttachmentDialog
 import com.educost.kanone.presentation.screens.card.components.ImageDialog
@@ -309,6 +310,13 @@ private fun CardScreen(
                 CardDeletionDialog(
                     onDismiss = { onIntent(CardIntent.CancelCardDeletion) },
                     onConfirm = { onIntent(CardIntent.ConfirmCardDeletion) }
+                )
+            }
+
+            if (state.isRenamingCard) {
+                CardRenameDialog(
+                    onDismiss = { onIntent(CardIntent.CancelCardRename) },
+                    onConfirm = { onIntent(CardIntent.ConfirmCardRename(it)) }
                 )
             }
         }

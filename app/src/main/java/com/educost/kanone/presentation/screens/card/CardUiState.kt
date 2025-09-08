@@ -19,6 +19,7 @@ data class CardUiState(
     val isShowingLabelDialog: Boolean = false,
     val labelBeingEdited: Label? = null,
     val isShowingCardDeletionDialog: Boolean = false,
+    val isRenamingCard: Boolean = false,
 )
 
 data class CreateTaskState(

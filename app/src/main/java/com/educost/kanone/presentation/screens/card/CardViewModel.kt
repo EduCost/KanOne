@@ -67,10 +67,13 @@ class CardViewModel @Inject constructor(
             is CardIntent.ObserveCard -> observeCard(intent.cardId)
             is CardIntent.OnNavigateBack -> onNavigateBack()
 
-            // Delete Card
+            // App Bar Dropdown Menu
             is CardIntent.DeleteCard -> deleteCard()
             is CardIntent.ConfirmCardDeletion -> confirmCardDeletion()
             is CardIntent.CancelCardDeletion -> clearAllCreateAndEditStates()
+            is CardIntent.StartRenamingCard -> startRenamingCard()
+            is CardIntent.ConfirmCardRename -> confirmRenamingCard(intent.newTitle)
+            is CardIntent.CancelCardRename -> clearAllCreateAndEditStates()
 
             // Description
             is CardIntent.StartEditingDescription -> startEditingDescription()
@@ -168,7 +171,7 @@ class CardViewModel @Inject constructor(
     }
 
 
-    // Delete Card
+    // App Bar Dropdown Menu
     private fun deleteCard() {
         clearAllCreateAndEditStates()
         _uiState.update { it.copy(isShowingCardDeletionDialog = true) }
@@ -191,6 +194,29 @@ class CardViewModel @Inject constructor(
                     )
                 )
             }
+        }
+    }
+
+    private fun startRenamingCard() {
+        clearAllCreateAndEditStates()
+        _uiState.update { it.copy(isRenamingCard = true) }
+    }
+
+    private fun confirmRenamingCard(newTitle: String) {
+        clearAllCreateAndEditStates()
+
+        val card = _uiState.value.card ?: return
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val newCard = card.copy(title = newTitle)
+            val wasCardUpdated = updateCardUseCase(newCard)
+
+            if (!wasCardUpdated) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.card_snackbar_rename_card_error),
+                    withDismissAction = true
+                )
+            )
         }
     }
 
@@ -733,7 +759,8 @@ class CardViewModel @Inject constructor(
                 isLabelMenuExpanded = false,
                 isShowingLabelDialog = false,
                 labelBeingEdited = null,
-                isShowingCardDeletionDialog = false
+                isShowingCardDeletionDialog = false,
+                isRenamingCard = false
             )
         }
     }

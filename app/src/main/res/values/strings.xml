@@ -59,6 +59,7 @@
 
     <!--  CARD SCREEN  -->
     <string name="card_appbar_dropdown_menu_delete_card">Delete Card</string>
+    <string name="card_appbar_dropdown_menu_rename_card">Rename Card</string>
     <string name="card_appbar_save_description">Save</string>
     <string name="card_appbar_create_task">Create Task</string>
     <string name="card_appbar_edit_task">Rename Task</string>
@@ -89,6 +90,13 @@
     <string name="card_dialog_delete_card_confirm_button">Delete</string>
     <string name="card_dialog_delete_card_cancel_button">Cancel</string>
     <string name="card_dialog_delete_card_text">This card will be permanently deleted.</string>
+
+    <string name="card_dialog_rename_card_title">Rename Card</string>
+    <string name="card_dialog_rename_card_text_field_label">New Title</string>
+    <string name="card_dialog_rename_card_button_confirm">Rename</string>
+    <string name="card_dialog_rename_card_button_cancel">Cancel</string>
+    <string name="card_snackbar_rename_card_error">Error renaming card</string>
+
     <string name="card_description">Description</string>
     <string name="card_labels">Labels</string>
     <string name="card_attachments">Attachments</string>

@@ -11,10 +11,14 @@ sealed interface CardIntent {
     data object OnNavigateBack : CardIntent
 
 
-    // Delete Card
+    // App Bar Dropdown Menu
     data object DeleteCard : CardIntent
     data object ConfirmCardDeletion : CardIntent
     data object CancelCardDeletion : CardIntent
+
+    data object StartRenamingCard : CardIntent
+    data class ConfirmCardRename(val newTitle: String) : CardIntent
+    data object CancelCardRename : CardIntent
 
 
     // Description
