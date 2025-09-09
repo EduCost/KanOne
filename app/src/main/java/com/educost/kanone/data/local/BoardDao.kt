@@ -16,14 +16,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface BoardDao {
 
-    @Query("SELECT * FROM boards WHERE id = :boardId")
-    suspend fun getBoard(boardId: Long): BoardEntity
-
     @Query("SELECT * FROM boards")
     fun observeAllBoards(): Flow<List<BoardWithColumns>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createBoard(board: BoardEntity): Long
+
+    @Update
+    suspend fun updateBoard(board: BoardEntity)
 
     @Delete
     suspend fun deleteBoard(board: BoardEntity)
@@ -32,6 +32,8 @@ interface BoardDao {
     @Query("SELECT * FROM boards WHERE id = :boardId")
     fun observeCompleteBoard(boardId: Long): Flow<BoardWithColumns>
 
+
+    // ===================  Update board data  ================================================
     @Update
     suspend fun updateColumns(columns: List<ColumnEntity>)
 
@@ -43,4 +45,5 @@ interface BoardDao {
         updateColumns(columns)
         updateCards(cards)
     }
+    // =========================================================================================
 }

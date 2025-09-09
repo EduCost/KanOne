@@ -28,13 +28,16 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.educost.kanone.R
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.model.Task
 import com.educost.kanone.presentation.components.ColorPickerDialog
+import com.educost.kanone.presentation.components.DialogRename
 import com.educost.kanone.presentation.screens.board.components.AddColumn
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
 import com.educost.kanone.presentation.screens.board.components.BoardColumn
@@ -131,6 +134,7 @@ fun BoardScreen(
                 BoardAppBar(
                     boardName = board.name,
                     type = state.topBarType,
+                    isDropdownMenuExpanded = state.isBoardDropdownMenuExpanded,
                     onIntent = onIntent
                 )
             }
@@ -217,6 +221,14 @@ fun BoardScreen(
             initialColor = initialColor,
             onDismiss = { onIntent(BoardIntent.CancelColumnColorEdit) },
             onConfirm = { onIntent(BoardIntent.ConfirmColumnColorEdit(it)) }
+        )
+    }
+
+    if (state.isRenamingBoard) {
+        DialogRename(
+            onDismiss = { onIntent(BoardIntent.CancelBoardRename)},
+            onConfirm = { onIntent(BoardIntent.ConfirmBoardRename(it))},
+            title = stringResource(R.string.board_dialog_rename_board_title),
         )
     }
 

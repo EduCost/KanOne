@@ -9,6 +9,17 @@ sealed interface BoardIntent {
     data class ObserveBoard(val boardId: Long) : BoardIntent
     data class OnCardClick(val cardId: Long) : BoardIntent
 
+    // App bar
+    data object OpenBoardDropdownMenu : BoardIntent
+    data object OnRenameBoardClicked : BoardIntent
+    data object OnShowLabelsClicked : BoardIntent
+    data object OnDeleteBoardClicked : BoardIntent
+    data object CloseBoardDropdownMenu : BoardIntent
+
+    // Rename Board
+    data class ConfirmBoardRename(val newName: String) : BoardIntent
+    data object CancelBoardRename : BoardIntent
+
     // Drag and drop
     data class OnDragStart(val offset: Offset) : BoardIntent
     data class OnDrag(val position: Offset) : BoardIntent

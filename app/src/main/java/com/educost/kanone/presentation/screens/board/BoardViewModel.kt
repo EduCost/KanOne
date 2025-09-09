@@ -18,7 +18,9 @@ import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
 import com.educost.kanone.domain.usecase.ReorderCardsUseCase
 import com.educost.kanone.domain.usecase.RestoreColumnUseCase
+import com.educost.kanone.domain.usecase.UpdateBoardUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
+import com.educost.kanone.presentation.screens.board.mapper.toBoard
 import com.educost.kanone.presentation.screens.board.mapper.toBoardUi
 import com.educost.kanone.presentation.screens.board.mapper.toCardUi
 import com.educost.kanone.presentation.screens.board.mapper.toColumnUi
@@ -60,7 +62,8 @@ class BoardViewModel @Inject constructor(
     private val deleteColumnUseCase: DeleteColumnUseCase,
     private val restoreColumnUseCase: RestoreColumnUseCase,
     private val persistBoardPositionsUseCase: PersistBoardPositionsUseCase,
-    private val reorderCardsUseCase: ReorderCardsUseCase
+    private val reorderCardsUseCase: ReorderCardsUseCase,
+    private val updateBoardUseCase: UpdateBoardUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BoardState())
@@ -77,6 +80,17 @@ class BoardViewModel @Inject constructor(
         when (intent) {
             is BoardIntent.ObserveBoard -> observeBoard(intent.boardId)
             is BoardIntent.OnCardClick -> navigateToCardScreen(intent.cardId)
+
+            // App bar
+            BoardIntent.OpenBoardDropdownMenu -> openBoardDropdownMenu()
+            BoardIntent.OnRenameBoardClicked -> onRenameBoardClicked()
+            BoardIntent.OnShowLabelsClicked -> onShowLabelsClicked()
+            BoardIntent.OnDeleteBoardClicked -> onDeleteBoardClicked()
+            BoardIntent.CloseBoardDropdownMenu -> clearEditAndCreationStates()
+
+            // Rename Board
+            is BoardIntent.ConfirmBoardRename -> confirmBoardRename(intent.newName)
+            is BoardIntent.CancelBoardRename -> clearEditAndCreationStates()
 
             // Drag and drop
             is BoardIntent.OnDragStart -> onDragStart(intent.offset)
@@ -180,6 +194,43 @@ class BoardViewModel @Inject constructor(
     private fun navigateToCardScreen(cardId: Long) {
         viewModelScope.launch(dispatcherProvider.main) {
             _sideEffectChannel.send(BoardSideEffect.NavigateToCardScreen(cardId))
+        }
+    }
+
+
+    // App bar
+
+    private fun openBoardDropdownMenu() {
+        clearEditAndCreationStates()
+        _uiState.update { it.copy(isBoardDropdownMenuExpanded = true) }
+    }
+
+    private fun onRenameBoardClicked() {
+        clearEditAndCreationStates()
+        _uiState.update { it.copy(isRenamingBoard = true) }
+    }
+
+    private fun onShowLabelsClicked() {}
+
+    private fun onDeleteBoardClicked() {}
+
+
+    // Rename board
+    private fun confirmBoardRename(newName: String) {
+        val board = uiState.value.board ?: return
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            val newBoard = board.copy(name = newName).toBoard()
+            val wasBoardUpdated = updateBoardUseCase(newBoard)
+
+            if (!wasBoardUpdated) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.board_snackbar_rename_board_error),
+                    withDismissAction = true
+                )
+            )
+
+            clearEditAndCreationStates()
         }
     }
 
@@ -470,7 +521,9 @@ class BoardViewModel @Inject constructor(
                 activeDropdownColumnId = null,
                 cardCreationState = CardCreationState(),
                 columnEditState = ColumnEditState(),
-                creatingColumnName = null
+                creatingColumnName = null,
+                isBoardDropdownMenuExpanded = false,
+                isRenamingBoard = false
             )
         }
     }

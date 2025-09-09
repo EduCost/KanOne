@@ -7,7 +7,6 @@ import com.educost.kanone.data.mapper.toBoardEntity
 import com.educost.kanone.data.mapper.toCardEntity
 import com.educost.kanone.data.mapper.toColumnEntity
 import com.educost.kanone.data.model.entity.CardEntity
-import com.educost.kanone.data.model.entity.ColumnEntity
 import com.educost.kanone.domain.error.FetchDataError
 import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.Board
@@ -22,18 +21,6 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 class BoardRepositoryImpl @Inject constructor(val boardDao: BoardDao) : BoardRepository {
-
-    override suspend fun getBoard(id: Long): Result<Board, FetchDataError> {
-        return try {
-            val board = boardDao.getBoard(id)
-            Result.Success(board.toBoard())
-        } catch (e: IOException) {
-            Result.Error(FetchDataError.IO_ERROR)
-        } catch (e: Exception) {
-            Log.e(LogTags.BOARD_REPO, e.stackTraceToString())
-            Result.Error(FetchDataError.UNKNOWN)
-        }
-    }
 
     override fun observeAllBoards(): Flow<Result<List<Board>, FetchDataError>> {
         return boardDao.observeAllBoards().map { boards ->
@@ -79,6 +66,16 @@ class BoardRepositoryImpl @Inject constructor(val boardDao: BoardDao) : BoardRep
         } catch (e: Exception) {
             Log.e(LogTags.BOARD_REPO, e.stackTraceToString())
             Result.Error(InsertDataError.UNKNOWN)
+        }
+    }
+
+    override suspend fun updateBoard(board: Board): Boolean {
+        return try {
+            boardDao.updateBoard(board.toBoardEntity())
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 

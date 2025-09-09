@@ -11,6 +11,8 @@ data class BoardState(
     val creatingColumnName: String? = null,
     val columnEditState: ColumnEditState = ColumnEditState(),
     val cardCreationState: CardCreationState = CardCreationState(),
+    val isBoardDropdownMenuExpanded: Boolean = false,
+    val isRenamingBoard: Boolean = false,
     val dragState: DragState = DragState(),
 )
 

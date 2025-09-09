@@ -3,16 +3,24 @@
 package com.educost.kanone.presentation.screens.board.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Label
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.ModeEdit
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import com.educost.kanone.R
@@ -25,6 +33,7 @@ fun BoardAppBar(
     modifier: Modifier = Modifier,
     boardName: String,
     type: BoardAppBarType = BoardAppBarType.DEFAULT,
+    isDropdownMenuExpanded: Boolean,
     onIntent: (BoardIntent) -> Unit
 ) {
 
@@ -47,6 +56,20 @@ fun BoardAppBar(
                         Icon(
                             Icons.Filled.Menu,
                             contentDescription = stringResource(R.string.menu_icon_content_description)
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = { onIntent(BoardIntent.OpenBoardDropdownMenu) }
+                    ) {
+                        Icon(
+                            Icons.Filled.MoreVert,
+                            contentDescription = stringResource(R.string.board_appbar_more_options_content_description)
+                        )
+                        BoardDropdownMenu(
+                            isExpanded = isDropdownMenuExpanded,
+                            onIntent = onIntent
                         )
                     }
                 }
@@ -84,6 +107,60 @@ fun BoardAppBar(
                 keyboardController?.hide()
                 onIntent(BoardIntent.ConfirmColumnRename)
             }
+        )
+    }
+}
+
+@Composable
+private fun BoardDropdownMenu(
+    modifier: Modifier = Modifier,
+    isExpanded: Boolean,
+    onIntent: (BoardIntent) -> Unit
+) {
+    DropdownMenu(
+        modifier = modifier,
+        expanded = isExpanded,
+        onDismissRequest = { onIntent(BoardIntent.CloseBoardDropdownMenu) },
+    ) {
+        DropdownMenuItem(
+            text = {
+                Text(stringResource(R.string.board_appbar_dropdown_menu_rename_board))
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.ModeEdit,
+                    contentDescription = null
+                )
+            },
+            onClick = { onIntent(BoardIntent.OnRenameBoardClicked) }
+        )
+        DropdownMenuItem(
+            text = {
+                Text(stringResource(R.string.board_appbar_dropdown_menu_open_labels))
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.Label,
+                    contentDescription = null
+                )
+            },
+            onClick = { onIntent(BoardIntent.OnShowLabelsClicked) }
+        )
+        DropdownMenuItem(
+            text = {
+                Text(stringResource(R.string.board_appbar_dropdown_menu_delete_board))
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = null
+                )
+            },
+            colors = MenuDefaults.itemColors(
+                leadingIconColor = Color.Red,
+                textColor = Color.Red
+            ),
+            onClick = { onIntent(BoardIntent.OnDeleteBoardClicked) }
         )
     }
 }

@@ -43,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.educost.kanone.R
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.Label
+import com.educost.kanone.presentation.components.DialogRename
 import com.educost.kanone.presentation.screens.card.components.CardAppBar
 import com.educost.kanone.presentation.screens.card.components.CardAttachments
 import com.educost.kanone.presentation.screens.card.components.CardCover
@@ -50,7 +51,6 @@ import com.educost.kanone.presentation.screens.card.components.CardDeletionDialo
 import com.educost.kanone.presentation.screens.card.components.CardDescription
 import com.educost.kanone.presentation.screens.card.components.CardDueDate
 import com.educost.kanone.presentation.screens.card.components.CardLabels
-import com.educost.kanone.presentation.screens.card.components.CardRenameDialog
 import com.educost.kanone.presentation.screens.card.components.CardTasks
 import com.educost.kanone.presentation.screens.card.components.CreateAttachmentDialog
 import com.educost.kanone.presentation.screens.card.components.ImageDialog
@@ -314,9 +314,10 @@ private fun CardScreen(
             }
 
             if (state.isRenamingCard) {
-                CardRenameDialog(
+                DialogRename(
                     onDismiss = { onIntent(CardIntent.CancelCardRename) },
-                    onConfirm = { onIntent(CardIntent.ConfirmCardRename(it)) }
+                    onConfirm = { onIntent(CardIntent.ConfirmCardRename(it)) },
+                    title = stringResource(R.string.card_dialog_rename_card_title),
                 )
             }
         }

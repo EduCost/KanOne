@@ -8,6 +8,10 @@
     <string name="pick_color_dialog_cancel_button">Cancel</string>
     <string name="pick_color_dialog_confirm_button">Confirm</string>
     <string name="undo_action">Undo</string>
+
+    <string name="dialog_rename_text_field_label">New Title</string>
+    <string name="dialog_rename_button_confirm">Rename</string>
+    <string name="dialog_rename_button_cancel">Cancel</string>
     <!--  COMMON  -->
 
     <!--  HOME SCREEN  -->
@@ -34,6 +38,15 @@
     <string name="board_appbar_rename_column">Rename</string>
     <string name="board_appbar_content_description_cancel_column_rename">Cancel column rename</string>
     <string name="board_appbar_content_description_confirm_column_rename">Confirm column rename</string>
+
+    <string name="board_appbar_more_options_content_description">More Board Options</string>
+    <string name="board_appbar_dropdown_menu_rename_board">Rename Board</string>
+    <string name="board_appbar_dropdown_menu_open_labels">Labels</string>
+    <string name="board_appbar_dropdown_menu_delete_board">Delete Board</string>
+
+    <string name="board_dialog_rename_board_title">Rename Board</string>
+    <string name="board_snackbar_rename_board_error">Error renaming board</string>
+
     <string name="board_button_add_column">Add Column</string>
     <string name="board_snackbar_column_creation_error">Error creating column</string>
     <string name="board_snackbar_column_empty_name_error">Column name is required</string> <!-- Shows when user tries to rename or create a column with empty name -->
@@ -92,9 +105,6 @@
     <string name="card_dialog_delete_card_text">This card will be permanently deleted.</string>
 
     <string name="card_dialog_rename_card_title">Rename Card</string>
-    <string name="card_dialog_rename_card_text_field_label">New Title</string>
-    <string name="card_dialog_rename_card_button_confirm">Rename</string>
-    <string name="card_dialog_rename_card_button_cancel">Cancel</string>
     <string name="card_snackbar_rename_card_error">Error renaming card</string>
 
     <string name="card_description">Description</string>

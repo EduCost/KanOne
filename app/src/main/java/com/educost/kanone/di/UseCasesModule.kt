@@ -25,6 +25,7 @@ import com.educost.kanone.domain.usecase.PersistBoardPositionsUseCase
 import com.educost.kanone.domain.usecase.ReorderCardsUseCase
 import com.educost.kanone.domain.usecase.RestoreColumnUseCase
 import com.educost.kanone.domain.usecase.SaveImageUseCase
+import com.educost.kanone.domain.usecase.UpdateBoardUseCase
 import com.educost.kanone.domain.usecase.UpdateCardUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import com.educost.kanone.domain.usecase.UpdateLabelAssociationUseCase
@@ -187,5 +188,11 @@ object UseCasesModule {
     @Singleton
     fun provideDeleteCardUseCase(cardRepository: CardRepository): DeleteCardUseCase {
         return DeleteCardUseCase(cardRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateBoardUseCase(boardRepository: BoardRepository): UpdateBoardUseCase {
+        return UpdateBoardUseCase(boardRepository)
     }
 }

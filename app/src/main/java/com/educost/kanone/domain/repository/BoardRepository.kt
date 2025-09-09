@@ -9,8 +9,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface BoardRepository {
 
-    suspend fun getBoard(id: Long): Result<Board, FetchDataError>
-
     fun observeAllBoards(): Flow<Result<List<Board>, FetchDataError>>
 
     fun observeCompleteBoard(boardId: Long): Flow<Result<Board, FetchDataError>>
@@ -18,4 +16,6 @@ interface BoardRepository {
     suspend fun createBoard(board: Board): Result<Long, InsertDataError>
 
     suspend fun updateBoardData(boardId: Long, columns: List<KanbanColumn>): Result<Unit, InsertDataError>
+
+    suspend fun updateBoard(board: Board): Boolean
 }
