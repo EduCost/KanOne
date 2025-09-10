@@ -3,8 +3,6 @@ package com.educost.kanone.presentation.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.educost.kanone.R
-import com.educost.kanone.domain.error.FetchDataError
-import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.usecase.CreateBoardUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
@@ -62,30 +60,12 @@ class HomeViewModel @Inject constructor(
                         }
                     }
 
-                    is Result.Error -> {
-
-                        when (boardsResult.error) {
-                            FetchDataError.IO_ERROR -> {
-                                _sideEffectChannel.send(
-                                    HomeSideEffect.ShowSnackBar(
-                                        SnackbarEvent(
-                                            message = UiText.StringResource(R.string.home_snackbar_fetch_io_error)
-                                        )
-                                    )
-                                )
-                            }
-
-                            FetchDataError.UNKNOWN -> {
-                                _sideEffectChannel.send(
-                                    HomeSideEffect.ShowSnackBar(
-                                        SnackbarEvent(
-                                            message = UiText.StringResource(R.string.home_snackbar_unknown_error)
-                                        )
-                                    )
-                                )
-                            }
-                        }
-                    }
+                    is Result.Error -> sendSnackbar(
+                        SnackbarEvent(
+                            message = UiText.StringResource(R.string.home_snackbar_observe_boards_error),
+                            withDismissAction = true
+                        )
+                    )
                 }
             }
             _uiState.update { it.copy(isLoading = false) }
@@ -134,6 +114,16 @@ class HomeViewModel @Inject constructor(
     private fun navigateToBoardScreen(boardId: Long) {
         viewModelScope.launch {
             _sideEffectChannel.send(HomeSideEffect.NavigateToBoardScreen(boardId))
+        }
+    }
+
+    private fun sendSnackbar(snackbarEvent: SnackbarEvent) {
+        viewModelScope.launch {
+            _sideEffectChannel.send(
+                HomeSideEffect.ShowSnackBar(
+                    snackbarEvent
+                )
+            )
         }
     }
 }

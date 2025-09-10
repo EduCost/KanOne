@@ -23,8 +23,7 @@
     <string name="home_dialog_textfield_label_board_name">Board Name</string>
     <string name="home_dialog_button_create">Create</string>
     <string name="home_dialog_button_cancel">Cancel</string>
-    <string name="home_snackbar_fetch_io_error">An error occurred while fetching data.</string>
-    <string name="home_snackbar_unknown_error">An unknown error occurred.</string>
+    <string name="home_snackbar_observe_boards_error">Error while fetching boards</string>
     <string name="home_snackbar_creating_board_error">Error while creating board</string>
     <!--  HOME SCREEN  -->
 

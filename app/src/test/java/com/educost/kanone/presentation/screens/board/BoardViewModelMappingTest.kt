@@ -4,7 +4,6 @@ import androidx.compose.ui.geometry.Offset
 import app.cash.turbine.test
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.dispatchers.TestDispatcherProvider
-import com.educost.kanone.domain.error.FetchDataError
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn

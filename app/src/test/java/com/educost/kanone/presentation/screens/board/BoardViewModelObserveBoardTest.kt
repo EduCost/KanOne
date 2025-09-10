@@ -3,7 +3,6 @@ package com.educost.kanone.presentation.screens.board
 import app.cash.turbine.test
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.dispatchers.TestDispatcherProvider
-import com.educost.kanone.domain.error.FetchDataError
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.utils.Result
