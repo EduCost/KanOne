@@ -20,6 +20,7 @@ fun CreateBoardDialog(
     onIntent: (HomeIntent) -> Unit
 ) {
     AlertDialog(
+        modifier = modifier,
         onDismissRequest = { onIntent(HomeIntent.DismissCreateBoardDialog) },
         title = { Text(text = stringResource(R.string.home_dialog_title_create_board)) },
         text = {

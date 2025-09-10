@@ -10,6 +10,10 @@ sealed interface BoardIntent {
     data class OnCardClick(val cardId: Long) : BoardIntent
     data object OnBackPressed : BoardIntent
 
+    // Full Screen
+    data object EnterFullScreen : BoardIntent
+    data object ExitFullScreen : BoardIntent
+
     // App bar
     data object OpenBoardDropdownMenu : BoardIntent
     data object OnRenameBoardClicked : BoardIntent

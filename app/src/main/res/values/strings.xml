@@ -38,6 +38,8 @@
     <string name="board_appbar_content_description_cancel_column_rename">Cancel column rename</string>
     <string name="board_appbar_content_description_confirm_column_rename">Confirm column rename</string>
 
+    <string name="board_appbar_full_screen_content_description">Enter full screen</string>
+
     <string name="board_appbar_more_options_content_description">More Board Options</string>
     <string name="board_appbar_dropdown_menu_rename_board">Rename Board</string>
 <!--    <string name="board_appbar_dropdown_menu_open_labels">Labels</string>-->

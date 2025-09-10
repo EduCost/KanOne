@@ -4,6 +4,7 @@ package com.educost.kanone.presentation.screens.board.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material.icons.filled.MoreVert
@@ -34,6 +35,7 @@ fun BoardAppBar(
     boardName: String,
     type: BoardAppBarType = BoardAppBarType.DEFAULT,
     isDropdownMenuExpanded: Boolean,
+    isFullScreen: Boolean,
     onIntent: (BoardIntent) -> Unit
 ) {
 
@@ -41,43 +43,53 @@ fun BoardAppBar(
 
     when (type) {
         BoardAppBarType.DEFAULT -> {
-            TopAppBar(
-                modifier = modifier,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                ),
-                title = {
-                    Text(
-                        text = boardName,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { /*TODO*/ }
-                    ) {
-                        Icon(
-                            Icons.Filled.Menu,
-                            contentDescription = stringResource(R.string.menu_icon_content_description)
+            if (!isFullScreen) {
+                TopAppBar(
+                    modifier = modifier,
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    ),
+                    title = {
+                        Text(
+                            text = boardName,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { /*TODO*/ }
+                        ) {
+                            Icon(
+                                Icons.Filled.Menu,
+                                contentDescription = stringResource(R.string.menu_icon_content_description)
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = { onIntent(BoardIntent.EnterFullScreen) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Fullscreen,
+                                contentDescription = stringResource(R.string.board_appbar_full_screen_content_description)
+                            )
+                        }
+                        IconButton(
+                            onClick = { onIntent(BoardIntent.OpenBoardDropdownMenu) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.MoreVert,
+                                contentDescription = stringResource(R.string.board_appbar_more_options_content_description)
+                            )
+                            BoardDropdownMenu(
+                                isExpanded = isDropdownMenuExpanded,
+                                onIntent = onIntent
+                            )
+                        }
                     }
-                },
-                actions = {
-                    IconButton(
-                        onClick = { onIntent(BoardIntent.OpenBoardDropdownMenu) }
-                    ) {
-                        Icon(
-                            Icons.Filled.MoreVert,
-                            contentDescription = stringResource(R.string.board_appbar_more_options_content_description)
-                        )
-                        BoardDropdownMenu(
-                            isExpanded = isDropdownMenuExpanded,
-                            onIntent = onIntent
-                        )
-                    }
-                }
-            )
+                )
+            }
         }
 
         BoardAppBarType.ADD_COLUMN -> ActionTopBar(

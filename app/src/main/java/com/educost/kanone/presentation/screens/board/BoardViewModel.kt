@@ -84,6 +84,10 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.OnCardClick -> navigateToCardScreen(intent.cardId)
             is BoardIntent.OnBackPressed -> clearEditAndCreationStates()
 
+            // Full screen
+            is BoardIntent.EnterFullScreen -> enterFullScreen()
+            is BoardIntent.ExitFullScreen -> exitFullScreen()
+
             // App bar
             is BoardIntent.OpenBoardDropdownMenu -> openBoardDropdownMenu()
             is BoardIntent.OnRenameBoardClicked -> onRenameBoardClicked()
@@ -653,6 +657,14 @@ class BoardViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    private fun enterFullScreen() {
+        _uiState.update { it.copy(isOnFullScreen = true) }
+    }
+
+    private fun exitFullScreen() {
+        _uiState.update { it.copy(isOnFullScreen = false) }
     }
 
 

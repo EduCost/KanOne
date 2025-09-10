@@ -6,6 +6,10 @@ import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 data class BoardState(
     val board: BoardUi? = null,
     val isLoading: Boolean = false,
+    val dragState: DragState = DragState(),
+    val isOnFullScreen: Boolean = false,
+
+    // Edit states
     val topBarType: BoardAppBarType = BoardAppBarType.DEFAULT,
     val activeDropdownColumnId: Long? = null,
     val creatingColumnName: String? = null,
@@ -14,7 +18,6 @@ data class BoardState(
     val isBoardDropdownMenuExpanded: Boolean = false,
     val isRenamingBoard: Boolean = false,
     val isShowingDeleteBoardDialog: Boolean = false,
-    val dragState: DragState = DragState(),
 ) {
     val hasEditStates = topBarType != BoardAppBarType.DEFAULT ||
             activeDropdownColumnId != null ||

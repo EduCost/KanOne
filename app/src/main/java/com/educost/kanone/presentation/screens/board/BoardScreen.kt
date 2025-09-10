@@ -115,8 +115,12 @@ fun BoardScreen(
     snackBarHostState: SnackbarHostState
 ) {
 
-    BackHandler(enabled = state.hasEditStates) {
-        onIntent(BoardIntent.OnBackPressed)
+    BackHandler(enabled = state.hasEditStates || state.isOnFullScreen) {
+        if (state.isOnFullScreen) {
+            onIntent(BoardIntent.ExitFullScreen)
+        } else {
+            onIntent(BoardIntent.OnBackPressed)
+        }
     }
 
     Scaffold(
@@ -145,6 +149,7 @@ fun BoardScreen(
                     boardName = board.name,
                     type = state.topBarType,
                     isDropdownMenuExpanded = state.isBoardDropdownMenuExpanded,
+                    isFullScreen = state.isOnFullScreen,
                     onIntent = onIntent
                 )
             }
@@ -153,6 +158,11 @@ fun BoardScreen(
     ) { innerPadding ->
 
         state.board?.let { board ->
+
+            val contentPadding = remember(state.isOnFullScreen) {
+                calculatePaddingValues(state.isOnFullScreen)
+            }
+
             LazyRow(
                 modifier = Modifier
                     .onGloballyPositioned { layoutCoordinates ->
@@ -168,7 +178,7 @@ fun BoardScreen(
                     }
                     .padding(innerPadding)
                     .fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
+                contentPadding = contentPadding,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 state = state.board.listState
             ) {
@@ -346,5 +356,18 @@ private fun BoardScreenPreview() {
             snackBarHostState = SnackbarHostState()
 
         )
+    }
+}
+
+private fun calculatePaddingValues(isFullScreen: Boolean): PaddingValues {
+    return if (isFullScreen) {
+        PaddingValues(
+            top = 4.dp,
+            start = 16.dp,
+            end = 16.dp,
+            bottom = 8.dp
+        )
+    } else {
+        PaddingValues(16.dp)
     }
 }
