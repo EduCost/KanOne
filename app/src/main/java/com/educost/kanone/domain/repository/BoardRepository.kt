@@ -18,4 +18,6 @@ interface BoardRepository {
     suspend fun updateBoardData(boardId: Long, columns: List<KanbanColumn>): Result<Unit, InsertDataError>
 
     suspend fun updateBoard(board: Board): Boolean
+
+    suspend fun deleteBoard(board: Board): Boolean
 }

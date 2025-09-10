@@ -42,6 +42,7 @@ import com.educost.kanone.presentation.screens.board.components.AddColumn
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
 import com.educost.kanone.presentation.screens.board.components.BoardColumn
 import com.educost.kanone.presentation.screens.board.components.ColumnCard
+import com.educost.kanone.presentation.screens.board.components.DeleteBoardDialog
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
@@ -58,6 +59,7 @@ fun BoardScreen(
     modifier: Modifier = Modifier,
     viewModel: BoardViewModel = hiltViewModel(),
     onNavigateToCard: (Long) -> Unit,
+    onNavigateBack: () -> Unit,
     boardId: Long
 ) {
 
@@ -74,6 +76,8 @@ fun BoardScreen(
         when (event) {
 
             is BoardSideEffect.NavigateToCardScreen -> onNavigateToCard(event.cardId)
+
+            is BoardSideEffect.OnNavigateBack -> onNavigateBack()
 
             is BoardSideEffect.ShowSnackBar -> {
                 scope.launch {
@@ -226,9 +230,16 @@ fun BoardScreen(
 
     if (state.isRenamingBoard) {
         DialogRename(
-            onDismiss = { onIntent(BoardIntent.CancelBoardRename)},
-            onConfirm = { onIntent(BoardIntent.ConfirmBoardRename(it))},
+            onDismiss = { onIntent(BoardIntent.CancelBoardRename) },
+            onConfirm = { onIntent(BoardIntent.ConfirmBoardRename(it)) },
             title = stringResource(R.string.board_dialog_rename_board_title),
+        )
+    }
+
+    if (state.isShowingDeleteBoardDialog) {
+        DeleteBoardDialog(
+            onDismiss = { onIntent(BoardIntent.CancelBoardDeletion) },
+            onDelete = { onIntent(BoardIntent.ConfirmBoardDeletion) }
         )
     }
 

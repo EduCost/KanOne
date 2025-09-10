@@ -17,6 +17,7 @@ fun AppNavHost(
     navController: NavHostController = rememberNavController()
 ) {
     NavHost(
+        modifier = modifier,
         navController = navController,
         startDestination = HomeDestination
     ) {
@@ -33,6 +34,9 @@ fun AppNavHost(
             val boardId = backStackEntry.toRoute<BoardDestination>().boardId
             BoardScreen(
                 boardId = boardId,
+                onNavigateBack = {
+                    navController.navigateUp()
+                },
                 onNavigateToCard = { cardId ->
                     navController.navigate(CardDestination(cardId))
                 }

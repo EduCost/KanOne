@@ -13,6 +13,7 @@ data class BoardState(
     val cardCreationState: CardCreationState = CardCreationState(),
     val isBoardDropdownMenuExpanded: Boolean = false,
     val isRenamingBoard: Boolean = false,
+    val isShowingDeleteBoardDialog: Boolean = false,
     val dragState: DragState = DragState(),
 )
 

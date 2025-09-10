@@ -136,18 +136,6 @@ private fun BoardDropdownMenu(
         )
         DropdownMenuItem(
             text = {
-                Text(stringResource(R.string.board_appbar_dropdown_menu_open_labels))
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.Label,
-                    contentDescription = null
-                )
-            },
-            onClick = { onIntent(BoardIntent.OnShowLabelsClicked) }
-        )
-        DropdownMenuItem(
-            text = {
                 Text(stringResource(R.string.board_appbar_dropdown_menu_delete_board))
             },
             leadingIcon = {

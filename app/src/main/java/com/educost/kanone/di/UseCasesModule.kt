@@ -13,6 +13,7 @@ import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.CreateLabelForCardUseCase
 import com.educost.kanone.domain.usecase.CreateTaskUseCase
 import com.educost.kanone.domain.usecase.DeleteAttachmentUseCase
+import com.educost.kanone.domain.usecase.DeleteBoardUseCase
 import com.educost.kanone.domain.usecase.DeleteCardUseCase
 import com.educost.kanone.domain.usecase.DeleteColumnUseCase
 import com.educost.kanone.domain.usecase.DeleteImageUseCase
@@ -194,5 +195,11 @@ object UseCasesModule {
     @Singleton
     fun provideUpdateBoardUseCase(boardRepository: BoardRepository): UpdateBoardUseCase {
         return UpdateBoardUseCase(boardRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteBoardUseCase(boardRepository: BoardRepository): DeleteBoardUseCase {
+        return DeleteBoardUseCase(boardRepository)
     }
 }

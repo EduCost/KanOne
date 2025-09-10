@@ -12,9 +12,12 @@ sealed interface BoardIntent {
     // App bar
     data object OpenBoardDropdownMenu : BoardIntent
     data object OnRenameBoardClicked : BoardIntent
-    data object OnShowLabelsClicked : BoardIntent
     data object OnDeleteBoardClicked : BoardIntent
     data object CloseBoardDropdownMenu : BoardIntent
+
+    // Delete Board
+    data object ConfirmBoardDeletion : BoardIntent
+    data object CancelBoardDeletion : BoardIntent
 
     // Rename Board
     data class ConfirmBoardRename(val newName: String) : BoardIntent

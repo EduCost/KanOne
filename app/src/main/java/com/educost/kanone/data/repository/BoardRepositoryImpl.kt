@@ -79,6 +79,16 @@ class BoardRepositoryImpl @Inject constructor(val boardDao: BoardDao) : BoardRep
         }
     }
 
+    override suspend fun deleteBoard(board: Board): Boolean {
+        return try {
+            boardDao.deleteBoard(board.toBoardEntity())
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
     override fun observeCompleteBoard(boardId: Long): Flow<Result<Board, FetchDataError>> {
         return boardDao.observeCompleteBoard(boardId).map {
             Result.Success(it.toBoard())
