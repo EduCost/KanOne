@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import com.educost.kanone.R
 import com.educost.kanone.presentation.components.ActionTopBar
 import com.educost.kanone.presentation.screens.board.BoardIntent
@@ -46,7 +47,11 @@ fun BoardAppBar(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer
                 ),
                 title = {
-                    Text(text = boardName)
+                    Text(
+                        text = boardName,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 },
                 navigationIcon = {
                     IconButton(

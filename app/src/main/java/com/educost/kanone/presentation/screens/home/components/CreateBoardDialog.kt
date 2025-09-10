@@ -26,7 +26,8 @@ fun CreateBoardDialog(
             OutlinedTextField(
                 value = state.newBoardName,
                 onValueChange = { onIntent(HomeIntent.OnNewBoardNameChange(it)) },
-                label = { Text(text = stringResource(R.string.home_dialog_textfield_label_board_name)) }
+                label = { Text(text = stringResource(R.string.home_dialog_textfield_label_board_name)) },
+                singleLine = true
             )
         },
         confirmButton = {

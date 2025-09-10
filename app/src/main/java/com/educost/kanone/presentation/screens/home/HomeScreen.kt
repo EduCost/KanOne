@@ -129,9 +129,15 @@ fun HomeScreen(
                 }
 
                 else -> {
+                    val fabHeight = remember { 72.dp }
                     LazyColumn(
                         modifier = Modifier,
-                        contentPadding = PaddingValues(8.dp),
+                        contentPadding = PaddingValues(
+                            top = 12.dp,
+                            start = 12.dp,
+                            end = 12.dp,
+                            bottom = fabHeight + 12.dp,
+                        ),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(state.boards) { board ->
