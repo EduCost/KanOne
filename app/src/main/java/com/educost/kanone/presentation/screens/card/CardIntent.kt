@@ -9,6 +9,7 @@ sealed interface CardIntent {
     data class ObserveCard(val cardId: Long) : CardIntent
 
     data object OnNavigateBack : CardIntent
+    data object OnBackPressed : CardIntent
 
 
     // App Bar Dropdown Menu

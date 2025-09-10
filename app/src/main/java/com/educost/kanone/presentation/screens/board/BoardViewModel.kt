@@ -82,6 +82,7 @@ class BoardViewModel @Inject constructor(
         when (intent) {
             is BoardIntent.ObserveBoard -> observeBoard(intent.boardId)
             is BoardIntent.OnCardClick -> navigateToCardScreen(intent.cardId)
+            is BoardIntent.OnBackPressed -> clearEditAndCreationStates()
 
             // App bar
             is BoardIntent.OpenBoardDropdownMenu -> openBoardDropdownMenu()
@@ -197,6 +198,7 @@ class BoardViewModel @Inject constructor(
     }
 
     private fun navigateToCardScreen(cardId: Long) {
+        clearEditAndCreationStates()
         viewModelScope.launch(dispatcherProvider.main) {
             _sideEffectChannel.send(BoardSideEffect.NavigateToCardScreen(cardId))
         }
@@ -303,20 +305,23 @@ class BoardViewModel @Inject constructor(
                     columnId = columnId
                 )
 
-                if (cardCreationResult == CreateCardResult.EMPTY_TITLE) sendSnackbar(
-                    SnackbarEvent(
-                        message = UiText.StringResource(R.string.board_snackbar_card_creation_empty_name_error),
-                        withDismissAction = true
+                if (cardCreationResult == CreateCardResult.EMPTY_TITLE) {
+                    sendSnackbar(
+                        SnackbarEvent(
+                            message = UiText.StringResource(R.string.board_snackbar_card_creation_empty_name_error),
+                            withDismissAction = true
+                        )
                     )
-                )
+                    return@launch
+                }
                 if (cardCreationResult == CreateCardResult.GENERIC_ERROR) sendSnackbar(
                     SnackbarEvent(
                         message = UiText.StringResource(R.string.board_snackbar_card_creation_error),
                         withDismissAction = true
                     )
                 )
+                clearEditAndCreationStates()
             }
-            clearEditAndCreationStates()
         }
     }
 

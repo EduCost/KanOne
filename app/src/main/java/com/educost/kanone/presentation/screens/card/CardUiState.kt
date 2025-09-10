@@ -7,20 +7,37 @@ import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 
 data class CardUiState(
     val card: CardItem? = null,
+    val boardLabels: List<Label> = emptyList(),
+
+    // edit states
     val appBarType: CardAppBarType = CardAppBarType.DEFAULT,
-    val newDescription: String? = null,
     val createTaskState: CreateTaskState = CreateTaskState(),
     val editTaskState: EditTaskState = EditTaskState(),
-    val isPickingDate: Boolean = false,
-    val isCreatingAttachment: Boolean = false,
     val displayingAttachment: Attachment? = null,
-    val boardLabels: List<Label> = emptyList(),
+    val newDescription: String? = null,
+    val labelBeingEdited: Label? = null,
+    val isCreatingAttachment: Boolean = false,
     val isLabelMenuExpanded: Boolean = false,
     val isShowingLabelDialog: Boolean = false,
-    val labelBeingEdited: Label? = null,
+    val isPickingDate: Boolean = false,
     val isShowingCardDeletionDialog: Boolean = false,
     val isRenamingCard: Boolean = false,
-)
+
+
+) {
+    val hasEditStates = appBarType != CardAppBarType.DEFAULT ||
+            createTaskState != CreateTaskState() ||
+            editTaskState != EditTaskState() ||
+            displayingAttachment != null ||
+            newDescription != null ||
+            labelBeingEdited != null ||
+            isCreatingAttachment ||
+            isLabelMenuExpanded ||
+            isShowingLabelDialog ||
+            isPickingDate ||
+            isShowingCardDeletionDialog ||
+            isRenamingCard
+}
 
 data class CreateTaskState(
     val description: String = "",

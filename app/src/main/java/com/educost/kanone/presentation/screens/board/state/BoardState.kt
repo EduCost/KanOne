@@ -15,7 +15,16 @@ data class BoardState(
     val isRenamingBoard: Boolean = false,
     val isShowingDeleteBoardDialog: Boolean = false,
     val dragState: DragState = DragState(),
-)
+) {
+    val hasEditStates = topBarType != BoardAppBarType.DEFAULT ||
+            activeDropdownColumnId != null ||
+            creatingColumnName != null ||
+            columnEditState != ColumnEditState() ||
+            cardCreationState != CardCreationState() ||
+            isBoardDropdownMenuExpanded ||
+            isRenamingBoard ||
+            isShowingDeleteBoardDialog
+}
 
 data class CardCreationState(
     val isAppendingToEnd: Boolean = false,

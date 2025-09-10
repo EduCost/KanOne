@@ -1,5 +1,6 @@
 package com.educost.kanone.presentation.screens.card
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -120,6 +121,10 @@ private fun CardScreen(
     onIntent: (CardIntent) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
+
+    BackHandler(enabled = state.hasEditStates) {
+        onIntent(CardIntent.OnBackPressed)
+    }
 
     val scrollState = rememberScrollState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()

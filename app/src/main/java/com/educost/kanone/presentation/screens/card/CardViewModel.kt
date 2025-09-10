@@ -66,6 +66,7 @@ class CardViewModel @Inject constructor(
         when (intent) {
             is CardIntent.ObserveCard -> observeCard(intent.cardId)
             is CardIntent.OnNavigateBack -> onNavigateBack()
+            is CardIntent.OnBackPressed -> clearAllCreateAndEditStates()
 
             // App Bar Dropdown Menu
             is CardIntent.DeleteCard -> deleteCard()

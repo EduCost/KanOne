@@ -1,5 +1,6 @@
 package com.educost.kanone.presentation.screens.board
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -113,6 +114,11 @@ fun BoardScreen(
     onIntent: (BoardIntent) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
+
+    BackHandler(enabled = state.hasEditStates) {
+        onIntent(BoardIntent.OnBackPressed)
+    }
+
     Scaffold(
         modifier = modifier
             .fillMaxSize()

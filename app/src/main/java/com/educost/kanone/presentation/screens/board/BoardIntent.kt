@@ -8,6 +8,7 @@ import com.educost.kanone.presentation.screens.board.utils.OrderType
 sealed interface BoardIntent {
     data class ObserveBoard(val boardId: Long) : BoardIntent
     data class OnCardClick(val cardId: Long) : BoardIntent
+    data object OnBackPressed : BoardIntent
 
     // App bar
     data object OpenBoardDropdownMenu : BoardIntent
