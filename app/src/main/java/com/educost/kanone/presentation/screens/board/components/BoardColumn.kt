@@ -135,7 +135,7 @@ fun BoardColumn(
                                 Modifier
                                     .graphicsLayer {
                                         colorFilter = ColorFilter.tint(Color.Gray)
-                                        alpha = 0.1f
+                                        alpha = 0.05f
                                     }
                             } else {
                                 Modifier

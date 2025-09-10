@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -190,7 +191,7 @@ fun BoardScreen(
                                     Modifier
                                         .graphicsLayer {
                                             colorFilter = ColorFilter.tint(Color.Gray)
-                                            alpha = 0.1f
+                                            alpha = 0.05f
                                         }
                                 } else {
                                     Modifier
