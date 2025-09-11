@@ -116,10 +116,10 @@ fun BoardScreen(
 ) {
 
     BackHandler(enabled = state.hasEditStates || state.isOnFullScreen) {
-        if (state.isOnFullScreen) {
-            onIntent(BoardIntent.ExitFullScreen)
-        } else {
-            onIntent(BoardIntent.OnBackPressed)
+        when {
+            state.isOnFullScreen && state.hasEditStates -> onIntent(BoardIntent.OnBackPressed)
+            state.isOnFullScreen -> onIntent(BoardIntent.ExitFullScreen)
+            else -> onIntent(BoardIntent.OnBackPressed)
         }
     }
 
