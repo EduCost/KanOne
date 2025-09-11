@@ -1,156 +1,20 @@
 <resources>
     <string name="app_name">KanOne</string>
 
-    <!--  COMMON  -->
     <string name="menu_icon_content_description">Menu Button</string>
     <string name="navigate_back_button_content_description">Navigate Back</string>
     <string name="icon_more_vert_content_description">More Options</string>
-    <string name="pick_color_dialog_cancel_button">Cancel</string>
-    <string name="pick_color_dialog_confirm_button">Confirm</string>
     <string name="undo_action">Undo</string>
 
+    <!-- Color Picker Dialog -->
+    <string name="pick_color_dialog_cancel_button">Cancel</string>
+    <string name="pick_color_dialog_confirm_button">Confirm</string>
+    <!-- Color Picker Dialog -->
+
+    <!-- Rename Dialog -->
     <string name="dialog_rename_text_field_label">New Title</string>
     <string name="dialog_rename_button_confirm">Rename</string>
     <string name="dialog_rename_button_cancel">Cancel</string>
-    <!--  COMMON  -->
-
-    <!--  HOME SCREEN  -->
-    <string name="home_screen_no_boards_found">No boards found</string>
-    <string name="home_fab_create_board">Create new board</string>
-    <string name="home_board_card_empty_board">Empty Board</string>
-    <string name="home_board_card_more_options_content_description">More Options</string>
-    <string name="home_dialog_title_create_board">Create Board</string>
-    <string name="home_dialog_textfield_label_board_name">Board Name</string>
-    <string name="home_dialog_button_create">Create</string>
-    <string name="home_dialog_button_cancel">Cancel</string>
-    <string name="home_snackbar_observe_boards_error">Error while fetching boards</string>
-    <string name="home_snackbar_creating_board_error">Error while creating board</string>
-    <!--  HOME SCREEN  -->
-
-    <!--  BOARD SCREEN  -->
-    <string name="board_appbar_create_column">Create Column</string>
-    <string name="board_appbar_content_description_cancel_column_creation">Cancel column creation</string>
-    <string name="board_appbar_content_description_confirm_column_creation">Confirm column creation</string>
-    <string name="board_appbar_create_card">Create Card</string>
-    <string name="board_appbar_content_description_cancel_card_creation">Cancel card creation</string>
-    <string name="board_appbar_content_description_confirm_card_creation">Confirm card creation</string>
-    <string name="board_appbar_rename_column">Rename</string>
-    <string name="board_appbar_content_description_cancel_column_rename">Cancel column rename</string>
-    <string name="board_appbar_content_description_confirm_column_rename">Confirm column rename</string>
-
-    <string name="board_appbar_full_screen_content_description">Enter full screen</string>
-
-    <string name="board_appbar_more_options_content_description">More Board Options</string>
-    <string name="board_appbar_dropdown_menu_rename_board">Rename Board</string>
-<!--    <string name="board_appbar_dropdown_menu_open_labels">Labels</string>-->
-    <string name="board_appbar_dropdown_menu_delete_board">Delete Board</string>
-
-    <string name="board_dialog_rename_board_title">Rename Board</string>
-    <string name="board_snackbar_rename_board_error">Error renaming board</string>
-
-    <string name="board_dialog_delete_title">Delete Board?</string>
-    <string name="board_dialog_delete_text">This board will be permanently deleted.</string>
-    <string name="board_dialog_delete_confirm_button">Delete</string>
-    <string name="board_dialog_delete_cancel_button">Cancel</string>
-    <string name="board_snackbar_delete_board_error">Error deleting board</string>
-
-    <string name="board_button_add_column">Add Column</string>
-    <string name="board_snackbar_column_creation_error">Error creating column</string>
-    <string name="board_snackbar_column_empty_name_error">Column name is required</string> <!-- Shows when user tries to rename or create a column with empty name -->
-    <string name="board_snackbar_fetch_board_error">Error fetching board data</string>
-    <string name="board_snackbar_card_creation_error">Error creating card</string>
-    <string name="board_snackbar_card_creation_empty_name_error">Card name is required</string>
-    <string name="board_snackbar_column_rename_error">Error renaming column</string>
-    <string name="board_snackbar_column_delete_error">Error deleting column</string>
-    <string name="board_snackbar_column_restore_error">Could not restore column</string>
-    <string name="board_snackbar_column_deleted">Column deleted</string>
-    <string name="board_snackbar_edit_column_color_error">Error editing column color</string>
-    <string name="board_snackbar_reorder_cards_error">Error reordering cards</string>
-    <string name="board_dropdown_menu_add_card">Add Card</string>
-    <string name="board_dropdown_menu_rename_column">Rename</string>
-    <string name="board_dropdown_menu_delete_column">Delete column</string>
-    <string name="board_dropdown_menu_order_by">Order by</string>
-    <string name="board_dropdown_menu_order_by_ascending">Ascending Order</string>
-    <string name="board_dropdown_menu_order_by_descending">Descending Order</string>
-    <string name="board_dropdown_menu_order_by_name">Name</string>
-    <string name="board_dropdown_menu_order_by_due_date">Due Date</string>
-    <string name="board_dropdown_menu_order_by_date_created">Date Created</string>
-    <!--  BOARD SCREEN  -->
-
-    <!--  CARD SCREEN  -->
-    <string name="card_appbar_dropdown_menu_delete_card">Delete Card</string>
-    <string name="card_appbar_dropdown_menu_rename_card">Rename Card</string>
-    <string name="card_appbar_save_description">Save</string>
-    <string name="card_appbar_create_task">Create Task</string>
-    <string name="card_appbar_edit_task">Rename Task</string>
-    <string name="card_appbar_save_description_content_description">Save Description</string>
-    <string name="card_appbar_save_task_changes_content_description">Save Task Changes</string>
-    <string name="card_appbar_cancel_description_content_description">Cancel Description Changes</string>
-    <string name="card_appbar_cancel_task_edit_content_description">Cancel Task Changes</string>
-    <string name="card_appbar_create_task_content_description">Confirm Task Creation</string>
-    <string name="card_appbar_cancel_task_creation_content_description">Cancel Task Creation</string>
-    <string name="card_dropdown_menu_label_title">Labels</string>
-    <string name="card_dropdown_menu_add_label">Add Label</string>
-    <string name="card_dialog_create_attachment_title">Create Attachment</string>
-    <string name="card_dialog_create_attachment_add_photo">Add Photo</string>
-    <string name="card_dialog_create_attachment_add_to_cover">Add to Cover</string>
-    <string name="card_dialog_create_attachment_button_confirm">Create</string>
-    <string name="card_dialog_create_attachment_button_cancel">Cancel</string>
-    <string name="card_dialog_image_button_delete">Delete</string>
-    <string name="card_dialog_image_button_close">Close</string>
-    <string name="card_dialog_image_checkbox_card_cover">Card Cover</string>
-    <string name="card_dialog_create_label_title">Create Label</string>
-    <string name="card_dialog_edit_label_title">Edit Label</string>
-    <string name="card_dialog_label_text_field_label">Label Name</string>
-    <string name="card_dialog_label_button_pick_color">Pick Color</string>
-    <string name="card_dialog_label_button_confirm">Confirm</string>
-    <string name="card_dialog_label_button_cancel">Cancel</string>
-    <string name="card_dialog_label_button_remove_color_content_description">Remove Color</string>
-    <string name="card_dialog_delete_card_title">Delete card?</string>
-    <string name="card_dialog_delete_card_confirm_button">Delete</string>
-    <string name="card_dialog_delete_card_cancel_button">Cancel</string>
-    <string name="card_dialog_delete_card_text">This card will be permanently deleted.</string>
-
-    <string name="card_dialog_rename_card_title">Rename Card</string>
-    <string name="card_snackbar_rename_card_error">Error renaming card</string>
-
-    <string name="card_description">Description</string>
-    <string name="card_labels">Labels</string>
-    <string name="card_attachments">Attachments</string>
-    <string name="card_created_at">Created at</string>
-    <string name="card_tasks">Tasks</string>
-    <string name="card_description_text_field_placeholder">Add a description</string>
-    <string name="card_text_add_due_date">Add due date</string>
-    <string name="card_button_add_due_date">Add due date</string>
-    <string name="card_button_remove_due_date">Remove due date</string>
-    <string name="card_edit_description_button_content_description">Edit Description</string>
-    <string name="card_add_task_button_content_description">Add Task</string>
-    <string name="card_add_attachment_button_content_description">Add Attachment</string>
-    <string name="card_add_label_button_content_description">Add Label</string>
-    <string name="card_snackbar_observe_card_error">Error fetching card data</string>
-    <string name="card_snackbar_save_description_error">Error saving description</string>
-    <string name="card_snackbar_create_task_error">Error creating task</string>
-    <string name="card_snackbar_create_task_with_empty_description_error">Can not create task with empty description</string>
-    <string name="card_snackbar_edit_task_with_empty_description_error">Can not save task with empty description</string>
-    <string name="card_snackbar_edit_task_error">Error editing task</string>
-    <string name="card_snackbar_task_checked_change_error">Error while saving</string>
-    <string name="card_snackbar_delete_task_error">Error deleting task</string>
-    <string name="card_snackbar_delete_task_success">Task deleted</string>
-    <string name="card_snackbar_restore_task_error">Error restoring task</string>
-    <string name="card_snackbar_save_date_error">Error saving date</string>
-    <string name="card_snackbar_save_image_error">Error saving image</string>
-    <string name="card_snackbar_create_attachment_error">Error saving attachment</string>
-    <string name="card_snackbar_add_cover_error">Error saving cover</string>
-    <string name="card_snackbar_delete_attachment_error">Error deleting attachment</string>
-    <string name="card_snackbar_delete_image_error">Error deleting image</string>
-    <string name="card_snackbar_create_label_error">Error creating label</string>
-    <string name="card_snackbar_update_label_association_error">Error updating label association</string>
-    <string name="card_snackbar_update_label_error">Error updating label</string>
-    <string name="card_snackbar_remove_cover_error">Error removing cover</string>
-    <string name="card_snackbar_add_to_cover_error">Error adding image to cover</string>
-    <string name="card_snackbar_delete_card_error">Could not delete card</string>
-
-    <!--  CARD SCREEN  -->
-
+    <!-- Rename Dialog -->
 
 </resources>

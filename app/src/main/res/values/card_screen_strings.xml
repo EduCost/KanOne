@@ -1,0 +1,145 @@
+<resources>
+
+<!--  Top App Bar  -->
+
+    <!-- Top App Bar - Board more options dropdown menu -->
+    <string name="card_appbar_dropdown_menu_delete_card">Delete Card</string>
+    <string name="card_appbar_dropdown_menu_rename_card">Rename Card</string>
+    <!-- Top App Bar - Board more options dropdown menu -->
+
+    <!-- Top App Bar - Save description -->
+    <string name="card_appbar_save_description">Save</string>
+    <string name="card_appbar_save_description_content_description">Save Description</string>
+    <string name="card_appbar_cancel_description_content_description">Cancel Description Changes</string>
+    <!-- Top App Bar - Save description -->
+
+    <!-- Top App Bar - Create Task -->
+    <string name="card_appbar_create_task">Create Task</string>
+    <string name="card_appbar_save_task_changes_content_description">Save Task Changes</string>
+    <string name="card_appbar_cancel_task_edit_content_description">Cancel Task Changes</string>
+    <!-- Top App Bar - Create Task -->
+
+    <!-- Top App Bar - Rename Task -->
+    <string name="card_appbar_edit_task">Rename Task</string>
+    <string name="card_appbar_create_task_content_description">Confirm Task Creation</string>
+    <string name="card_appbar_cancel_task_creation_content_description">Cancel Task Creation</string>
+    <!-- Top App Bar - Rename Task -->
+
+<!--  Top App Bar  -->
+
+
+<!--  Card Screen  -->
+
+    <string name="card_created_at">Created at</string>
+
+    <!--  Description  -->
+    <string name="card_description">Description</string>
+    <string name="card_description_text_field_placeholder">Add a description</string>
+    <string name="card_edit_description_button_content_description">Edit Description</string>
+    <!--  Description  -->
+
+    <!--  Labels  -->
+    <string name="card_labels">Labels</string>
+    <string name="card_dropdown_menu_label_title">Labels</string>
+    <string name="card_dropdown_menu_add_label">Add Label</string>
+    <string name="card_add_label_button_content_description">Add Label</string>
+    <!--  Labels  -->
+
+    <!--  Due Date  -->
+    <string name="card_text_add_due_date">Add due date</string>
+    <string name="card_button_add_due_date">Add due date</string>
+    <string name="card_button_remove_due_date">Remove due date</string>
+    <!--  Due Date  -->
+
+    <!--  Tasks  -->
+    <string name="card_tasks">Tasks</string>
+    <string name="card_add_task_button_content_description">Add Task</string>
+    <!--  Tasks  -->
+
+    <!--  Attachments  -->
+    <string name="card_attachments">Attachments</string>
+    <string name="card_add_attachment_button_content_description">Add Attachment</string>
+    <!--  Attachments  -->
+
+<!--  Card Screen  -->
+
+
+<!--  Dialogs  -->
+
+    <!--  Dialog for rename card  -->
+    <string name="card_dialog_rename_card_title">Rename Card</string>
+
+    <string name="card_snackbar_rename_card_error">Error renaming card</string>
+    <!--  Dialog for rename card  -->
+
+    <!--  Dialog for delete card  -->
+    <string name="card_dialog_delete_card_title">Delete card?</string>
+    <string name="card_dialog_delete_card_text">This card will be permanently deleted.</string>
+    <string name="card_dialog_delete_card_confirm_button">Delete</string>
+    <string name="card_dialog_delete_card_cancel_button">Cancel</string>
+
+    <string name="card_snackbar_delete_card_error">Could not delete card</string>
+    <!--  Dialog for delete card  -->
+
+    <!--  Dialog for create attachment  -->
+    <string name="card_dialog_create_attachment_title">Create Attachment</string>
+    <string name="card_dialog_create_attachment_add_photo">Add Photo</string>
+    <string name="card_dialog_create_attachment_add_to_cover">Add to Cover</string>
+    <string name="card_dialog_create_attachment_button_confirm">Create</string>
+    <string name="card_dialog_create_attachment_button_cancel">Cancel</string>
+
+    <string name="card_snackbar_create_attachment_error">Error saving attachment</string>
+    <string name="card_snackbar_save_image_error">Error saving image</string>
+    <!--  Dialog for create attachment  -->
+
+    <!--  Dialog for showing image attachment  -->
+    <string name="card_dialog_image_checkbox_card_cover">Card Cover</string>
+    <string name="card_dialog_image_button_delete">Delete</string>
+    <string name="card_dialog_image_button_close">Close</string>
+
+    <string name="card_snackbar_delete_attachment_error">Error deleting attachment</string>
+    <string name="card_snackbar_delete_image_error">Error deleting image</string>
+    <!--  Dialog for showing image attachment  -->
+
+    <!--  Dialog for edit or create label  -->
+    <string name="card_dialog_create_label_title">Create Label</string>
+    <string name="card_dialog_edit_label_title">Edit Label</string>
+    <string name="card_dialog_label_text_field_label">Label Name</string>
+    <string name="card_dialog_label_button_pick_color">Pick Color</string>
+    <string name="card_dialog_label_button_remove_color_content_description">Remove Color</string>
+    <string name="card_dialog_label_button_confirm">Confirm</string>
+    <string name="card_dialog_label_button_cancel">Cancel</string>
+
+    <string name="card_snackbar_create_label_error">Error creating label</string>
+    <string name="card_snackbar_update_label_error">Error updating label</string>
+    <string name="card_snackbar_update_label_association_error">Error updating label association</string>
+    <!--  Dialog for edit or create label  -->
+
+<!--  Dialogs  -->
+
+
+<!--  Snackbars  -->
+
+    <string name="card_snackbar_observe_card_error">Error fetching card data</string> <!-- Shows when an error occurs while fetching card data -->
+    <string name="card_snackbar_save_description_error">Error saving description</string>
+    <string name="card_snackbar_remove_cover_error">Error removing cover</string>
+    <string name="card_snackbar_add_to_cover_error">Error adding image to cover</string> <!-- Shows when an error occurs while trying to add an image attachment to the card cover -->
+    <string name="card_snackbar_task_checked_change_error">Error while saving</string> <!-- Shows when an error occurs while trying to persist the checked state of a task -->
+    <string name="card_snackbar_save_date_error">Error saving date</string> <!-- Shows when an error occurs while trying to save a due date -->
+
+    <!-- Snackbars for create and edit task -->
+    <string name="card_snackbar_create_task_error">Error creating task</string>
+    <string name="card_snackbar_edit_task_error">Error editing task</string>
+    <string name="card_snackbar_create_task_with_empty_description_error">Can not create task with empty description</string>
+    <string name="card_snackbar_edit_task_with_empty_description_error">Can not save task with empty description</string>
+    <!-- Snackbars for create and edit task -->
+
+    <!-- Snackbars for delete a task -->
+    <string name="card_snackbar_delete_task_success">Task deleted</string> <!-- Shows when a task is successfully deleted -->
+    <string name="card_snackbar_delete_task_error">Error deleting task</string>
+    <string name="card_snackbar_restore_task_error">Error restoring task</string> <!-- Shows when an error occurs while trying to restore a deleted task -->
+    <!-- Snackbars for delete a task -->
+
+<!--  Snackbars  -->
+
+</resources>

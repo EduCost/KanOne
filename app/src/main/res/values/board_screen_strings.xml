@@ -1,0 +1,105 @@
+<resources>
+<!--  Top App Bar  -->
+
+    <!-- Top App Bar - Action buttons content descriptions -->
+    <string name="board_appbar_full_screen_content_description">Enter full screen</string>
+    <string name="board_appbar_more_options_content_description">More Board Options</string>
+    <!-- Top App Bar - Action buttons content descriptions -->
+
+    <!-- Top App Bar - Board more options dropdown menu -->
+    <string name="board_appbar_dropdown_menu_rename_board">Rename Board</string>
+    <string name="board_appbar_dropdown_menu_delete_board">Delete Board</string>
+    <!-- Top App Bar - Board more options dropdown menu -->
+
+    <!--  Top App Bar - Create Column -->
+    <string name="board_appbar_create_column">Create Column</string>
+    <string name="board_appbar_content_description_cancel_column_creation">Cancel column creation</string>
+    <string name="board_appbar_content_description_confirm_column_creation">Confirm column creation</string>
+    <!--  Top App Bar - Create Column  -->
+
+    <!-- Top App Bar - Create Card -->
+    <string name="board_appbar_create_card">Create Card</string>
+    <string name="board_appbar_content_description_cancel_card_creation">Cancel card creation</string>
+    <string name="board_appbar_content_description_confirm_card_creation">Confirm card creation</string>
+    <!-- Top App Bar - Create Card -->
+
+    <!--  Top App Bar - Rename Column -->
+    <string name="board_appbar_rename_column">Rename Column</string>
+    <string name="board_appbar_content_description_cancel_column_rename">Cancel column rename</string>
+    <string name="board_appbar_content_description_confirm_column_rename">Confirm column rename</string>
+    <!--  Top App Bar - Rename Column -->
+
+<!--  Top App Bar  -->
+
+
+<!-- Column -->
+
+    <string name="board_column_header_more_options_content_description">More Column Options</string>
+    <string name="board_column_button_add_card">Add Card</string>
+    <string name="board_button_add_column">Add Column</string>
+
+    <!-- Column - Dropdown Menu -->
+    <string name="board_dropdown_menu_add_card">Add Card</string>
+    <string name="board_dropdown_menu_rename_column">Rename</string>
+    <string name="board_dropdown_menu_delete_column">Delete column</string>
+
+        <!-- Column - Dropdown Menu - Order By -->
+    <string name="board_dropdown_menu_order_by">Order by</string>
+    <string name="board_dropdown_menu_order_by_name">Name</string>
+    <string name="board_dropdown_menu_order_by_due_date">Due Date</string>
+    <string name="board_dropdown_menu_order_by_date_created">Date Created</string>
+    <string name="board_dropdown_menu_order_by_ascending_content_description">Ascending Order</string>
+    <string name="board_dropdown_menu_order_by_descending_content_description">Descending Order</string>
+        <!-- Column - Dropdown Menu - Order By -->
+
+    <!-- Column - Dropdown Menu -->
+
+<!-- Column -->
+
+
+<!-- Dialogs -->
+
+    <!-- Dialog for rename board -->
+    <string name="board_dialog_rename_board_title">Rename Board</string>
+
+    <string name="board_snackbar_rename_board_error">Error renaming board</string>
+    <!-- Dialog for rename board -->
+
+    <!-- Dialog for delete board -->
+    <string name="board_dialog_delete_title">Delete Board?</string>
+    <string name="board_dialog_delete_text">This board will be permanently deleted.</string>
+    <string name="board_dialog_delete_confirm_button">Delete</string>
+    <string name="board_dialog_delete_cancel_button">Cancel</string>
+
+    <string name="board_snackbar_delete_board_error">Error deleting board</string>
+    <!-- Dialog for delete board -->
+
+<!-- Dialogs -->
+
+
+<!-- Snackbars -->
+
+    <string name="board_snackbar_fetch_board_error">Error fetching board data</string>
+    <string name="board_snackbar_reorder_cards_error">Error reordering cards</string>
+    <string name="board_snackbar_edit_column_color_error">Error editing column color</string>
+
+    <!-- Snackbars for delete column -->
+    <string name="board_snackbar_column_deleted">Column deleted</string> <!-- Shows when a column is deleted successfully -->
+    <string name="board_snackbar_column_delete_error">Error deleting column</string>
+    <string name="board_snackbar_column_restore_error">Could not restore column</string> <!-- Shows when an error occurs while trying to restore a deleted column -->
+    <!-- Snackbars for delete column -->
+
+    <!-- Snackbars for create or rename column -->
+    <string name="board_snackbar_column_creation_error">Error creating column</string>
+    <string name="board_snackbar_column_rename_error">Error renaming column</string>
+    <string name="board_snackbar_column_empty_name_error">Column name is required</string> <!-- Shows when user tries to rename or create a column with empty name -->
+    <!-- Snackbars for create or rename column -->
+
+    <!-- Snackbars for create card -->
+    <string name="board_snackbar_card_creation_error">Error creating card</string>
+    <string name="board_snackbar_card_creation_empty_name_error">Card name is required</string> <!-- Shows when user tries to rename or create a card with empty name -->
+    <!-- Snackbars for create card -->
+
+<!-- Snackbars -->
+
+</resources>

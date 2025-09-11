@@ -149,7 +149,7 @@ fun ColumnHeader(
                 ) {
                     Icon(
                         Icons.Filled.MoreVert,
-                        contentDescription = stringResource(R.string.icon_more_vert_content_description)
+                        contentDescription = stringResource(R.string.board_column_header_more_options_content_description)
                     )
                 }
 

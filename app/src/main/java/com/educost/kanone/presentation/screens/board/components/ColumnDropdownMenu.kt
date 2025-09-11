@@ -239,7 +239,7 @@ fun OrderByDropdownMenuItem(
             SelectOrderTypeCard(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.ArrowDropUp,
-                contentDescription = stringResource(R.string.board_dropdown_menu_order_by_ascending),
+                contentDescription = stringResource(R.string.board_dropdown_menu_order_by_ascending_content_description),
                 onClick = { onConfirmOrder(OrderType.ASCENDING) }
             )
 
@@ -248,7 +248,7 @@ fun OrderByDropdownMenuItem(
             SelectOrderTypeCard(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.ArrowDropDown,
-                contentDescription = stringResource(R.string.board_dropdown_menu_order_by_descending),
+                contentDescription = stringResource(R.string.board_dropdown_menu_order_by_descending_content_description),
                 onClick = { onConfirmOrder(OrderType.DESCENDING) }
             )
         }

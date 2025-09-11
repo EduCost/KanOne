@@ -620,7 +620,7 @@ class CardViewModel @Inject constructor(
 
             if (!wasCardUpdated) sendSnackbar(
                 SnackbarEvent(
-                    message = UiText.StringResource(R.string.card_snackbar_add_cover_error),
+                    message = UiText.StringResource(R.string.card_snackbar_add_to_cover_error),
                     withDismissAction = true,
                 )
             )

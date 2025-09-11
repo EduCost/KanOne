@@ -1,0 +1,20 @@
+<resources>
+    <string name="home_screen_no_boards_found">No boards found</string> <!--  Shows when the use does not have any boards created  -->
+    <string name="home_fab_create_board">Create new board</string> <!--  Floating action button to create a new board  -->
+    <string name="home_snackbar_observe_boards_error">Error while fetching boards</string> <!--  Shows when an error occurs while fetching boards  -->
+
+    <!--  Board Card  -->
+    <string name="home_board_card_empty_board">Empty Board</string> <!--  Shows when a board has no columns  -->
+    <string name="home_board_card_more_options_content_description">More Options</string> <!--  Content description for the more options button  -->
+    <!--  Board Card  -->
+
+    <!--  Create Board Dialog  -->
+    <string name="home_dialog_title_create_board">Create Board</string>
+    <string name="home_dialog_textfield_label_board_name">Board Name</string>
+    <string name="home_dialog_button_create">Create</string>
+    <string name="home_dialog_button_cancel">Cancel</string>
+
+    <string name="home_snackbar_creating_board_error">Error while creating board</string>
+    <!--  Create Board Dialog  -->
+
+</resources>
