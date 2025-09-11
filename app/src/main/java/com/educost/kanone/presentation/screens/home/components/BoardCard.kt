@@ -107,7 +107,7 @@ private fun BoardCardColumns(modifier: Modifier = Modifier, columns: List<Kanban
                         .fillMaxWidth()
                         .height(12.dp)
                         .clip(MaterialTheme.shapes.extraSmall)
-                        .background(MaterialTheme.colorScheme.onSecondaryContainer)
+                        .background(MaterialTheme.colorScheme.surfaceColorAtElevation(5.dp))
 
                 )
 
