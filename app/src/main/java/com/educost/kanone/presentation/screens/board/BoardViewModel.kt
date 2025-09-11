@@ -83,6 +83,7 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.ObserveBoard -> observeBoard(intent.boardId)
             is BoardIntent.OnCardClick -> navigateToCardScreen(intent.cardId)
             is BoardIntent.OnBackPressed -> clearEditAndCreationStates()
+            is BoardIntent.OnNavigateBack -> navigateBack()
 
             // Full screen
             is BoardIntent.EnterFullScreen -> enterFullScreen()
@@ -205,6 +206,13 @@ class BoardViewModel @Inject constructor(
         clearEditAndCreationStates()
         viewModelScope.launch(dispatcherProvider.main) {
             _sideEffectChannel.send(BoardSideEffect.NavigateToCardScreen(cardId))
+        }
+    }
+
+    private fun navigateBack() {
+        clearEditAndCreationStates()
+        viewModelScope.launch(dispatcherProvider.main) {
+            _sideEffectChannel.send(BoardSideEffect.OnNavigateBack)
         }
     }
 

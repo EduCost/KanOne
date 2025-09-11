@@ -9,6 +9,7 @@ sealed interface BoardIntent {
     data class ObserveBoard(val boardId: Long) : BoardIntent
     data class OnCardClick(val cardId: Long) : BoardIntent
     data object OnBackPressed : BoardIntent
+    data object OnNavigateBack : BoardIntent
 
     // Full Screen
     data object EnterFullScreen : BoardIntent

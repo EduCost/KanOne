@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">KanOne</string>
 
-    <string name="menu_icon_content_description">Menu Button</string>
     <string name="navigate_back_button_content_description">Navigate Back</string>
     <string name="icon_more_vert_content_description">More Options</string>
     <string name="undo_action">Undo</string>

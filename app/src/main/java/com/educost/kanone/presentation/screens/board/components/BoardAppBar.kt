@@ -3,6 +3,8 @@
 package com.educost.kanone.presentation.screens.board.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.Menu
@@ -58,11 +60,11 @@ fun BoardAppBar(
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = { /*TODO*/ }
+                            onClick = { onIntent(BoardIntent.OnNavigateBack) }
                         ) {
                             Icon(
-                                Icons.Filled.Menu,
-                                contentDescription = stringResource(R.string.menu_icon_content_description)
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.navigate_back_button_content_description)
                             )
                         }
                     },
