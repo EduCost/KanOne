@@ -275,7 +275,7 @@ class BoardViewModelSetCoordinatesTest {
                             color = null,
                             createdAt = LocalDateTime.now(),
                             dueDate = null,
-                            thumbnailFileName = null,
+                            coverFileName = null,
                             tasks = emptyList(),
                             attachments = emptyList(),
                             labels = emptyList()
@@ -288,7 +288,7 @@ class BoardViewModelSetCoordinatesTest {
                             color = null,
                             createdAt = LocalDateTime.now(),
                             dueDate = null,
-                            thumbnailFileName = null,
+                            coverFileName = null,
                             tasks = emptyList(),
                             attachments = emptyList(),
                             labels = emptyList()

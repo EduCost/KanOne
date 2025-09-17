@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.educost.kanone.domain.model.CardPriority
 import java.time.LocalDateTime
 
 @Entity(
@@ -26,6 +27,7 @@ data class CardEntity(
     @ColumnInfo(name = "created_at") val createdAt: LocalDateTime = LocalDateTime.now(),
     @ColumnInfo(name = "due_date") val dueDate: LocalDateTime? = null,
     val color: Int? = null,
-    @ColumnInfo(name = "thumbnail_file_name") val thumbnailFileName: String? = null,
+    @ColumnInfo(name = "cover_file_name") val coverFileName: String? = null,
+    val priority: CardPriority = CardPriority.NORMAL,
     @ColumnInfo(name = "column_id") val columnId: Long
 )

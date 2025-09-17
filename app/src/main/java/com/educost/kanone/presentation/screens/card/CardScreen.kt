@@ -176,7 +176,7 @@ private fun CardScreen(
                     .padding(horizontal = 8.dp, vertical = 16.dp)
             ) {
 
-                card.thumbnailFileName?.let { cover ->
+                card.coverFileName?.let { cover ->
                     CardCover(
                         cover = cover,
                         onRemoveCover = { onIntent(CardIntent.RemoveCover) }
@@ -296,7 +296,7 @@ private fun CardScreen(
                     attachment = attachment,
                     onDismiss = { onIntent(CardIntent.CloseImage) },
                     onDeleteImage = { onIntent(CardIntent.DeleteImage(it)) },
-                    cardCover = card.thumbnailFileName,
+                    cardCover = card.coverFileName,
                     onSetCover = { onIntent(CardIntent.AddToCover(it)) },
                     onRemoveCover = { onIntent(CardIntent.RemoveCover) }
                 )
@@ -343,7 +343,7 @@ private fun CardScreenPreview() {
                     description = /*"Card description"*/null,
                     color = null,
                     dueDate = /*LocalDateTime.now().plusDays(3)*/null,
-                    thumbnailFileName = null,
+                    coverFileName = null,
                     tasks = emptyList(),
                     attachments = emptyList(),
                     labels = listOf(

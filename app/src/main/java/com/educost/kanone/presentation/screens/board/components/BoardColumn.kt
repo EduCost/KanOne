@@ -183,7 +183,7 @@ private fun BoardColumnPreview() {
                             description = null,
                             dueDate = null,
                             createdAt = LocalDateTime.now(),
-                            thumbnailFileName = null,
+                            coverFileName = null,
                             tasks = emptyList(),
                             attachments = emptyList(),
                             labels = emptyList(),

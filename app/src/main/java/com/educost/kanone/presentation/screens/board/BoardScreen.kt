@@ -316,7 +316,7 @@ private fun BoardScreenPreview() {
                                     description = "Some description",
                                     dueDate = LocalDateTime.now().plusDays(3),
                                     createdAt = LocalDateTime.now(),
-                                    thumbnailFileName = null,
+                                    coverFileName = null,
                                     tasks = listOf(
                                         Task(
                                             id = 0,

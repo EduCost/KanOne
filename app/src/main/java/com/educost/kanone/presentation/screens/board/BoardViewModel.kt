@@ -609,7 +609,7 @@ class BoardViewModel @Inject constructor(
                                 color = cards.color,
                                 createdAt = cards.createdAt,
                                 dueDate = cards.dueDate,
-                                thumbnailFileName = cards.thumbnailFileName,
+                                coverFileName = cards.coverFileName,
                                 tasks = cards.tasks,
                                 attachments = cards.attachments,
                                 labels = cards.labels

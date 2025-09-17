@@ -12,7 +12,7 @@ fun CardEntity.toCardItem() = CardItem(
     color = this.color,
     createdAt = this.createdAt,
     dueDate = this.dueDate,
-    thumbnailFileName = this.thumbnailFileName,
+    coverFileName = this.coverFileName,
     tasks = emptyList(),
     attachments = emptyList(),
     labels = emptyList()
@@ -26,7 +26,7 @@ fun CardItem.toCardEntity(columnId: Long) = CardEntity(
     createdAt = this.createdAt,
     dueDate = this.dueDate,
     color = this.color,
-    thumbnailFileName = this.thumbnailFileName,
+    coverFileName = this.coverFileName,
     columnId = columnId
 )
 
@@ -38,7 +38,7 @@ fun CardWithRelations.toCardItem() = CardItem(
     color = this.card.color,
     createdAt = this.card.createdAt,
     dueDate = this.card.dueDate,
-    thumbnailFileName = this.card.thumbnailFileName,
+    coverFileName = this.card.coverFileName,
     tasks = this.tasks.map { it.toTask() },
     attachments = this.attachments.map { it.toAttachment() },
     labels = this.labels.map { it.toLabel() }

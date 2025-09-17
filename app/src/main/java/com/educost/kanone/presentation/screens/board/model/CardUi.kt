@@ -13,7 +13,7 @@ data class CardUi(
     val color: Int?,
     val createdAt: LocalDateTime,
     val dueDate: LocalDateTime?,
-    val thumbnailFileName: String?,
+    val coverFileName: String?,
     val tasks: List<Task>,
     val attachments: List<Attachment>,
     val labels: List<Label>,

@@ -590,7 +590,7 @@ class CardViewModel @Inject constructor(
                 )
             )
 
-            val isCover = card.thumbnailFileName == attachment.fileName
+            val isCover = card.coverFileName == attachment.fileName
             if (isCover) removeCover()
         }
     }
@@ -614,7 +614,7 @@ class CardViewModel @Inject constructor(
         val card = _uiState.value.card ?: return
 
         viewModelScope.launch(dispatcherProvider.main) {
-            val newCard = card.copy(thumbnailFileName = absolutePath)
+            val newCard = card.copy(coverFileName = absolutePath)
 
             val wasCardUpdated = updateCardUseCase(newCard)
 
@@ -631,7 +631,7 @@ class CardViewModel @Inject constructor(
         val card = _uiState.value.card ?: return
 
         viewModelScope.launch(dispatcherProvider.main) {
-            val newCard = card.copy(thumbnailFileName = null)
+            val newCard = card.copy(coverFileName = null)
 
             val wasCardUpdated = updateCardUseCase(newCard)
 
@@ -648,7 +648,7 @@ class CardViewModel @Inject constructor(
         val card = _uiState.value.card ?: return
 
         viewModelScope.launch(dispatcherProvider.main) {
-            val newCard = card.copy(thumbnailFileName = cover)
+            val newCard = card.copy(coverFileName = cover)
 
             val wasCardUpdated = updateCardUseCase(newCard)
 

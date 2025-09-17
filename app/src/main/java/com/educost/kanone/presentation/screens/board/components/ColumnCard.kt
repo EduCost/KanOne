@@ -59,7 +59,7 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
             .clip(MaterialTheme.shapes.small)
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(7.dp))
     ) {
-        card.thumbnailFileName?.let { cover ->
+        card.coverFileName?.let { cover ->
             CardImage(
                 cover = cover,
                 modifier = Modifier
@@ -295,7 +295,7 @@ private fun ColumnCardPreview() {
                     description = "Some description",
                     dueDate = LocalDateTime.now().plusDays(3),
                     createdAt = LocalDateTime.now(),
-                    thumbnailFileName = null,
+                    coverFileName = null,
                     tasks = listOf(
                         Task(
                             id = 0,
