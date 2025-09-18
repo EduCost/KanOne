@@ -1,9 +1,7 @@
 package com.educost.kanone.presentation.screens.settings.theme
 
-import android.app.AlertDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -130,7 +128,7 @@ fun SettingsThemeScreen(
                 .verticalScroll(scrollState)
         ) {
             DarkMode(
-                themeType = state.themeType,
+                themeType = state.themeData.themeType,
                 onClick = { isSelectingTheme = true },
                 onDarkModeChange = { onIntent(SettingsThemeIntent.SetDarkMode(it)) }
             )
@@ -138,7 +136,7 @@ fun SettingsThemeScreen(
 
         if (isSelectingTheme) {
             ThemeDialog(
-                selectedTheme = state.themeType,
+                selectedTheme = state.themeData.themeType,
                 onThemeSelected = { onIntent(SettingsThemeIntent.SetTheme(it)) },
                 onDismiss = { isSelectingTheme = false }
             )

@@ -29,8 +29,8 @@ class SettingsThemeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(dispatchers.main) {
-            userPreferencesRepository.selectedThemeType.collect { themeType ->
-                _uiState.update { it.copy(themeType = themeType) }
+            userPreferencesRepository.selectedThemeType.collect { themeData ->
+                _uiState.update { it.copy(themeData = themeData) }
             }
         }
     }

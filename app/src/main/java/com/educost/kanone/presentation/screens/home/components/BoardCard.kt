@@ -33,6 +33,8 @@ import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.presentation.theme.KanOneTheme
+import com.educost.kanone.presentation.theme.ThemeData
+import com.educost.kanone.presentation.theme.ThemeType
 import java.time.LocalDateTime
 
 @Composable
@@ -236,7 +238,7 @@ private fun BoardCardPreview() {
 @PreviewDynamicColors
 @Composable
 private fun BoardCardPreviewDark() {
-    KanOneTheme(darkTheme = true) {
+    KanOneTheme(themeData = ThemeData(ThemeType.DARK)) {
         BoardCard(
             board = Board(
                 id = 0,

@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.educost.kanone.domain.repository.UserPreferencesRepository
+import com.educost.kanone.presentation.theme.ThemeData
 import com.educost.kanone.presentation.theme.ThemeType
 import kotlinx.coroutines.flow.map
 
@@ -17,10 +18,11 @@ class UserPreferencesRepositoryImpl(private val context: Context) : UserPreferen
     }
 
     override val selectedThemeType = context.dataStore.data.map { preferences ->
-        val theme = preferences[SELECTED_THEME_TYPE]
+        val themeType = preferences[SELECTED_THEME_TYPE] ?: ThemeType.SYSTEM.name
 
-        if (theme != null) ThemeType.valueOf(theme)
-        else ThemeType.SYSTEM
+        ThemeData(
+            themeType = ThemeType.valueOf(themeType)
+        )
     }
 
     override suspend fun setThemeType(themeType: ThemeType) {
