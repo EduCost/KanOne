@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Info
@@ -163,7 +164,7 @@ fun SettingsScreen(
             )
             SettingOption(
                 name = "Logs",
-                icon = Icons.Filled.ListAlt,
+                icon = Icons.AutoMirrored.Filled.ListAlt,
                 onClick = {
                     toast.cancel()
                     toast.show()
