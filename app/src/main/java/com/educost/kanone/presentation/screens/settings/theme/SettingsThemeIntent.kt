@@ -7,5 +7,6 @@ sealed interface SettingsThemeIntent {
     data object OnNavigateBack : SettingsThemeIntent
     data class SetDarkMode(val darkMode: Boolean) : SettingsThemeIntent
     data class SetTheme(val themeType: ThemeType) : SettingsThemeIntent
+    data class SetMaterialYouEnabled(val enabled: Boolean) : SettingsThemeIntent
 
 }

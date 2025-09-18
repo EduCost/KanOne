@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ColorLens
+import androidx.compose.material.icons.filled.Colorize
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,6 +56,7 @@ import com.educost.kanone.presentation.util.UiText
 import kotlinx.coroutines.launch
 
 val rowPadding = 16.dp
+val rowHeight = 76.dp
 
 @Composable
 fun SettingsThemeScreen(
@@ -132,6 +135,11 @@ fun SettingsThemeScreen(
                 onClick = { isSelectingTheme = true },
                 onDarkModeChange = { onIntent(SettingsThemeIntent.SetDarkMode(it)) }
             )
+
+            MaterialYouSwitch(
+                enabled = state.themeData.isMaterialYouEnabled,
+                onCheckedChange = { onIntent(SettingsThemeIntent.SetMaterialYouEnabled(it)) }
+            )
         }
 
         if (isSelectingTheme) {
@@ -166,7 +174,7 @@ private fun DarkMode(
 
     Row(
         modifier = modifier
-            .height(76.dp)
+            .height(rowHeight)
             .clickable(onClick = onClick)
             .padding(rowPadding),
         verticalAlignment = Alignment.CenterVertically
@@ -209,6 +217,50 @@ private fun DarkMode(
     }
 }
 
+@Composable
+private fun MaterialYouSwitch(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = modifier
+            .heightIn(rowHeight)
+            .clickable(onClick = {})
+            .padding(rowPadding),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Colorize,
+            contentDescription = null
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = stringResource(R.string.settings_theme_material_you),
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = stringResource(R.string.settings_theme_material_you_summary),
+                style = MaterialTheme.typography.labelLarge.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            )
+        }
+
+
+        Switch(
+            modifier = Modifier.padding(start = 16.dp),
+            checked = enabled,
+            onCheckedChange = { onCheckedChange(it) }
+        )
+    }
+}
 
 @Composable
 private fun ThemeDialog(

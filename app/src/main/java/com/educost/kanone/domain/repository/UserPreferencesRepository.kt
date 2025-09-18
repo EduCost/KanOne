@@ -6,8 +6,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserPreferencesRepository {
 
-    val selectedThemeType: Flow<ThemeData>
+    val themePreference: Flow<ThemeData>
 
     suspend fun setThemeType(themeType: ThemeType)
+
+    suspend fun setMaterialYouEnabled(enabled: Boolean)
 
 }

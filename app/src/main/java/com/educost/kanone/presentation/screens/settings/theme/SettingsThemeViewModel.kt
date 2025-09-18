@@ -29,7 +29,7 @@ class SettingsThemeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(dispatchers.main) {
-            userPreferencesRepository.selectedThemeType.collect { themeData ->
+            userPreferencesRepository.themePreference.collect { themeData ->
                 _uiState.update { it.copy(themeData = themeData) }
             }
         }
@@ -40,6 +40,7 @@ class SettingsThemeViewModel @Inject constructor(
             is SettingsThemeIntent.OnNavigateBack -> onNavigateBack()
             is SettingsThemeIntent.SetDarkMode -> setDarkMode(intent.darkMode)
             is SettingsThemeIntent.SetTheme -> setTheme(intent.themeType)
+            is SettingsThemeIntent.SetMaterialYouEnabled -> setMaterialYouEnabled(intent.enabled)
 
         }
     }
@@ -58,6 +59,12 @@ class SettingsThemeViewModel @Inject constructor(
     private fun setTheme(themeType: ThemeType) {
         viewModelScope.launch(dispatchers.main) {
             userPreferencesRepository.setThemeType(themeType)
+        }
+    }
+
+    private fun setMaterialYouEnabled(enabled: Boolean) {
+        viewModelScope.launch(dispatchers.main) {
+            userPreferencesRepository.setMaterialYouEnabled(enabled)
         }
     }
 

@@ -94,8 +94,6 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun KanOneTheme(
     themeData: ThemeData = ThemeData(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
 
@@ -112,7 +110,7 @@ fun KanOneTheme(
     }
 
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        themeData.isMaterialYouEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }

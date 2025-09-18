@@ -13,7 +13,7 @@ class AppEntryViewModel @Inject constructor(
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
-    val themeData = userPreferencesRepository.selectedThemeType.stateIn(
+    val themeData = userPreferencesRepository.themePreference.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = null
