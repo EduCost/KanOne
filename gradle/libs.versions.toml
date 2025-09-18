@@ -21,6 +21,7 @@ turbine = "1.2.1"
 mockk = "1.14.5"
 coilCompose = "3.3.0"
 coreSplashscreen = "1.0.1"
+datastorePreferences = "1.1.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -71,6 +72,10 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCo
 
 # Splash screen
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+
+# Preferences DataStore
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+
 
 
 # testing

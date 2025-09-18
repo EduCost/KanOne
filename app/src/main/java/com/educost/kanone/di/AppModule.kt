@@ -15,6 +15,7 @@ import com.educost.kanone.data.repository.CardRepositoryImpl
 import com.educost.kanone.data.repository.ColumnRepositoryImpl
 import com.educost.kanone.data.repository.LabelRepositoryImpl
 import com.educost.kanone.data.repository.TaskRepositoryImpl
+import com.educost.kanone.data.repository.UserPreferencesRepositoryImpl
 import com.educost.kanone.data.util.DefaultImageCompressor
 import com.educost.kanone.data.util.DefaultInternalStorageManager
 import com.educost.kanone.dispatchers.DefaultDispatcherProvider
@@ -25,6 +26,7 @@ import com.educost.kanone.domain.repository.CardRepository
 import com.educost.kanone.domain.repository.ColumnRepository
 import com.educost.kanone.domain.repository.LabelRepository
 import com.educost.kanone.domain.repository.TaskRepository
+import com.educost.kanone.domain.repository.UserPreferencesRepository
 import com.educost.kanone.domain.util.ImageCompressor
 import com.educost.kanone.domain.util.InternalStorageManager
 import dagger.Module
@@ -122,6 +124,12 @@ object AppModule {
     @Singleton
     fun provideLabelRepository(labelDao: LabelDao): LabelRepository {
         return LabelRepositoryImpl(labelDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserPreferencesRepository(@ApplicationContext context: Context): UserPreferencesRepository {
+        return UserPreferencesRepositoryImpl(context)
     }
 
 }
