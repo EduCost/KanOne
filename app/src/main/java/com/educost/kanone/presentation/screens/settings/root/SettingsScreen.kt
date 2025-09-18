@@ -1,13 +1,11 @@
-package com.educost.kanone.presentation.screens.settings
+package com.educost.kanone.presentation.screens.settings.root
 
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,11 +40,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.settings.components.SettingsTopBar
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
@@ -56,6 +56,7 @@ import kotlinx.coroutines.launch
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
+    onNavigateToSettingsTheme: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
 
@@ -66,9 +67,11 @@ fun SettingsScreen(
 
     ObserveAsEvents(viewModel.sideEffectFlow) { event ->
         when (event) {
-            is SettingsSideEffect.OnNavigateBack -> onNavigateBack()
+            is SettingsRootSideEffect.OnNavigateBack -> onNavigateBack()
 
-            is SettingsSideEffect.ShowSnackBar -> {
+            is SettingsRootSideEffect.OnNavigateToSettingsTheme -> onNavigateToSettingsTheme()
+
+            is SettingsRootSideEffect.ShowSnackBar -> {
                 scope.launch {
                     snackBarHostState.currentSnackbarData?.dismiss()
 
@@ -116,6 +119,7 @@ fun SettingsScreen(
         snackbarHost = { SnackbarHost(snackBarHostState) },
         topBar = {
             SettingsTopBar(
+                title = stringResource(R.string.settings_appbar_title),
                 onNavigateBack = { onIntent(SettingsIntent.OnNavigateBack) },
                 scrollBehavior = scrollBehavior
             )
@@ -123,18 +127,15 @@ fun SettingsScreen(
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                .padding(innerPadding)
                 .fillMaxSize()
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .verticalScroll(scrollState)
-                .padding(innerPadding)
         ) {
             SettingOption(
-                name = "Theme",
+                name = stringResource(R.string.settings_theme),
                 icon = Icons.Filled.ColorLens,
-                onClick = {
-                    toast.cancel()
-                    toast.show()
-                }
+                onClick = { onIntent(SettingsIntent.OnNavigateToSettingsTheme) }
             )
             SettingOption(
                 name = "Language",

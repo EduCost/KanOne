@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+<!--  Common  -->
+    <string name="settings_theme">Theme</string>
+<!--  Common  -->
+
+<!--  Root Settings  -->
     <!--  Top App Bar  -->
     <string name="settings_appbar_title">Settings</string>
-    <string name="settings_appbar_navigate_back_content_description">Navigate Back</string>
     <!--  Top App Bar  -->
+
+<!--  Root Settings  -->
+
+
+<!--  Theme Settings  -->
+<!--  Theme Settings  -->
+
 </resources>

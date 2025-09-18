@@ -1,4 +1,4 @@
-package com.educost.kanone.presentation.screens.settings
+package com.educost.kanone.presentation.screens.settings.components
 
 import com.educost.kanone.presentation.util.SnackbarEvent
 

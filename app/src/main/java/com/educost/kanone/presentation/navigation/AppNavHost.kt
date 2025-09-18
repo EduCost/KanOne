@@ -10,7 +10,8 @@ import androidx.navigation.toRoute
 import com.educost.kanone.presentation.screens.board.BoardScreen
 import com.educost.kanone.presentation.screens.card.CardScreen
 import com.educost.kanone.presentation.screens.home.HomeScreen
-import com.educost.kanone.presentation.screens.settings.SettingsScreen
+import com.educost.kanone.presentation.screens.settings.root.SettingsScreen
+import com.educost.kanone.presentation.screens.settings.theme.SettingsThemeScreen
 
 @Composable
 fun AppNavHost(
@@ -54,6 +55,15 @@ fun AppNavHost(
 
         composable<AppSettingsDestination> {
             SettingsScreen(
+                onNavigateBack = { navController.navigateUp() },
+                onNavigateToSettingsTheme = {
+                    navController.navigate(SettingsThemeDestination)
+                }
+            )
+        }
+
+        composable<SettingsThemeDestination> {
+            SettingsThemeScreen(
                 onNavigateBack = { navController.navigateUp() }
             )
         }

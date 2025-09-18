@@ -13,3 +13,6 @@ data class CardDestination(val cardId: Long)
 
 @Serializable
 data object AppSettingsDestination
+
+@Serializable
+data object SettingsThemeDestination
