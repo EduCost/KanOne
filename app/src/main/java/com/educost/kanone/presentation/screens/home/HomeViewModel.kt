@@ -41,6 +41,7 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.DismissCreateBoardDialog -> dismissCreateBoardDialog()
             is HomeIntent.OnNewBoardNameChange -> onNewBoardNameChange(intent.newBoardName)
             is HomeIntent.NavigateToBoardScreen -> navigateToBoardScreen(intent.boardId)
+            is HomeIntent.NavigateToSettingsScreen -> navigateToSettingsScreen()
         }
     }
 
@@ -114,6 +115,12 @@ class HomeViewModel @Inject constructor(
     private fun navigateToBoardScreen(boardId: Long) {
         viewModelScope.launch {
             _sideEffectChannel.send(HomeSideEffect.NavigateToBoardScreen(boardId))
+        }
+    }
+
+    private fun navigateToSettingsScreen() {
+        viewModelScope.launch {
+            _sideEffectChannel.send(HomeSideEffect.OnNavigateToSettings)
         }
     }
 

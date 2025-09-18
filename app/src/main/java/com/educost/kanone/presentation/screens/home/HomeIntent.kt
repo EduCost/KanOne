@@ -9,4 +9,6 @@ sealed interface HomeIntent {
     data class OnNewBoardNameChange(val newBoardName: String) : HomeIntent
     data class NavigateToBoardScreen(val boardId: Long) : HomeIntent
 
+    data object NavigateToSettingsScreen : HomeIntent
+
 }

@@ -10,6 +10,7 @@ import androidx.navigation.toRoute
 import com.educost.kanone.presentation.screens.board.BoardScreen
 import com.educost.kanone.presentation.screens.card.CardScreen
 import com.educost.kanone.presentation.screens.home.HomeScreen
+import com.educost.kanone.presentation.screens.settings.SettingsScreen
 
 @Composable
 fun AppNavHost(
@@ -26,6 +27,9 @@ fun AppNavHost(
             HomeScreen(
                 onNavigateToBoard = { boardId ->
                     navController.navigate(BoardDestination(boardId))
+                },
+                onNavigateToSettings = {
+                    navController.navigate(AppSettingsDestination)
                 }
             )
         }
@@ -46,6 +50,12 @@ fun AppNavHost(
         composable<CardDestination> { backStackEntry ->
             val cardId = backStackEntry.toRoute<CardDestination>().cardId
             CardScreen(cardId = cardId, onNavigateBack = { navController.navigateUp() })
+        }
+
+        composable<AppSettingsDestination> {
+            SettingsScreen(
+                onNavigateBack = { navController.navigateUp() }
+            )
         }
 
     }

@@ -3,6 +3,11 @@
     <string name="home_fab_create_board">Create new board</string> <!--  Floating action button to create a new board  -->
     <string name="home_snackbar_observe_boards_error">Error while fetching boards</string> <!--  Shows when an error occurs while fetching boards  -->
 
+    <!--  Top App Bar  -->
+    <string name="home_appbar_more_options_content_description">More home options</string>
+    <string name="home_appbar_settings">Settings</string>
+    <!--  Top App Bar  -->
+
     <!--  Board Card  -->
     <string name="home_board_card_empty_board">Empty Board</string> <!--  Shows when a board has no columns  -->
     <string name="home_board_card_more_options_content_description">More Options</string> <!--  Content description for the more options button  -->

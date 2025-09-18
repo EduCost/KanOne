@@ -48,7 +48,8 @@ import java.time.LocalDateTime
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToBoard: (Long) -> Unit
+    onNavigateToBoard: (Long) -> Unit,
+    onNavigateToSettings: () -> Unit
 ) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -59,6 +60,7 @@ fun HomeScreen(
     ObserveAsEvents(flow = viewModel.sideEffectFlow) { event ->
         when (event) {
             is HomeSideEffect.NavigateToBoardScreen -> onNavigateToBoard(event.boardId)
+            is HomeSideEffect.OnNavigateToSettings -> onNavigateToSettings()
             is HomeSideEffect.ShowSnackBar -> {
                 scope.launch {
                     snackBarHostState.currentSnackbarData?.dismiss()
@@ -94,7 +96,7 @@ fun HomeScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            HomeTopBar()
+            HomeTopBar(onNavigateToSettings = { onIntent(HomeIntent.NavigateToSettingsScreen) })
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
