@@ -26,3 +26,6 @@ data object SettingsRootDestination
 
 @Serializable
 data object SettingsThemeDestination
+
+@Serializable
+data object LogDestination

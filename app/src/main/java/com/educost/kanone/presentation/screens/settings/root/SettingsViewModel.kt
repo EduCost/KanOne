@@ -26,8 +26,8 @@ class SettingsViewModel @Inject constructor(
     fun onIntent(intent: SettingsIntent) {
         when (intent) {
             is SettingsIntent.OnNavigateBack -> onNavigateBack()
-
             is SettingsIntent.OnNavigateToSettingsTheme -> onNavigateToSettingsTheme()
+            is SettingsIntent.OnNavigateToLog -> onNavigateToLog()
         }
     }
 
@@ -40,6 +40,12 @@ class SettingsViewModel @Inject constructor(
     private fun onNavigateToSettingsTheme() {
         viewModelScope.launch(dispatchers.main) {
             _sideEffectChannel.send(SettingsRootSideEffect.OnNavigateToSettingsTheme)
+        }
+    }
+
+    private fun onNavigateToLog() {
+        viewModelScope.launch(dispatchers.main) {
+            _sideEffectChannel.send(SettingsRootSideEffect.OnNavigateToLog)
         }
     }
 

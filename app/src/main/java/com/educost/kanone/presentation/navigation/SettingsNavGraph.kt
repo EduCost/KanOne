@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.educost.kanone.presentation.screens.settings.logs.LogScreen
 import com.educost.kanone.presentation.screens.settings.root.SettingsScreen
 import com.educost.kanone.presentation.screens.settings.theme.SettingsThemeScreen
 
@@ -15,12 +16,21 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController) {
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettingsTheme = {
                     navController.navigate(SettingsThemeDestination)
+                },
+                onNavigateToLog = {
+                    navController.navigate(LogDestination)
                 }
             )
         }
 
         composable<SettingsThemeDestination> {
             SettingsThemeScreen(
+                onNavigateBack = { navController.navigateUp() }
+            )
+        }
+
+        composable<LogDestination> {
+            LogScreen(
                 onNavigateBack = { navController.navigateUp() }
             )
         }

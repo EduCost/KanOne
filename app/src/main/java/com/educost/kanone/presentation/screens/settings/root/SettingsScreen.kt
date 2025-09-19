@@ -58,6 +58,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
     onNavigateToSettingsTheme: () -> Unit,
+    onNavigateToLog: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
 
@@ -71,6 +72,8 @@ fun SettingsScreen(
             is SettingsRootSideEffect.OnNavigateBack -> onNavigateBack()
 
             is SettingsRootSideEffect.OnNavigateToSettingsTheme -> onNavigateToSettingsTheme()
+
+            is SettingsRootSideEffect.OnNavigateToLog -> onNavigateToLog()
 
             is SettingsRootSideEffect.ShowSnackBar -> {
                 scope.launch {
@@ -163,12 +166,9 @@ fun SettingsScreen(
                 }
             )
             SettingOption(
-                name = "Logs",
+                name = stringResource(R.string.settings_logs),
                 icon = Icons.AutoMirrored.Filled.ListAlt,
-                onClick = {
-                    toast.cancel()
-                    toast.show()
-                }
+                onClick = { onIntent(SettingsIntent.OnNavigateToLog) }
             )
 
         }
