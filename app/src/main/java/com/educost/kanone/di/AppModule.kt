@@ -18,6 +18,7 @@ import com.educost.kanone.data.repository.TaskRepositoryImpl
 import com.educost.kanone.data.repository.UserPreferencesRepositoryImpl
 import com.educost.kanone.data.util.DefaultImageCompressor
 import com.educost.kanone.data.util.DefaultInternalStorageManager
+import com.educost.kanone.data.util.JsonConverterImpl
 import com.educost.kanone.dispatchers.DefaultDispatcherProvider
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.domain.repository.AttachmentRepository
@@ -29,6 +30,7 @@ import com.educost.kanone.domain.repository.TaskRepository
 import com.educost.kanone.domain.repository.UserPreferencesRepository
 import com.educost.kanone.domain.util.ImageCompressor
 import com.educost.kanone.domain.util.InternalStorageManager
+import com.educost.kanone.domain.util.JsonConverter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -57,6 +59,12 @@ object AppModule {
     @Singleton
     fun provideInternalStorageManager(@ApplicationContext context: Context): InternalStorageManager {
         return DefaultInternalStorageManager(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideJsonConverter(): JsonConverter {
+        return JsonConverterImpl()
     }
 
 
