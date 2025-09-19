@@ -226,7 +226,7 @@ private fun MaterialYouSwitch(
     Row(
         modifier = modifier
             .heightIn(rowHeight)
-            .clickable(onClick = {})
+            .clickable(onClick = { onCheckedChange(!enabled) })
             .padding(rowPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
