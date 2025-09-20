@@ -28,6 +28,7 @@ class LogHandlerImpl(
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             log(
                 throwable = throwable,
+                message = null,
                 from = LogLocation.UNCAUGHT_EXCEPTION_HANDLER,
                 level = LogLevel.ERROR
             )
@@ -37,6 +38,7 @@ class LogHandlerImpl(
 
     override fun log(
         throwable: Throwable,
+        message: String?,
         from: String,
         level: LogLevel
     ) {
@@ -44,13 +46,14 @@ class LogHandlerImpl(
         if (!logFolder.exists()) logFolder.mkdirs()
 
         val timestamp = Instant.now().toString()
-        val message = throwable.message ?: "Unknown"
+        val exceptionName = throwable::class.java.name
         val stackTrace = throwable.stackTraceToString()
         val deviceSdkInt = Build.VERSION.SDK_INT
         val appVersionName = BuildConfig.VERSION_NAME
 
         val logEvent = LogEvent(
             timestamp = timestamp,
+            exceptionName = exceptionName,
             message = message,
             stackTrace = stackTrace,
             level = level,

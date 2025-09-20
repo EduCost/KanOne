@@ -3,6 +3,8 @@
 
     <string name="navigate_back_button_content_description">Navigate Back</string>
     <string name="icon_more_vert_content_description">More Options</string>
+    <string name="delete_button_content_description">Delete</string>
+    <string name="copy_button_content_description">Copy</string>
     <string name="undo_action">Undo</string>
 
     <!-- Color Picker Dialog -->

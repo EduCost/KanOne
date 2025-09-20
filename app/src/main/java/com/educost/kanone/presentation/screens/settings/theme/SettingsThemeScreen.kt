@@ -109,7 +109,7 @@ fun SettingsThemeScreen(
 ) {
 
     val scrollState = rememberScrollState()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var isSelectingTheme by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(

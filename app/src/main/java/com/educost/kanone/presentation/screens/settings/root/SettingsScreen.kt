@@ -111,7 +111,7 @@ fun SettingsScreen(
 ) {
 
     val scrollState = rememberScrollState()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val context = LocalContext.current
     val toast = remember {
         Toast.makeText(context, "Not implemented yet", Toast.LENGTH_SHORT)

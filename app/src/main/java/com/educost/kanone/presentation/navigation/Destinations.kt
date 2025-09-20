@@ -1,5 +1,6 @@
 package com.educost.kanone.presentation.navigation
 
+import com.educost.kanone.domain.logs.LogEvent
 import kotlinx.serialization.Serializable
 
 
@@ -29,3 +30,6 @@ data object SettingsThemeDestination
 
 @Serializable
 data object LogDestination
+
+@Serializable
+data class LogDetailDestination(val logEventJson: String)
