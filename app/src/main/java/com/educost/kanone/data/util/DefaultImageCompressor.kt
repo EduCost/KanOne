@@ -6,6 +6,9 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.core.net.toUri
 import com.educost.kanone.domain.error.GenericError
+import com.educost.kanone.domain.logs.LogHandler
+import com.educost.kanone.domain.logs.LogLevel
+import com.educost.kanone.domain.logs.LogLocation
 import com.educost.kanone.domain.util.ImageCompressor
 import com.educost.kanone.utils.Result
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +18,10 @@ import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import kotlin.math.roundToInt
 
-class DefaultImageCompressor(private val context: Context) : ImageCompressor {
+class DefaultImageCompressor(
+    private val context: Context,
+    private val logHandler: LogHandler
+) : ImageCompressor {
 
     override suspend fun compressImage(uri: String, compressThreshold: Long): Result<ByteArray, GenericError> {
         return withContext(Dispatchers.IO) {
@@ -67,7 +73,13 @@ class DefaultImageCompressor(private val context: Context) : ImageCompressor {
                     Result.Success(outputBytes)
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                logHandler.log(
+                    throwable = e,
+                    message = "Error compressing image",
+                    from = LogLocation.IMAGE_COMPRESSOR,
+                    level = LogLevel.ERROR
+                )
+
                 Result.Error(GenericError)
             }
         }

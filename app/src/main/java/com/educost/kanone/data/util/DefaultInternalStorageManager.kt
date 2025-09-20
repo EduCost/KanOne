@@ -4,6 +4,9 @@ import android.content.Context
 import android.webkit.MimeTypeMap
 import androidx.core.net.toUri
 import com.educost.kanone.domain.error.GenericError
+import com.educost.kanone.domain.logs.LogHandler
+import com.educost.kanone.domain.logs.LogLevel
+import com.educost.kanone.domain.logs.LogLocation
 import com.educost.kanone.domain.util.InternalStorageManager
 import com.educost.kanone.utils.Result
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +14,10 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
 
-class DefaultInternalStorageManager(private val context: Context) : InternalStorageManager {
+class DefaultInternalStorageManager(
+    private val context: Context,
+    private val logHandler: LogHandler
+) : InternalStorageManager {
 
     val imageDirectory by lazy {
         File(context.filesDir, "images").apply {
@@ -37,7 +43,13 @@ class DefaultInternalStorageManager(private val context: Context) : InternalStor
                 Result.Success(file.absolutePath)
 
             } catch (e: Exception) {
-                e.printStackTrace()
+                logHandler.log(
+                    throwable = e,
+                    message = "Error saving image",
+                    from = LogLocation.INTERNAL_STORAGE_MANAGER,
+                    level = LogLevel.ERROR
+                )
+
                 Result.Error(GenericError)
             }
         }
@@ -56,7 +68,13 @@ class DefaultInternalStorageManager(private val context: Context) : InternalStor
                 Result.Success(file.absolutePath)
 
             } catch (e: Exception) {
-                e.printStackTrace()
+                logHandler.log(
+                    throwable = e,
+                    message = "Error saving image",
+                    from = LogLocation.INTERNAL_STORAGE_MANAGER,
+                    level = LogLevel.ERROR
+                )
+
                 Result.Error(GenericError)
             }
         }
@@ -77,7 +95,13 @@ class DefaultInternalStorageManager(private val context: Context) : InternalStor
                 val file = File(absolutePath)
                 file.delete()
             } catch (e: Exception) {
-                e.printStackTrace()
+                logHandler.log(
+                    throwable = e,
+                    message = "Error deleting file",
+                    from = LogLocation.INTERNAL_STORAGE_MANAGER,
+                    level = LogLevel.ERROR
+                )
+
                 false
             }
         }

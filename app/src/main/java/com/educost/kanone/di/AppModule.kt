@@ -52,15 +52,21 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideImageCompressor(@ApplicationContext context: Context): ImageCompressor {
-        return DefaultImageCompressor(context)
+    fun provideImageCompressor(
+        @ApplicationContext context: Context,
+        logHandler: LogHandler
+    ): ImageCompressor {
+        return DefaultImageCompressor(context, logHandler)
 
     }
 
     @Provides
     @Singleton
-    fun provideInternalStorageManager(@ApplicationContext context: Context): InternalStorageManager {
-        return DefaultInternalStorageManager(context)
+    fun provideInternalStorageManager(
+        @ApplicationContext context: Context,
+        logHandler: LogHandler
+    ): InternalStorageManager {
+        return DefaultInternalStorageManager(context, logHandler)
     }
 
     @Provides
@@ -118,31 +124,41 @@ object AppModule {
     // Repositories
     @Provides
     @Singleton
-    fun provideBoardRepository(boardDao: BoardDao): BoardRepository = BoardRepositoryImpl(boardDao)
-
-    @Provides
-    @Singleton
-    fun provideColumnRepository(columnDao: ColumnDao): ColumnRepository =
-        ColumnRepositoryImpl(columnDao)
-
-    @Provides
-    @Singleton
-    fun provideCardRepository(cardDao: CardDao): CardRepository = CardRepositoryImpl(cardDao)
-
-    @Provides
-    @Singleton
-    fun provideTaskRepository(taskDao: TaskDao): TaskRepository = TaskRepositoryImpl(taskDao)
-
-    @Provides
-    @Singleton
-    fun provideAttachmentRepository(attachmentDao: AttachmentDao): AttachmentRepository {
-        return AttachmentRepositoryImpl(attachmentDao)
+    fun provideBoardRepository(boardDao: BoardDao, logHandler: LogHandler): BoardRepository {
+        return BoardRepositoryImpl(boardDao, logHandler)
     }
 
     @Provides
     @Singleton
-    fun provideLabelRepository(labelDao: LabelDao): LabelRepository {
-        return LabelRepositoryImpl(labelDao)
+    fun provideColumnRepository(columnDao: ColumnDao, logHandler: LogHandler): ColumnRepository {
+        return ColumnRepositoryImpl(columnDao, logHandler)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCardRepository(cardDao: CardDao, logHandler: LogHandler): CardRepository {
+        return CardRepositoryImpl(cardDao, logHandler)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskRepository(taskDao: TaskDao, logHandler: LogHandler): TaskRepository {
+        return TaskRepositoryImpl(taskDao, logHandler)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAttachmentRepository(
+        attachmentDao: AttachmentDao,
+        logHandler: LogHandler
+    ): AttachmentRepository {
+        return AttachmentRepositoryImpl(attachmentDao, logHandler)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLabelRepository(labelDao: LabelDao, logHandler: LogHandler): LabelRepository {
+        return LabelRepositoryImpl(labelDao, logHandler)
     }
 
     @Provides

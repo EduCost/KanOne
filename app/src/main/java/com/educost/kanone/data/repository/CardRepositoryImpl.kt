@@ -4,6 +4,9 @@ import com.educost.kanone.data.local.CardDao
 import com.educost.kanone.data.mapper.toCardEntity
 import com.educost.kanone.data.mapper.toCardItem
 import com.educost.kanone.domain.error.GenericError
+import com.educost.kanone.domain.logs.LogHandler
+import com.educost.kanone.domain.logs.LogLevel
+import com.educost.kanone.domain.logs.LogLocation
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.repository.CardRepository
 import com.educost.kanone.utils.Result
@@ -11,7 +14,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
-class CardRepositoryImpl(val cardDao: CardDao) : CardRepository {
+class CardRepositoryImpl(
+    private val cardDao: CardDao,
+    private val logHandler: LogHandler
+) : CardRepository {
 
     override fun observeCard(cardId: Long): Flow<Result<CardItem, GenericError>> {
         return cardDao.observeCard(cardId)
@@ -19,7 +25,13 @@ class CardRepositoryImpl(val cardDao: CardDao) : CardRepository {
                 Result.Success(card.toCardItem())
             }
             .catch { e ->
-                e.printStackTrace()
+                logHandler.log(
+                    throwable = e,
+                    message = "Error fetching card",
+                    from = LogLocation.CARD_REPOSITORY,
+                    level = LogLevel.ERROR
+                )
+
                 Result.Error(GenericError)
             }
     }
@@ -32,7 +44,13 @@ class CardRepositoryImpl(val cardDao: CardDao) : CardRepository {
             cardDao.createCard(card.toCardEntity(columnId))
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error creating card",
+                from = LogLocation.CARD_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
     }
@@ -46,7 +64,13 @@ class CardRepositoryImpl(val cardDao: CardDao) : CardRepository {
             cardDao.updateCards(cardsEntities)
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error updating cards",
+                from = LogLocation.CARD_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
     }
@@ -59,7 +83,13 @@ class CardRepositoryImpl(val cardDao: CardDao) : CardRepository {
             cardDao.updateCard(card.toCardEntity(columnId))
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error updating card",
+                from = LogLocation.CARD_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
     }
@@ -69,7 +99,12 @@ class CardRepositoryImpl(val cardDao: CardDao) : CardRepository {
             val columnId = cardDao.getCardColumnId(cardId)
             Result.Success(columnId)
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = null,
+                from = LogLocation.CARD_REPOSITORY,
+                level = LogLevel.ERROR
+            )
             Result.Error(GenericError)
         }
 
@@ -83,7 +118,13 @@ class CardRepositoryImpl(val cardDao: CardDao) : CardRepository {
             cardDao.deleteCard(card.toCardEntity(columnId))
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error deleting card",
+                from = LogLocation.CARD_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
     }

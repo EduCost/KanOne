@@ -7,40 +7,57 @@ import com.educost.kanone.data.mapper.toCardEntity
 import com.educost.kanone.data.mapper.toColumnEntity
 import com.educost.kanone.data.model.entity.CardEntity
 import com.educost.kanone.domain.error.GenericError
+import com.educost.kanone.domain.logs.LogHandler
+import com.educost.kanone.domain.logs.LogLevel
+import com.educost.kanone.domain.logs.LogLocation
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.repository.BoardRepository
 import com.educost.kanone.utils.Result
-import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
-class BoardRepositoryImpl @Inject constructor(val boardDao: BoardDao) : BoardRepository {
+class BoardRepositoryImpl(
+    private val boardDao: BoardDao,
+    private val logHandler: LogHandler
+) : BoardRepository {
 
     override fun observeAllBoards(): Flow<Result<List<Board>, GenericError>> {
         return boardDao.observeAllBoards().map { boards ->
             Result.Success(boards.map { it.toBoard() })
         }.catch { e ->
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error fetching all boards",
+                from = LogLocation.BOARD_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             Result.Error(GenericError)
         }
     }
 
-    override suspend fun createBoard(board: Board): Result<Long, GenericError> {
+    override suspend fun createBoard(board: Board): Boolean {
         return try {
-            val boardId = boardDao.createBoard(board.toBoardEntity())
-            Result.Success(boardId)
+            boardDao.createBoard(board.toBoardEntity())
+            true
         } catch (e: Exception) {
-            e.printStackTrace()
-            Result.Error(GenericError)
+            logHandler.log(
+                throwable = e,
+                message = "Error creating board",
+                from = LogLocation.BOARD_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
+            false
         }
     }
 
     override suspend fun updateBoardData(
         boardId: Long,
         columns: List<KanbanColumn>
-    ): Result<Unit, GenericError> {
+    ): Boolean {
         return try {
             val columnsToUpdate = columns.map { it.toColumnEntity(boardId) }
             val cardsToUpdate = mutableListOf<CardEntity>()
@@ -49,10 +66,17 @@ class BoardRepositoryImpl @Inject constructor(val boardDao: BoardDao) : BoardRep
                     cardsToUpdate.add(card.toCardEntity(column.id))
                 }
             }
-            Result.Success(boardDao.updateBoardData(columnsToUpdate, cardsToUpdate))
+            boardDao.updateBoardData(columnsToUpdate, cardsToUpdate)
+            true
         } catch (e: Exception) {
-            e.printStackTrace()
-            Result.Error(GenericError)
+            logHandler.log(
+                throwable = e,
+                message = "Error updating board data",
+                from = LogLocation.BOARD_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
+            false
         }
     }
 
@@ -61,7 +85,13 @@ class BoardRepositoryImpl @Inject constructor(val boardDao: BoardDao) : BoardRep
             boardDao.updateBoard(board.toBoardEntity())
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error updating board",
+                from = LogLocation.BOARD_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
     }
@@ -71,7 +101,13 @@ class BoardRepositoryImpl @Inject constructor(val boardDao: BoardDao) : BoardRep
             boardDao.deleteBoard(board.toBoardEntity())
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error deleting board",
+                from = LogLocation.BOARD_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
     }
@@ -80,7 +116,13 @@ class BoardRepositoryImpl @Inject constructor(val boardDao: BoardDao) : BoardRep
         return boardDao.observeCompleteBoard(boardId).map {
             Result.Success(it.toBoard())
         }.catch { e ->
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error fetching board",
+                from = LogLocation.BOARD_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             Result.Error(GenericError)
         }
     }

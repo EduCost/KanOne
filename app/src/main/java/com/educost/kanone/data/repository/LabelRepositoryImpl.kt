@@ -5,6 +5,9 @@ import com.educost.kanone.data.mapper.toLabel
 import com.educost.kanone.data.mapper.toLabelEntity
 import com.educost.kanone.data.model.entity.LabelCardCrossRef
 import com.educost.kanone.domain.error.GenericError
+import com.educost.kanone.domain.logs.LogHandler
+import com.educost.kanone.domain.logs.LogLevel
+import com.educost.kanone.domain.logs.LogLocation
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.repository.LabelRepository
 import com.educost.kanone.utils.Result
@@ -12,14 +15,23 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
-class LabelRepositoryImpl(val labelDao: LabelDao) : LabelRepository {
+class LabelRepositoryImpl(
+    private val labelDao: LabelDao,
+    private val logHandler: LogHandler
+) : LabelRepository {
 
     override fun observeLabels(cardId: Long): Flow<Result<List<Label>, GenericError>> {
         return labelDao.observeLabels(cardId).map { labels ->
             Result.Success(labels.map { it.toLabel() })
 
         }.catch { e ->
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error fetching labels",
+                from = LogLocation.LABEL_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             Result.Error(GenericError)
         }
     }
@@ -29,7 +41,13 @@ class LabelRepositoryImpl(val labelDao: LabelDao) : LabelRepository {
             labelDao.updateLabel(label.toLabelEntity(boardId))
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error updating label",
+                from = LogLocation.LABEL_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
     }
@@ -46,10 +64,15 @@ class LabelRepositoryImpl(val labelDao: LabelDao) : LabelRepository {
             )
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error creating label and associating with card",
+                from = LogLocation.LABEL_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
-
     }
 
     override suspend fun associateLabelWithCard(labelId: Long, cardId: Long): Boolean {
@@ -62,10 +85,15 @@ class LabelRepositoryImpl(val labelDao: LabelDao) : LabelRepository {
             )
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error associating label with card",
+                from = LogLocation.LABEL_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
-
     }
 
     override suspend fun deleteLabelAssociation(labelId: Long, cardId: Long): Boolean {
@@ -78,7 +106,13 @@ class LabelRepositoryImpl(val labelDao: LabelDao) : LabelRepository {
             )
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error trying to remove label association",
+                from = LogLocation.LABEL_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
     }
@@ -91,7 +125,13 @@ class LabelRepositoryImpl(val labelDao: LabelDao) : LabelRepository {
             )
             labelAssociation != null
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = null,
+                from = LogLocation.LABEL_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
     }
@@ -102,7 +142,13 @@ class LabelRepositoryImpl(val labelDao: LabelDao) : LabelRepository {
             val boardId = labelDao.getCardBoardId(cardId)
             Result.Success(boardId)
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = null,
+                from = LogLocation.LABEL_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             Result.Error(GenericError)
         }
     }

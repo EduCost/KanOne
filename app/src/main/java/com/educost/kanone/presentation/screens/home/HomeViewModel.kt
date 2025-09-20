@@ -75,22 +75,14 @@ class HomeViewModel @Inject constructor(
 
     private fun createBoard(board: Board) {
         viewModelScope.launch {
-            val result = createBoardUseCase(board)
-            when (result) {
-                is Result.Error -> {
+            val wasBoardCreated = createBoardUseCase(board)
 
-                    _sideEffectChannel.send(
-                        HomeSideEffect.ShowSnackBar(
-                            SnackbarEvent(
-                                message = UiText.StringResource(R.string.home_snackbar_creating_board_error)
-                            )
-                        )
-                    )
+            if (!wasBoardCreated) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.home_snackbar_creating_board_error)
+                )
+            )
 
-                }
-
-                is Result.Success -> Unit
-            }
             dismissCreateBoardDialog()
         }
     }

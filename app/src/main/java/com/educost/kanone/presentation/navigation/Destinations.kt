@@ -1,6 +1,5 @@
 package com.educost.kanone.presentation.navigation
 
-import com.educost.kanone.domain.logs.LogEvent
 import kotlinx.serialization.Serializable
 
 

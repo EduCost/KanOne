@@ -1,13 +1,11 @@
 package com.educost.kanone.domain.usecase
 
-import com.educost.kanone.domain.error.GenericError
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.repository.BoardRepository
-import com.educost.kanone.utils.Result
 
 class PersistBoardPositionsUseCase(val boardRepository: BoardRepository) {
 
-    suspend operator fun invoke(boardId: Long, columns: List<KanbanColumn>): Result<Unit, GenericError> {
+    suspend operator fun invoke(boardId: Long, columns: List<KanbanColumn>): Boolean {
 
         val updatedColumns = columns.mapIndexed { columnIdx, column ->
 

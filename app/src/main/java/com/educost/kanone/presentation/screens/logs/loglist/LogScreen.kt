@@ -47,7 +47,6 @@ import com.educost.kanone.domain.logs.LogEvent
 import com.educost.kanone.domain.logs.LogLevel
 import com.educost.kanone.presentation.screens.logs.loglist.components.DeleteLogsDialog
 import com.educost.kanone.presentation.screens.logs.loglist.components.LogAppBar
-import com.educost.kanone.presentation.screens.settings.components.SettingsTopBar
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
 import kotlinx.coroutines.launch

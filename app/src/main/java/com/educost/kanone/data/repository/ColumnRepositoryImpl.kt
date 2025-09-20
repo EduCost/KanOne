@@ -11,6 +11,9 @@ import com.educost.kanone.data.model.entity.AttachmentEntity
 import com.educost.kanone.data.model.entity.LabelEntity
 import com.educost.kanone.data.model.entity.TaskEntity
 import com.educost.kanone.domain.error.GenericError
+import com.educost.kanone.domain.logs.LogHandler
+import com.educost.kanone.domain.logs.LogLevel
+import com.educost.kanone.domain.logs.LogLocation
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.repository.ColumnRepository
 import com.educost.kanone.utils.Result
@@ -18,14 +21,23 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
-class ColumnRepositoryImpl(val columnDao: ColumnDao) : ColumnRepository {
+class ColumnRepositoryImpl(
+    private val columnDao: ColumnDao,
+    private val logHandler: LogHandler
+) : ColumnRepository {
 
     override fun observeColumns(boardId: Long): Flow<Result<List<KanbanColumn>, GenericError>> {
         return columnDao.observeColumns(boardId).map { columns ->
             Result.Success(columns.map { it.toKanbanColumn() })
 
         }.catch { e ->
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error fetching column",
+                from = LogLocation.COLUMN_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             Result.Error(GenericError)
         }
     }
@@ -38,7 +50,13 @@ class ColumnRepositoryImpl(val columnDao: ColumnDao) : ColumnRepository {
             columnDao.createColumn(column.toColumnEntity(boardId))
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error creating column",
+                from = LogLocation.COLUMN_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
     }
@@ -51,9 +69,14 @@ class ColumnRepositoryImpl(val columnDao: ColumnDao) : ColumnRepository {
             columnDao.updateColumn(column.toColumnEntity(boardId))
             true
         } catch (e: Exception) {
-            e.printStackTrace()
-            false
+            logHandler.log(
+                throwable = e,
+                message = "Error updating column",
+                from = LogLocation.COLUMN_REPOSITORY,
+                level = LogLevel.ERROR
+            )
 
+            false
         }
     }
 
@@ -65,7 +88,13 @@ class ColumnRepositoryImpl(val columnDao: ColumnDao) : ColumnRepository {
             columnDao.deleteColumn(column.toColumnEntity(boardId))
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error deleting column",
+                from = LogLocation.COLUMN_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
     }
@@ -102,7 +131,12 @@ class ColumnRepositoryImpl(val columnDao: ColumnDao) : ColumnRepository {
             )
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error restoring column",
+                from = LogLocation.COLUMN_REPOSITORY,
+                level = LogLevel.ERROR
+            )
             false
         }
     }

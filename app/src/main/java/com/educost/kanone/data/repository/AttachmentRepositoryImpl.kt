@@ -2,17 +2,29 @@ package com.educost.kanone.data.repository
 
 import com.educost.kanone.data.local.AttachmentDao
 import com.educost.kanone.data.mapper.toAttachmentEntity
+import com.educost.kanone.domain.logs.LogHandler
+import com.educost.kanone.domain.logs.LogLevel
+import com.educost.kanone.domain.logs.LogLocation
 import com.educost.kanone.domain.model.Attachment
 import com.educost.kanone.domain.repository.AttachmentRepository
 
-class AttachmentRepositoryImpl(val attachmentDao: AttachmentDao) : AttachmentRepository {
+class AttachmentRepositoryImpl(
+    private val attachmentDao: AttachmentDao,
+    private val logHandler: LogHandler
+) : AttachmentRepository {
 
     override suspend fun createAttachment(attachment: Attachment, cardId: Long): Boolean {
         return try {
             attachmentDao.createAttachment(attachment.toAttachmentEntity(cardId))
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error creating attachment",
+                from = LogLocation.ATTACHMENT_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
     }
@@ -22,7 +34,13 @@ class AttachmentRepositoryImpl(val attachmentDao: AttachmentDao) : AttachmentRep
             attachmentDao.deleteAttachment(attachment.toAttachmentEntity(cardId))
             true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logHandler.log(
+                throwable = e,
+                message = "Error deleting attachment",
+                from = LogLocation.ATTACHMENT_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
             false
         }
     }

@@ -12,9 +12,9 @@ interface BoardRepository {
 
     fun observeCompleteBoard(boardId: Long): Flow<Result<Board, GenericError>>
 
-    suspend fun createBoard(board: Board): Result<Long, GenericError>
+    suspend fun createBoard(board: Board): Boolean
 
-    suspend fun updateBoardData(boardId: Long, columns: List<KanbanColumn>): Result<Unit, GenericError>
+    suspend fun updateBoardData(boardId: Long, columns: List<KanbanColumn>): Boolean
 
     suspend fun updateBoard(board: Board): Boolean
 
