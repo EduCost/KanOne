@@ -9,6 +9,7 @@ import com.educost.kanone.data.local.ColumnDao
 import com.educost.kanone.data.local.KanbanDatabase
 import com.educost.kanone.data.local.LabelDao
 import com.educost.kanone.data.local.TaskDao
+import com.educost.kanone.data.logs.LogHandlerImpl
 import com.educost.kanone.data.repository.AttachmentRepositoryImpl
 import com.educost.kanone.data.repository.BoardRepositoryImpl
 import com.educost.kanone.data.repository.CardRepositoryImpl
@@ -21,6 +22,7 @@ import com.educost.kanone.data.util.DefaultInternalStorageManager
 import com.educost.kanone.data.util.JsonConverterImpl
 import com.educost.kanone.dispatchers.DefaultDispatcherProvider
 import com.educost.kanone.dispatchers.DispatcherProvider
+import com.educost.kanone.domain.logs.LogHandler
 import com.educost.kanone.domain.repository.AttachmentRepository
 import com.educost.kanone.domain.repository.BoardRepository
 import com.educost.kanone.domain.repository.CardRepository
@@ -65,6 +67,15 @@ object AppModule {
     @Singleton
     fun provideJsonConverter(): JsonConverter {
         return JsonConverterImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLogHandler(
+        @ApplicationContext context: Context,
+        jsonConverter: JsonConverter
+    ): LogHandler {
+        return LogHandlerImpl(jsonConverter, context)
     }
 
 
