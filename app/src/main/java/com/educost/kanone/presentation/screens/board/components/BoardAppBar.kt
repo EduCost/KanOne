@@ -3,7 +3,6 @@
 package com.educost.kanone.presentation.screens.board.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.ModeEdit
@@ -26,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.educost.kanone.R
 import com.educost.kanone.presentation.components.ActionTopBar
+import com.educost.kanone.presentation.components.NavigateBackIcon
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 
@@ -57,14 +57,7 @@ fun BoardAppBar(
                         )
                     },
                     navigationIcon = {
-                        IconButton(
-                            onClick = { onIntent(BoardIntent.OnNavigateBack) }
-                        ) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.navigate_back_button_content_description)
-                            )
-                        }
+                        NavigateBackIcon { onIntent(BoardIntent.OnNavigateBack) }
                     },
                     actions = {
                         IconButton(

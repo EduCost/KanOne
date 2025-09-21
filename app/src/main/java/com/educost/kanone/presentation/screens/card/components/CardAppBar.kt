@@ -1,7 +1,6 @@
 package com.educost.kanone.presentation.screens.card.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material.icons.filled.MoreVert
@@ -32,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.presentation.components.ActionTopBar
+import com.educost.kanone.presentation.components.NavigateBackIcon
 import com.educost.kanone.presentation.screens.card.CardIntent
 import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 
@@ -67,14 +67,7 @@ fun CardAppBar(
                     )
                 },
                 navigationIcon = {
-                    IconButton(
-                        onClick = { onIntent(CardIntent.OnNavigateBack) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.navigate_back_button_content_description)
-                        )
-                    }
+                    NavigateBackIcon { onIntent(CardIntent.OnNavigateBack) }
                 },
                 actions = {
                     IconButton(

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.educost.kanone.R
+import com.educost.kanone.presentation.components.NavigateBackIcon
 import kotlinx.coroutines.launch
 
 @Composable
@@ -124,21 +125,14 @@ private fun LogDetailCard(modifier: Modifier = Modifier, title: String, content:
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LogDetailAppBar(modifier: Modifier = Modifier, onNavigateBack: () -> Unit, onCopy: () -> Unit) {
+private fun LogDetailAppBar(modifier: Modifier = Modifier, onNavigateBack: () -> Unit, onCopy: () -> Unit) {
     CenterAlignedTopAppBar(
         modifier = modifier,
         title = {
             Text(text = "Log Detail")
         },
         navigationIcon = {
-            IconButton(
-                onClick = onNavigateBack
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.navigate_back_button_content_description)
-                )
-            }
+            NavigateBackIcon { onNavigateBack() }
         },
         actions = {
             IconButton(
