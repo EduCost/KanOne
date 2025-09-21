@@ -32,3 +32,9 @@ data object LogDestination
 
 @Serializable
 data class LogDetailDestination(val logEventJson: String)
+
+@Serializable
+data object AboutDestination
+
+@Serializable
+data object CreditsDestination

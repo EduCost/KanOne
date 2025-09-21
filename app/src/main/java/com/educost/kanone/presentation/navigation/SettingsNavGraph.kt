@@ -7,6 +7,8 @@ import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.educost.kanone.presentation.screens.logs.logdetail.LogDetailScreen
 import com.educost.kanone.presentation.screens.logs.loglist.LogScreen
+import com.educost.kanone.presentation.screens.settings.about.AboutScreen
+import com.educost.kanone.presentation.screens.settings.about.CreditsScreen
 import com.educost.kanone.presentation.screens.settings.root.SettingsScreen
 import com.educost.kanone.presentation.screens.settings.theme.SettingsThemeScreen
 
@@ -18,6 +20,9 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController) {
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettingsTheme = {
                     navController.navigate(SettingsThemeDestination)
+                },
+                onNavigateToAbout = {
+                    navController.navigate(AboutDestination)
                 },
                 onNavigateToLog = {
                     navController.navigate(LogDestination)
@@ -46,7 +51,21 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController) {
                 logEventJson = logEventJson,
                 onNavigateBack = { navController.navigateUp() }
             )
+        }
 
+        composable<AboutDestination> {
+            AboutScreen(
+                onNavigateBack = { navController.navigateUp() },
+                onNavigateToCredits = {
+                    navController.navigate(CreditsDestination)
+                }
+            )
+        }
+
+        composable<CreditsDestination> {
+            CreditsScreen(
+                onNavigateBack = { navController.navigateUp() }
+            )
         }
 
     }

@@ -57,6 +57,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
     onNavigateToSettingsTheme: () -> Unit,
+    onNavigateToAbout: () -> Unit,
     onNavigateToLog: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -71,6 +72,8 @@ fun SettingsScreen(
             is SettingsRootSideEffect.OnNavigateBack -> onNavigateBack()
 
             is SettingsRootSideEffect.OnNavigateToSettingsTheme -> onNavigateToSettingsTheme()
+
+            is SettingsRootSideEffect.OnNavigateToAbout -> onNavigateToAbout()
 
             is SettingsRootSideEffect.OnNavigateToLog -> onNavigateToLog()
 
@@ -157,12 +160,9 @@ fun SettingsScreen(
                 }
             )
             SettingOption(
-                name = "About",
+                name = stringResource(R.string.settings_about),
                 icon = Icons.Filled.Info,
-                onClick = {
-                    toast.cancel()
-                    toast.show()
-                }
+                onClick = { onIntent(SettingsIntent.OnNavigateToAbout) }
             )
             SettingOption(
                 name = stringResource(R.string.settings_logs),

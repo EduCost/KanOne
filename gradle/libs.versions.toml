@@ -23,6 +23,7 @@ coilCompose = "3.3.0"
 coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.7"
 gson = "2.13.2"
+aboutLibraries = "13.0.0-rc01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -80,6 +81,9 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 # Gson
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 
+# About Libraries
+aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
+aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
 
 
 # testing
@@ -95,4 +99,5 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "daggerHilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin.android", version.ref = "aboutLibraries" }
 
