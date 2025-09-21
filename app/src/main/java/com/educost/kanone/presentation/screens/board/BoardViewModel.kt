@@ -1053,9 +1053,9 @@ class BoardViewModel @Inject constructor(
         val shouldScrollRight = canScrollRight && isCardBeyondRightEdge
 
         scrollState.horizontalSpeed = if (shouldScrollLeft) {
-            (itemLeft - boardLeft) / 3
+            (itemLeft - boardLeft) / 6
         } else if (shouldScrollRight) {
-            (itemRight - boardRight) / 3
+            (itemRight - boardRight) / 6
         } else {
             0f
         }
