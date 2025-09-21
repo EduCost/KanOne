@@ -1,4 +1,4 @@
-package com.educost.kanone.presentation.screens.board.components
+package com.educost.kanone.presentation.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -18,10 +18,10 @@ fun DeleteBoardDialog(
         modifier = modifier,
         onDismissRequest = onDismiss,
         title = {
-            Text(text = stringResource(R.string.board_dialog_delete_title))
+            Text(text = stringResource(R.string.dialog_board_delete_title))
         },
         text = {
-            Text(text = stringResource(R.string.board_dialog_delete_text))
+            Text(text = stringResource(R.string.dialog_board_delete_text))
         },
         confirmButton = {
             TextButton(
@@ -30,7 +30,7 @@ fun DeleteBoardDialog(
                     onDismiss()
                 }
             ) {
-                Text(text = stringResource(R.string.board_dialog_delete_confirm_button))
+                Text(text = stringResource(R.string.dialog_board_delete_confirm_button))
             }
         },
         dismissButton = {
@@ -39,7 +39,7 @@ fun DeleteBoardDialog(
                     onDismiss()
                 }
             ) {
-                Text(text = stringResource(R.string.board_dialog_delete_cancel_button))
+                Text(text = stringResource(R.string.dialog_board_delete_cancel_button))
             }
         }
     )

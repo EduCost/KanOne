@@ -38,12 +38,12 @@ import com.educost.kanone.R
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.model.Task
 import com.educost.kanone.presentation.components.ColorPickerDialog
+import com.educost.kanone.presentation.components.DeleteBoardDialog
 import com.educost.kanone.presentation.components.DialogRename
 import com.educost.kanone.presentation.screens.board.components.AddColumn
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
 import com.educost.kanone.presentation.screens.board.components.BoardColumn
 import com.educost.kanone.presentation.screens.board.components.ColumnCard
-import com.educost.kanone.presentation.screens.board.components.DeleteBoardDialog
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
@@ -248,7 +248,7 @@ fun BoardScreen(
         DialogRename(
             onDismiss = { onIntent(BoardIntent.CancelBoardRename) },
             onConfirm = { onIntent(BoardIntent.ConfirmBoardRename(it)) },
-            title = stringResource(R.string.board_dialog_rename_board_title),
+            title = stringResource(R.string.dialog_rename_board_title),
         )
     }
 

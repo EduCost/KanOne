@@ -7,6 +7,6 @@ data class HomeUiState(
     val boards: List<Board> = emptyList(),
     val isLoading: Boolean = false,
 
-    val showCreateBoardDialog: Boolean = false,
-    val newBoardName: String = ""
+    val boardBeingRenamed: Long? = null,
+    val boardBeingDeleted: Long? = null,
 )

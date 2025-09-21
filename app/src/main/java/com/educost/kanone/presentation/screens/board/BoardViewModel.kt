@@ -247,7 +247,7 @@ class BoardViewModel @Inject constructor(
             } else {
                 sendSnackbar(
                     SnackbarEvent(
-                        message = UiText.StringResource(R.string.board_snackbar_delete_board_error),
+                        message = UiText.StringResource(R.string.snackbar_delete_board_error),
                         withDismissAction = true
                     )
                 )
@@ -265,7 +265,7 @@ class BoardViewModel @Inject constructor(
 
             if (!wasBoardUpdated) sendSnackbar(
                 SnackbarEvent(
-                    message = UiText.StringResource(R.string.board_snackbar_rename_board_error),
+                    message = UiText.StringResource(R.string.snackbar_rename_board_error),
                     withDismissAction = true
                 )
             )

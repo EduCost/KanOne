@@ -20,6 +20,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,13 +42,19 @@ import com.educost.kanone.presentation.theme.ThemeType
 import java.time.LocalDateTime
 
 @Composable
-fun BoardCard(modifier: Modifier = Modifier, board: Board, onNavigateToBoard: (Long) -> Unit) {
+fun BoardCard(
+    modifier: Modifier = Modifier,
+    board: Board,
+    onNavigateToBoard: () -> Unit,
+    onRenameBoard: () -> Unit,
+    onDeleteBoard: () -> Unit
+) {
     Box(
         modifier = modifier
             .height(230.dp)
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))
-            .clickable(onClick = { onNavigateToBoard(board.id) }),
+            .clickable(onClick = { onNavigateToBoard() }),
     ) {
 
         if (board.columns.isEmpty()) {
@@ -65,7 +75,8 @@ fun BoardCard(modifier: Modifier = Modifier, board: Board, onNavigateToBoard: (L
                 }
                 BoardCardBottomRow(
                     name = board.name,
-                    onMoreOptionsClick = {}
+                    onRenameBoard = onRenameBoard,
+                    onDeleteBoard = onDeleteBoard
                 )
             }
 
@@ -80,7 +91,8 @@ fun BoardCard(modifier: Modifier = Modifier, board: Board, onNavigateToBoard: (L
             BoardCardBottomRow(
                 modifier = Modifier.align(Alignment.BottomStart),
                 name = board.name,
-                onMoreOptionsClick = {}
+                onRenameBoard = onRenameBoard,
+                onDeleteBoard = onDeleteBoard
             )
         }
 
@@ -134,8 +146,12 @@ private fun BoardCardColumns(modifier: Modifier = Modifier, columns: List<Kanban
 private fun BoardCardBottomRow(
     modifier: Modifier = Modifier,
     name: String,
-    onMoreOptionsClick: () -> Unit
+    onRenameBoard: () -> Unit,
+    onDeleteBoard: () -> Unit
 ) {
+
+    var isDropdownMenuOpen by rememberSaveable { mutableStateOf(false) }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -152,12 +168,24 @@ private fun BoardCardBottomRow(
             modifier = Modifier.weight(1f)
         )
         IconButton(
-            onClick = onMoreOptionsClick
+            onClick = { isDropdownMenuOpen = true }
         ) {
             Icon(
                 imageVector = Icons.Filled.MoreVert,
                 contentDescription = stringResource(R.string.home_board_card_more_options_content_description),
                 tint = MaterialTheme.colorScheme.onSurface
+            )
+            BoardCardDropdownMenu(
+                expanded = isDropdownMenuOpen,
+                onDismissRequest = { isDropdownMenuOpen = false },
+                onRename = {
+                    onRenameBoard()
+                    isDropdownMenuOpen = false
+                },
+                onDelete = {
+                    onDeleteBoard()
+                    isDropdownMenuOpen = false
+                }
             )
         }
     }
@@ -171,7 +199,7 @@ private fun BoardCardPreview() {
         BoardCard(
             board = Board(
                 id = 0,
-                name = "Test",
+                name = "Board Name",
                 columns = listOf(
                     KanbanColumn(
                         id = 0,
@@ -230,7 +258,9 @@ private fun BoardCardPreview() {
                     ),
                 )
             ),
-            onNavigateToBoard = {}
+            onNavigateToBoard = {},
+            onDeleteBoard = {},
+            onRenameBoard = {}
         )
     }
 }
@@ -242,7 +272,7 @@ private fun BoardCardPreviewDark() {
         BoardCard(
             board = Board(
                 id = 0,
-                name = "Test",
+                name = "Board Name",
                 columns = listOf(
                     KanbanColumn(
                         id = 0,
@@ -301,7 +331,9 @@ private fun BoardCardPreviewDark() {
                     ),
                 )
             ),
-            onNavigateToBoard = {}
+            onNavigateToBoard = {},
+            onDeleteBoard = {},
+            onRenameBoard = {}
         )
     }
 }

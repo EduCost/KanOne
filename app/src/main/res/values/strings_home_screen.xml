@@ -13,6 +13,11 @@
     <string name="home_board_card_more_options_content_description">More Options</string> <!--  Content description for the more options button  -->
     <!--  Board Card  -->
 
+    <!--  Board Card Dropdown Menu  -->
+    <string name="home_board_card_dropdown_menu_rename">Rename</string>
+    <string name="home_board_card_dropdown_menu_delete">Delete</string>
+    <!--  Board Card Dropdown Menu  -->
+
     <!--  Create Board Dialog  -->
     <string name="home_dialog_title_create_board">Create Board</string>
     <string name="home_dialog_textfield_label_board_name">Board Name</string>

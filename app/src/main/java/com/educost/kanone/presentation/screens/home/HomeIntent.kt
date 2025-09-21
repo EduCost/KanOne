@@ -3,12 +3,22 @@ package com.educost.kanone.presentation.screens.home
 import com.educost.kanone.domain.model.Board
 
 sealed interface HomeIntent {
-    data class CreateBoard(val board: Board) : HomeIntent
-    data object ShowCreateBoardDialog : HomeIntent
-    data object DismissCreateBoardDialog : HomeIntent
-    data class OnNewBoardNameChange(val newBoardName: String) : HomeIntent
-    data class NavigateToBoardScreen(val boardId: Long) : HomeIntent
 
+    // Create Board
+    data class CreateBoard(val boardName: String) : HomeIntent
+
+    // Rename Board
+    data class RenameBoardClicked(val boardId: Long) : HomeIntent
+    data class OnConfirmRenameBoard(val newName: String) : HomeIntent
+    data object OnCancelRenameBoard : HomeIntent
+
+    // Delete Board
+    data class DeleteBoardClicked(val boardId: Long) : HomeIntent
+    data object OnConfirmDeleteBoard : HomeIntent
+    data object OnCancelDeleteBoard : HomeIntent
+
+    // Navigate
+    data class NavigateToBoardScreen(val boardId: Long) : HomeIntent
     data object NavigateToSettingsScreen : HomeIntent
 
 }

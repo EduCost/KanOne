@@ -12,10 +12,27 @@
     <string name="pick_color_dialog_confirm_button">Confirm</string>
     <!-- Color Picker Dialog -->
 
-    <!-- Rename Dialog -->
+
+<!-- Rename Dialog -->
     <string name="dialog_rename_text_field_label">New Title</string>
     <string name="dialog_rename_button_confirm">Rename</string>
     <string name="dialog_rename_button_cancel">Cancel</string>
-    <!-- Rename Dialog -->
+
+    <!-- Rename Board Dialog -->
+    <string name="dialog_rename_board_title">Rename Board</string>
+    <string name="snackbar_rename_board_error">Error renaming board</string>
+    <!-- Rename Board Dialog -->
+<!-- Rename Dialog -->
+
+
+    <!-- Dialog for delete board -->
+    <string name="dialog_board_delete_title">Delete Board?</string>
+    <string name="dialog_board_delete_text">This board will be permanently deleted.</string>
+    <string name="dialog_board_delete_confirm_button">Delete</string>
+    <string name="dialog_board_delete_cancel_button">Cancel</string>
+
+    <string name="snackbar_delete_board_error">Error deleting board</string>
+    <!-- Dialog for delete board -->
+
 
 </resources>

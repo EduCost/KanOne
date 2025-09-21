@@ -59,20 +59,7 @@
 
 <!-- Dialogs -->
 
-    <!-- Dialog for rename board -->
-    <string name="board_dialog_rename_board_title">Rename Board</string>
 
-    <string name="board_snackbar_rename_board_error">Error renaming board</string>
-    <!-- Dialog for rename board -->
-
-    <!-- Dialog for delete board -->
-    <string name="board_dialog_delete_title">Delete Board?</string>
-    <string name="board_dialog_delete_text">This board will be permanently deleted.</string>
-    <string name="board_dialog_delete_confirm_button">Delete</string>
-    <string name="board_dialog_delete_cancel_button">Cancel</string>
-
-    <string name="board_snackbar_delete_board_error">Error deleting board</string>
-    <!-- Dialog for delete board -->
 
 <!-- Dialogs -->
 

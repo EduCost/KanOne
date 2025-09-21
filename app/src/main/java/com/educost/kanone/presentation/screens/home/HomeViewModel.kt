@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.educost.kanone.R
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.usecase.CreateBoardUseCase
+import com.educost.kanone.domain.usecase.DeleteBoardUseCase
 import com.educost.kanone.domain.usecase.ObserveAllBoardsUseCase
+import com.educost.kanone.domain.usecase.UpdateBoardUseCase
 import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText
 import com.educost.kanone.utils.Result
@@ -21,7 +23,9 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val observeAllBoardsUseCase: ObserveAllBoardsUseCase,
-    private val createBoardUseCase: CreateBoardUseCase
+    private val createBoardUseCase: CreateBoardUseCase,
+    private val updateBoardUseCase: UpdateBoardUseCase,
+    private val deleteBoardUseCase: DeleteBoardUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -36,10 +40,20 @@ class HomeViewModel @Inject constructor(
 
     fun onIntent(intent: HomeIntent) {
         when (intent) {
-            is HomeIntent.CreateBoard -> createBoard(intent.board)
-            is HomeIntent.ShowCreateBoardDialog -> showCreateBoardDialog()
-            is HomeIntent.DismissCreateBoardDialog -> dismissCreateBoardDialog()
-            is HomeIntent.OnNewBoardNameChange -> onNewBoardNameChange(intent.newBoardName)
+            // Create Board
+            is HomeIntent.CreateBoard -> createBoard(intent.boardName)
+
+            // Rename Board
+            is HomeIntent.RenameBoardClicked -> renameBoardClicked(intent.boardId)
+            is HomeIntent.OnConfirmRenameBoard -> onConfirmRenameBoard(intent.newName)
+            is HomeIntent.OnCancelRenameBoard -> onCancelRenameBoard()
+
+            // Delete Board
+            is HomeIntent.DeleteBoardClicked -> deleteBoardClicked(intent.boardId)
+            is HomeIntent.OnConfirmDeleteBoard -> onConfirmDeleteBoard()
+            is HomeIntent.OnCancelDeleteBoard -> onCancelRenameBoard()
+
+            // Navigate
             is HomeIntent.NavigateToBoardScreen -> navigateToBoardScreen(intent.boardId)
             is HomeIntent.NavigateToSettingsScreen -> navigateToSettingsScreen()
         }
@@ -73,37 +87,103 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun createBoard(board: Board) {
+    private fun createBoard(boardName: String) {
+        val newBoard = Board(
+            id = 0,
+            name = boardName,
+            columns = emptyList()
+        )
         viewModelScope.launch {
-            val wasBoardCreated = createBoardUseCase(board)
+            val wasBoardCreated = createBoardUseCase(newBoard)
 
             if (!wasBoardCreated) sendSnackbar(
                 SnackbarEvent(
                     message = UiText.StringResource(R.string.home_snackbar_creating_board_error)
                 )
             )
-
-            dismissCreateBoardDialog()
         }
     }
 
-    private fun showCreateBoardDialog() {
-        _uiState.update { it.copy(showCreateBoardDialog = true) }
+
+    // Rename Board
+    private fun renameBoardClicked(boardId: Long) {
+        _uiState.update { it.copy(boardBeingRenamed = boardId) }
     }
 
-    private fun dismissCreateBoardDialog() {
-        _uiState.update {
-            it.copy(
-                showCreateBoardDialog = false,
-                newBoardName = ""
+    private fun onConfirmRenameBoard(newName: String) {
+        val boardId = uiState.value.boardBeingRenamed
+        val board = uiState.value.boards.find { it.id == boardId }
+
+        if (board == null) {
+            sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.snackbar_rename_board_error),
+                    withDismissAction = true
+                )
             )
+            return
+        }
+
+        val newBoard = board.copy(name = newName)
+
+        viewModelScope.launch {
+            val wasBoardRenamed = updateBoardUseCase(newBoard)
+
+            if (!wasBoardRenamed) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.snackbar_rename_board_error),
+                    withDismissAction = true
+                )
+            )
+
+            onCancelRenameBoard()
         }
     }
 
-    private fun onNewBoardNameChange(newBoardName: String) {
-        _uiState.update { it.copy(newBoardName = newBoardName) }
+    private fun onCancelRenameBoard() {
+        _uiState.update { it.copy(boardBeingRenamed = null) }
     }
 
+
+    // Delete Board
+    private fun deleteBoardClicked(boardId: Long) {
+        _uiState.update { it.copy(boardBeingDeleted = boardId) }
+    }
+
+    private fun onConfirmDeleteBoard() {
+        val boardId = uiState.value.boardBeingDeleted
+        val board = uiState.value.boards.find { it.id == boardId }
+
+        if (board == null) {
+            sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.snackbar_delete_board_error),
+                    withDismissAction = true
+                )
+            )
+            return
+        }
+
+        viewModelScope.launch {
+            val wasBoardDeleted = deleteBoardUseCase(board)
+
+            if (!wasBoardDeleted) sendSnackbar(
+                SnackbarEvent(
+                    message = UiText.StringResource(R.string.snackbar_delete_board_error),
+                    withDismissAction = true
+                )
+            )
+
+            onCancelDeleteBoard()
+        }
+    }
+
+    private fun onCancelDeleteBoard() {
+        _uiState.update { it.copy(boardBeingDeleted = null) }
+    }
+
+
+    // Navigate
     private fun navigateToBoardScreen(boardId: Long) {
         viewModelScope.launch {
             _sideEffectChannel.send(HomeSideEffect.NavigateToBoardScreen(boardId))
@@ -116,6 +196,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+
+    // Utils
     private fun sendSnackbar(snackbarEvent: SnackbarEvent) {
         viewModelScope.launch {
             _sideEffectChannel.send(

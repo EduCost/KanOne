@@ -22,8 +22,11 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +39,8 @@ import com.educost.kanone.R
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn
+import com.educost.kanone.presentation.components.DeleteBoardDialog
+import com.educost.kanone.presentation.components.DialogRename
 import com.educost.kanone.presentation.screens.home.components.BoardCard
 import com.educost.kanone.presentation.screens.home.components.CreateBoardDialog
 import com.educost.kanone.presentation.screens.home.components.HomeTopBar
@@ -93,6 +98,9 @@ fun HomeScreen(
     onIntent: (HomeIntent) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
+
+    var isCreatingBoard by rememberSaveable { mutableStateOf(false) }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -102,9 +110,7 @@ fun HomeScreen(
             ExtendedFloatingActionButton(
                 text = { Text(stringResource(R.string.home_fab_create_board)) },
                 icon = { Icon(Icons.Filled.Add, null) },
-                onClick = {
-                    onIntent(HomeIntent.ShowCreateBoardDialog)
-                },
+                onClick = { isCreatingBoard = true },
                 containerColor = MaterialTheme.colorScheme.tertiary,
                 contentColor = MaterialTheme.colorScheme.onTertiary
             )
@@ -147,6 +153,12 @@ fun HomeScreen(
                                 board = board,
                                 onNavigateToBoard = {
                                     onIntent(HomeIntent.NavigateToBoardScreen(board.id))
+                                },
+                                onRenameBoard = {
+                                    onIntent(HomeIntent.RenameBoardClicked(board.id))
+                                },
+                                onDeleteBoard = {
+                                    onIntent(HomeIntent.DeleteBoardClicked(board.id))
                                 }
                             )
                         }
@@ -156,10 +168,28 @@ fun HomeScreen(
         }
     }
 
-    if (state.showCreateBoardDialog) {
+    if (isCreatingBoard) {
         CreateBoardDialog(
-            state = state,
-            onIntent = onIntent
+            onCreate = { boardName ->
+                isCreatingBoard = false
+                onIntent(HomeIntent.CreateBoard(boardName))
+            },
+            onDismiss = { isCreatingBoard = false }
+        )
+    }
+
+    if (state.boardBeingRenamed != null) {
+        DialogRename(
+            onDismiss = { onIntent(HomeIntent.OnCancelRenameBoard) },
+            onConfirm = { onIntent(HomeIntent.OnConfirmRenameBoard(it)) },
+            title = stringResource(R.string.dialog_rename_board_title),
+        )
+    }
+
+    if (state.boardBeingDeleted != null) {
+        DeleteBoardDialog (
+            onDismiss = { onIntent(HomeIntent.OnCancelDeleteBoard) },
+            onDelete = { onIntent(HomeIntent.OnConfirmDeleteBoard) },
         )
     }
 }
