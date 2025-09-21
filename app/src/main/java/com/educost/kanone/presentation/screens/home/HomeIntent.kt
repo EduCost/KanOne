@@ -1,7 +1,5 @@
 package com.educost.kanone.presentation.screens.home
 
-import com.educost.kanone.domain.model.Board
-
 sealed interface HomeIntent {
 
     // Create Board

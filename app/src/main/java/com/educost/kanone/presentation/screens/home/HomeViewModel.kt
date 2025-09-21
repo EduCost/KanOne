@@ -51,7 +51,7 @@ class HomeViewModel @Inject constructor(
             // Delete Board
             is HomeIntent.DeleteBoardClicked -> deleteBoardClicked(intent.boardId)
             is HomeIntent.OnConfirmDeleteBoard -> onConfirmDeleteBoard()
-            is HomeIntent.OnCancelDeleteBoard -> onCancelRenameBoard()
+            is HomeIntent.OnCancelDeleteBoard -> onCancelDeleteBoard()
 
             // Navigate
             is HomeIntent.NavigateToBoardScreen -> navigateToBoardScreen(intent.boardId)

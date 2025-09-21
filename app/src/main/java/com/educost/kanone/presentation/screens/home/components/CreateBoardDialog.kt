@@ -13,9 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.educost.kanone.R
-import com.educost.kanone.domain.model.Board
-import com.educost.kanone.presentation.screens.home.HomeIntent
-import com.educost.kanone.presentation.screens.home.HomeUiState
 
 @Composable
 fun CreateBoardDialog(

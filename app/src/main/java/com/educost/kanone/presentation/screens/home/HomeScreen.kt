@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -20,6 +21,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +31,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -91,6 +94,7 @@ fun HomeScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -99,12 +103,16 @@ fun HomeScreen(
     snackBarHostState: SnackbarHostState
 ) {
 
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     var isCreatingBoard by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            HomeTopBar(onNavigateToSettings = { onIntent(HomeIntent.NavigateToSettingsScreen) })
+            HomeTopBar(
+                onNavigateToSettings = { onIntent(HomeIntent.NavigateToSettingsScreen) },
+                scrollBehavior = scrollBehavior
+            )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
@@ -139,7 +147,7 @@ fun HomeScreen(
                 else -> {
                     val fabHeight = remember { 72.dp }
                     LazyColumn(
-                        modifier = Modifier,
+                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         contentPadding = PaddingValues(
                             top = 12.dp,
                             start = 12.dp,

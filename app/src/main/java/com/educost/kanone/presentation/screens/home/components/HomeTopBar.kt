@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,12 +23,17 @@ import com.educost.kanone.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopBar(modifier: Modifier = Modifier, onNavigateToSettings: () -> Unit) {
+fun HomeTopBar(
+    modifier: Modifier = Modifier,
+    onNavigateToSettings: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior
+) {
 
     var isMenuExpanded by rememberSaveable { mutableStateOf(false) }
 
     TopAppBar(
         modifier = modifier,
+        scrollBehavior = scrollBehavior,
         title = {
             Text(
                 text = stringResource(R.string.app_name),
