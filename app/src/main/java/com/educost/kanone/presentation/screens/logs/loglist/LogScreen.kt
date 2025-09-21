@@ -2,10 +2,12 @@ package com.educost.kanone.presentation.screens.logs.loglist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -40,6 +42,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.educost.kanone.R
@@ -50,6 +53,9 @@ import com.educost.kanone.presentation.screens.logs.loglist.components.LogAppBar
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun LogScreen(
@@ -173,7 +179,15 @@ private fun LogCard(
     log: LogEvent,
     onNavigateToLogDetail: () -> Unit
 ) {
+
     val errorText = remember { log.message ?: log.exceptionName }
+    val formattedDate = remember {
+        val instant = Instant.parse(log.timestamp)
+        val formatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault())
+        formatter.format(instant)
+    }
+
     Card(
         modifier = modifier,
         onClick = onNavigateToLogDetail,
@@ -188,12 +202,19 @@ private fun LogCard(
                 .heightIn(min = 56.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                modifier = Modifier
-                    .weight(1f),
-                text = errorText,
-                style = MaterialTheme.typography.titleMedium
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = errorText,
+                    style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp)
+                )
+
+                Spacer(Modifier.height(4.dp))
+
+                Text(
+                    text = formattedDate,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
 
             Spacer(Modifier.width(16.dp))
 
@@ -215,7 +236,7 @@ private fun LogScreenPreview() {
             state = LogUiState(
                 logs = listOf(
                     LogEvent(
-                        timestamp = "",
+                        timestamp = Instant.now().toString(),
                         exceptionName = "ArithmeticException",
                         message = "Some Error Message",
                         stackTrace = "",
@@ -225,7 +246,7 @@ private fun LogScreenPreview() {
                         appVersionName = "1.0"
                     ),
                     LogEvent(
-                        timestamp = "",
+                        timestamp = Instant.now().toString(),
                         exceptionName = "NullPointerException",
                         message = null,
                         stackTrace = "",

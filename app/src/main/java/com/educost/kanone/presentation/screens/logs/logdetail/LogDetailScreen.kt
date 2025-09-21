@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,6 +24,7 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
@@ -36,6 +36,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.educost.kanone.R
 import com.educost.kanone.presentation.components.NavigateBackIcon
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun LogDetailScreen(
@@ -94,7 +97,14 @@ fun LogDetailScreen(
                 LogDetailCard(title = "Device Sdk Int", content = log.deviceSdkInt.toString())
                 Spacer(Modifier.padding(bottom = 8.dp))
 
-                LogDetailCard(title = "Timestamp", content = log.timestamp)
+
+                val formattedDate = remember {
+                    val instant = Instant.parse(log.timestamp)
+                    val formatter =
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault())
+                    formatter.format(instant)
+                }
+                LogDetailCard(title = "Timestamp", content = formattedDate)
 
             }
         }
