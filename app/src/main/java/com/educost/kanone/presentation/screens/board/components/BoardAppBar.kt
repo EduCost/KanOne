@@ -60,14 +60,14 @@ fun BoardAppBar(
                         NavigateBackIcon { onIntent(BoardIntent.OnNavigateBack) }
                     },
                     actions = {
-                        IconButton(
-                            onClick = { onIntent(BoardIntent.EnterFullScreen) }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Fullscreen,
-                                contentDescription = stringResource(R.string.board_appbar_full_screen_content_description)
-                            )
-                        }
+//                        IconButton(
+//                            onClick = { onIntent(BoardIntent.EnterFullScreen) }
+//                        ) {
+//                            Icon(
+//                                imageVector = Icons.Filled.Fullscreen,
+//                                contentDescription = stringResource(R.string.board_appbar_full_screen_content_description)
+//                            )
+//                        }
                         IconButton(
                             onClick = { onIntent(BoardIntent.OpenBoardDropdownMenu) }
                         ) {
