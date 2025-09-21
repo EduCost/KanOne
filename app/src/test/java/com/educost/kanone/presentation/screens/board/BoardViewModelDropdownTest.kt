@@ -3,7 +3,6 @@ package com.educost.kanone.presentation.screens.board
 import app.cash.turbine.test
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.dispatchers.TestDispatcherProvider
-import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.usecase.DeleteColumnUseCase
@@ -54,7 +53,9 @@ class BoardViewModelDropdownTest {
             deleteColumnUseCase = deleteColumnUseCase,
             restoreColumnUseCase = mockk(),
             persistBoardPositionsUseCase = mockk(),
-            reorderCardsUseCase = reorderCardsUseCase
+            reorderCardsUseCase = reorderCardsUseCase,
+            updateBoardUseCase = mockk(),
+            deleteBoardUseCase = mockk()
         )
     }
 
@@ -157,7 +158,7 @@ class BoardViewModelDropdownTest {
             Result.Success(board)
         )
 
-        coEvery { deleteColumnUseCase(column, boardId) } returns Result.Success(Unit)
+        coEvery { deleteColumnUseCase(column, boardId) } returns true
 
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
@@ -193,7 +194,7 @@ class BoardViewModelDropdownTest {
             Result.Success(board)
         )
 
-        coEvery { deleteColumnUseCase(column, boardId) } returns Result.Success(Unit)
+        coEvery { deleteColumnUseCase(column, boardId) } returns true
 
         runTest(testDispatcher) {
             viewModel.onIntent(BoardIntent.ObserveBoard(boardId))
@@ -225,7 +226,7 @@ class BoardViewModelDropdownTest {
             Result.Success(board)
         )
 
-        coEvery { deleteColumnUseCase(column, boardId) } returns Result.Success(Unit)
+        coEvery { deleteColumnUseCase(column, boardId) } returns true
 
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
@@ -266,7 +267,7 @@ class BoardViewModelDropdownTest {
                 column,
                 boardId
             )
-        } returns Result.Error(InsertDataError.UNKNOWN)
+        } returns false
 
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
@@ -304,7 +305,7 @@ class BoardViewModelDropdownTest {
                 OrderType.ASCENDING,
                 CardOrder.NAME
             )
-        } returns Result.Success(Unit)
+        } returns true
 
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
@@ -349,7 +350,7 @@ class BoardViewModelDropdownTest {
                 OrderType.ASCENDING,
                 CardOrder.NAME
             )
-        } returns Result.Success(Unit)
+        } returns true
 
 
         runTest(testDispatcher) {
@@ -396,7 +397,7 @@ class BoardViewModelDropdownTest {
                 OrderType.ASCENDING,
                 CardOrder.NAME
             )
-        } returns Result.Error(InsertDataError.UNKNOWN)
+        } returns false
 
 
         runTest(testDispatcher) {

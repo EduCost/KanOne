@@ -3,7 +3,6 @@ package com.educost.kanone.presentation.screens.board
 import app.cash.turbine.test
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.dispatchers.TestDispatcherProvider
-import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
@@ -48,7 +47,9 @@ class BoardViewModelEditColumnTest {
             deleteColumnUseCase = mockk(),
             restoreColumnUseCase = mockk(),
             persistBoardPositionsUseCase = mockk(),
-            reorderCardsUseCase = mockk()
+            reorderCardsUseCase = mockk(),
+            updateBoardUseCase = mockk(),
+            deleteBoardUseCase = mockk()
         )
     }
 
@@ -101,7 +102,7 @@ class BoardViewModelEditColumnTest {
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
         )
-        coEvery { updateColumnUseCase(any(), any()) } returns Result.Success(Unit)
+        coEvery { updateColumnUseCase(any(), any()) } returns true
 
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
@@ -133,7 +134,7 @@ class BoardViewModelEditColumnTest {
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
         )
-        coEvery { updateColumnUseCase(any(), any()) } returns Result.Success(Unit)
+        coEvery { updateColumnUseCase(any(), any()) } returns true
 
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
@@ -171,7 +172,7 @@ class BoardViewModelEditColumnTest {
             Result.Success(board)
         )
 
-        coEvery { updateColumnUseCase(any(), any()) } returns Result.Success(Unit)
+        coEvery { updateColumnUseCase(any(), any()) } returns true
 
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
@@ -209,8 +210,7 @@ class BoardViewModelEditColumnTest {
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(board)
         )
-        coEvery { updateColumnUseCase(any(), any()) } returns
-                Result.Error(InsertDataError.UNKNOWN)
+        coEvery { updateColumnUseCase(any(), any()) } returns true
 
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
@@ -250,7 +250,7 @@ class BoardViewModelEditColumnTest {
         coEvery { observeCompleteBoardUseCase(boardId) } returns flowOf(
             Result.Success(board)
         )
-        coEvery { updateColumnUseCase(expectedColumn, boardId) } returns Result.Success(Unit)
+        coEvery { updateColumnUseCase(expectedColumn, boardId) } returns true
 
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
@@ -289,7 +289,7 @@ class BoardViewModelEditColumnTest {
         coEvery { observeCompleteBoardUseCase(boardId) } returns flowOf(
             Result.Success(board)
         )
-        coEvery { updateColumnUseCase(expectedColumn, boardId) } returns Result.Success(Unit)
+        coEvery { updateColumnUseCase(expectedColumn, boardId) } returns true
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
@@ -349,8 +349,7 @@ class BoardViewModelEditColumnTest {
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(board)
         )
-        coEvery { updateColumnUseCase(any(), any()) } returns
-                Result.Error(InsertDataError.UNKNOWN)
+        coEvery { updateColumnUseCase(any(), any()) } returns false
 
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
@@ -388,7 +387,7 @@ class BoardViewModelEditColumnTest {
         )
         coEvery {
             updateColumnUseCase(expectedColumn, board.id)
-        } returns Result.Error(InsertDataError.UNKNOWN)
+        } returns false
 
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
@@ -425,7 +424,7 @@ class BoardViewModelEditColumnTest {
         )
         coEvery {
             updateColumnUseCase(expectedColumn, board.id)
-        } returns Result.Success(Unit)
+        } returns true
 
         runTest(testDispatcher) {
             viewModel.onIntent(BoardIntent.ObserveBoard(1))

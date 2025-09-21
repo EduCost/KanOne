@@ -4,6 +4,7 @@ import androidx.compose.ui.geometry.Offset
 import app.cash.turbine.test
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.dispatchers.TestDispatcherProvider
+import com.educost.kanone.domain.error.GenericError
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn
@@ -48,7 +49,9 @@ class BoardViewModelMappingTest {
             deleteColumnUseCase = mockk(),
             restoreColumnUseCase = mockk(),
             persistBoardPositionsUseCase = mockk(),
-            reorderCardsUseCase = mockk()
+            reorderCardsUseCase = mockk(),
+            updateBoardUseCase = mockk(),
+            deleteBoardUseCase = mockk()
         )
     }
 
@@ -79,7 +82,7 @@ class BoardViewModelMappingTest {
     @Test
     fun `SHOULD update previous board without changing Ui properties WHEN new board is observed`() {
 
-        val boardFlow = MutableSharedFlow<Result<Board, FetchDataError>>()
+        val boardFlow = MutableSharedFlow<Result<Board, GenericError>>()
         coEvery { observeCompleteBoardUseCase(any()) } returns boardFlow.asSharedFlow()
 
         runTest(testDispatcher) {
@@ -168,7 +171,7 @@ class BoardViewModelMappingTest {
     @Test
     fun `SHOULD update column without changing Ui properties WHEN existing column is updated`() {
 
-        val boardFlow = MutableSharedFlow<Result<Board, FetchDataError>>()
+        val boardFlow = MutableSharedFlow<Result<Board, GenericError>>()
         coEvery { observeCompleteBoardUseCase(any()) } returns boardFlow.asSharedFlow()
 
         val firstEmission = Result.Success(
@@ -350,7 +353,7 @@ class BoardViewModelMappingTest {
     @Test
     fun `SHOULD update card without changing Ui properties WHEN existing card is updated`() {
 
-        val boardFlow = MutableSharedFlow<Result<Board, FetchDataError>>()
+        val boardFlow = MutableSharedFlow<Result<Board, GenericError>>()
         coEvery { observeCompleteBoardUseCase(any()) } returns boardFlow.asSharedFlow()
 
         val firstEmission = Result.Success(

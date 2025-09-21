@@ -1,12 +1,10 @@
 package com.educost.kanone.domain.usecase
 
-import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.repository.CardRepository
 import com.educost.kanone.presentation.screens.board.utils.CardOrder
 import com.educost.kanone.presentation.screens.board.utils.OrderType
-import com.educost.kanone.utils.Result
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -70,11 +68,11 @@ class ReorderCardsUseCaseTest {
                 cards = expectedSortedCards,
                 columnId = column.id
             )
-        } returns Result.Success(Unit)
+        } returns true
 
-        val result = reorderCardsUseCase(column, OrderType.ASCENDING, CardOrder.NAME)
+        val wasReordered = reorderCardsUseCase(column, OrderType.ASCENDING, CardOrder.NAME)
 
-        assertTrue(result is Result.Success)
+        assertTrue(wasReordered)
         coVerify(exactly = 1) {
             cardRepository.updateCards(
                 cards = expectedSortedCards,
@@ -96,11 +94,11 @@ class ReorderCardsUseCaseTest {
                 cards = expectedSortedCards,
                 columnId = column.id
             )
-        } returns Result.Success(Unit)
+        } returns true
 
-        val result = reorderCardsUseCase(column, OrderType.ASCENDING, CardOrder.DUE_DATE)
+        val wasReordered = reorderCardsUseCase(column, OrderType.ASCENDING, CardOrder.DUE_DATE)
 
-        assertTrue(result is Result.Success)
+        assertTrue(wasReordered)
         coVerify(exactly = 1) {
             cardRepository.updateCards(
                 cards = expectedSortedCards,
@@ -122,11 +120,11 @@ class ReorderCardsUseCaseTest {
                 cards = expectedSortedCards,
                 columnId = column.id
             )
-        } returns Result.Success(Unit)
+        } returns true
 
-        val result = reorderCardsUseCase(column, OrderType.ASCENDING, CardOrder.DATE_CREATED)
+        val wasReordered = reorderCardsUseCase(column, OrderType.ASCENDING, CardOrder.DATE_CREATED)
 
-        assertTrue(result is Result.Success)
+        assertTrue(wasReordered)
         coVerify(exactly = 1) {
             cardRepository.updateCards(
                 cards = expectedSortedCards,
@@ -148,11 +146,11 @@ class ReorderCardsUseCaseTest {
                 cards = expectedSortedCards,
                 columnId = column.id
             )
-        } returns Result.Success(Unit)
+        } returns true
 
-        val result = reorderCardsUseCase(column, OrderType.DESCENDING, CardOrder.NAME)
+        val wasReordered = reorderCardsUseCase(column, OrderType.DESCENDING, CardOrder.NAME)
 
-        assertTrue(result is Result.Success)
+        assertTrue(wasReordered)
         coVerify(exactly = 1) {
             cardRepository.updateCards(
                 cards = expectedSortedCards,
@@ -174,11 +172,11 @@ class ReorderCardsUseCaseTest {
                 cards = expectedSortedCards,
                 columnId = column.id
             )
-        } returns Result.Success(Unit)
+        } returns true
 
-        val result = reorderCardsUseCase(column, OrderType.DESCENDING, CardOrder.DUE_DATE)
+        val wasReordered = reorderCardsUseCase(column, OrderType.DESCENDING, CardOrder.DUE_DATE)
 
-        assertTrue(result is Result.Success)
+        assertTrue(wasReordered)
         coVerify(exactly = 1) {
             cardRepository.updateCards(
                 cards = expectedSortedCards,
@@ -200,11 +198,11 @@ class ReorderCardsUseCaseTest {
                 cards = expectedSortedCards,
                 columnId = column.id
             )
-        } returns Result.Success(Unit)
+        } returns true
 
-        val result = reorderCardsUseCase(column, OrderType.DESCENDING, CardOrder.DATE_CREATED)
+        val wasReordered = reorderCardsUseCase(column, OrderType.DESCENDING, CardOrder.DATE_CREATED)
 
-        assertTrue(result is Result.Success)
+        assertTrue(wasReordered)
         coVerify(exactly = 1) {
             cardRepository.updateCards(
                 cards = expectedSortedCards,
@@ -222,11 +220,11 @@ class ReorderCardsUseCaseTest {
                 cards = any(),
                 columnId = column.id
             )
-        } returns Result.Success(Unit)
+        } returns true
 
-        val result = reorderCardsUseCase(columnWithNoCards, OrderType.ASCENDING, CardOrder.NAME)
+        val wasReordered = reorderCardsUseCase(columnWithNoCards, OrderType.ASCENDING, CardOrder.NAME)
 
-        assertTrue(result is Result.Success)
+        assertTrue(wasReordered)
         coVerify(exactly = 0) {
             cardRepository.updateCards(
                 cards = any(),
@@ -255,15 +253,15 @@ class ReorderCardsUseCaseTest {
                 cards = expectedSortedCards,
                 columnId = column.id
             )
-        } returns Result.Success(Unit)
+        } returns true
 
-        val result = reorderCardsUseCase(
+        val wasReordered = reorderCardsUseCase(
             column = columnWithNullDueDate,
             orderType = OrderType.ASCENDING,
             cardOrder = CardOrder.DUE_DATE
         )
 
-        assertTrue(result is Result.Success)
+        assertTrue(wasReordered)
         coVerify(exactly = 1) {
             cardRepository.updateCards(
                 cards = expectedSortedCards,
@@ -293,15 +291,15 @@ class ReorderCardsUseCaseTest {
                 cards = expectedSortedCards,
                 columnId = column.id
             )
-        } returns Result.Success(Unit)
+        } returns true
 
-        val result = reorderCardsUseCase(
+        val wasReordered = reorderCardsUseCase(
             column = columnWithNullDueDate,
             orderType = OrderType.DESCENDING,
             cardOrder = CardOrder.DUE_DATE
         )
 
-        assertTrue(result is Result.Success)
+        assertTrue(wasReordered)
         coVerify(exactly = 1) {
             cardRepository.updateCards(
                 cards = expectedSortedCards,
@@ -323,11 +321,11 @@ class ReorderCardsUseCaseTest {
                 cards = expectedSortedCards,
                 columnId = column.id
             )
-        } returns Result.Error(InsertDataError.UNKNOWN)
+        } returns false
 
-        val result = reorderCardsUseCase(column, OrderType.ASCENDING, CardOrder.DUE_DATE)
+        val wasReordered = reorderCardsUseCase(column, OrderType.ASCENDING, CardOrder.DUE_DATE)
 
-        assertTrue(result is Result.Error)
+        assertTrue(!wasReordered)
         coVerify(exactly = 1) {
             cardRepository.updateCards(
                 cards = expectedSortedCards,
@@ -356,11 +354,11 @@ class ReorderCardsUseCaseTest {
                 cards = expectedSortedCards,
                 columnId = column.id
             )
-        } returns Result.Success(Unit)
+        } returns true
 
-        val result = reorderCardsUseCase(columnWithMixedCasing, OrderType.ASCENDING, CardOrder.NAME)
+        val wasReordered = reorderCardsUseCase(columnWithMixedCasing, OrderType.ASCENDING, CardOrder.NAME)
 
-        assertTrue(result is Result.Success)
+        assertTrue(wasReordered)
         coVerify(exactly = 1) {
             cardRepository.updateCards(
                 cards = expectedSortedCards,
@@ -389,11 +387,11 @@ class ReorderCardsUseCaseTest {
                 cards = expectedSortedCards,
                 columnId = column.id
             )
-        } returns Result.Success(Unit)
+        } returns true
 
-        val result = reorderCardsUseCase(columnWithMixedCasing, OrderType.DESCENDING, CardOrder.NAME)
+        val wasReordered = reorderCardsUseCase(columnWithMixedCasing, OrderType.DESCENDING, CardOrder.NAME)
 
-        assertTrue(result is Result.Success)
+        assertTrue(wasReordered)
         coVerify(exactly = 1) {
             cardRepository.updateCards(
                 cards = expectedSortedCards,

@@ -3,6 +3,7 @@ package com.educost.kanone.presentation.screens.board
 import app.cash.turbine.test
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.dispatchers.TestDispatcherProvider
+import com.educost.kanone.domain.error.GenericError
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.utils.Result
@@ -43,7 +44,9 @@ class BoardViewModelObserveBoardTest {
             deleteColumnUseCase = mockk(),
             restoreColumnUseCase = mockk(),
             persistBoardPositionsUseCase = mockk(),
-            reorderCardsUseCase = mockk()
+            reorderCardsUseCase = mockk(),
+            updateBoardUseCase = mockk(),
+            deleteBoardUseCase = mockk()
         )
     }
 
@@ -73,7 +76,7 @@ class BoardViewModelObserveBoardTest {
     fun `SHOULD update loading state to true than to false WHEN observe board returns error`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
-            Result.Error(FetchDataError.UNKNOWN)
+            Result.Error(GenericError)
         )
 
         runTest(testDispatcher) {
@@ -92,7 +95,7 @@ class BoardViewModelObserveBoardTest {
     fun `SHOULD send snackbar WHEN observe board returns error`() {
 
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
-            Result.Error(FetchDataError.UNKNOWN)
+            Result.Error(GenericError)
         )
 
         runTest(testDispatcher) {

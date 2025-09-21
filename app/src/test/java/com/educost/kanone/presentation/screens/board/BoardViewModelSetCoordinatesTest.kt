@@ -46,7 +46,9 @@ class BoardViewModelSetCoordinatesTest {
             deleteColumnUseCase = mockk(),
             restoreColumnUseCase = mockk(),
             persistBoardPositionsUseCase = mockk(),
-            reorderCardsUseCase = mockk()
+            reorderCardsUseCase = mockk(),
+            updateBoardUseCase = mockk(),
+            deleteBoardUseCase = mockk()
         )
     }
 

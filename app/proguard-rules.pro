@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class com.educost.kanone.data.model.*
+-keep class com.educost.kanone.data.local.*
+-keep interface com.educost.kanone.data.local.*

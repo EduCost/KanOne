@@ -3,8 +3,8 @@ package com.educost.kanone.presentation.screens.board
 import app.cash.turbine.test
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.dispatchers.TestDispatcherProvider
-import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.Board
+import com.educost.kanone.domain.usecase.CreateColumnResult
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
@@ -47,7 +47,9 @@ class BoardViewModelCreateColumnTest {
             deleteColumnUseCase = mockk(),
             restoreColumnUseCase = mockk(),
             persistBoardPositionsUseCase = mockk(),
-            reorderCardsUseCase = mockk()
+            reorderCardsUseCase = mockk(),
+            updateBoardUseCase = mockk(),
+            deleteBoardUseCase = mockk()
         )
     }
 
@@ -127,7 +129,7 @@ class BoardViewModelCreateColumnTest {
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(Board(id = 1, name = "test", emptyList()))
         )
-        coEvery { createColumnUseCase(any(), any()) } returns Result.Success(1)
+        coEvery { createColumnUseCase(any(), any(), any()) } returns CreateColumnResult.SUCCESS
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
@@ -146,7 +148,7 @@ class BoardViewModelCreateColumnTest {
 
                 cancelAndConsumeRemainingEvents()
                 coVerify {
-                    createColumnUseCase(any(), any())
+                    createColumnUseCase(any(), any(), any())
                     observeCompleteBoardUseCase(any())
                 }
             }
@@ -160,8 +162,8 @@ class BoardViewModelCreateColumnTest {
             Result.Success(Board(id = 1, name = "test", emptyList()))
         )
         coEvery {
-            createColumnUseCase(any(), any())
-        } returns Result.Error(InsertDataError.UNKNOWN)
+            createColumnUseCase(any(), any(), any())
+        } returns CreateColumnResult.GENERIC_ERROR
 
         runTest(testDispatcher) {
             viewModel.onIntent(BoardIntent.ObserveBoard(1))
@@ -175,7 +177,7 @@ class BoardViewModelCreateColumnTest {
                 cancelAndConsumeRemainingEvents()
             }
             coVerify {
-                createColumnUseCase(any(), any())
+                createColumnUseCase(any(), any(), any())
                 observeCompleteBoardUseCase(any())
             }
         }
@@ -185,8 +187,8 @@ class BoardViewModelCreateColumnTest {
     fun `SHOULD send snackbar WHEN create column is called and board is null`() {
 
         coEvery {
-            createColumnUseCase(any(), any())
-        } returns Result.Success(1)
+            createColumnUseCase(any(), any(), any())
+        } returns CreateColumnResult.SUCCESS
 
         runTest(testDispatcher) {
 
@@ -197,7 +199,7 @@ class BoardViewModelCreateColumnTest {
                 cancelAndConsumeRemainingEvents()
             }
             coVerify(exactly = 0) {
-                createColumnUseCase(any(), any())
+                createColumnUseCase(any(), any(), any())
             }
         }
     }
@@ -210,8 +212,8 @@ class BoardViewModelCreateColumnTest {
         )
 
         coEvery {
-            createColumnUseCase(any(), any())
-        } returns Result.Success(1)
+            createColumnUseCase(any(), any(), any())
+        } returns CreateColumnResult.SUCCESS
 
 
         runTest(testDispatcher) {
@@ -236,7 +238,7 @@ class BoardViewModelCreateColumnTest {
                 cancelAndConsumeRemainingEvents()
             }
             coVerify(exactly = 0) {
-                createColumnUseCase(any(), any())
+                createColumnUseCase(any(), any(), any())
             }
         }
     }

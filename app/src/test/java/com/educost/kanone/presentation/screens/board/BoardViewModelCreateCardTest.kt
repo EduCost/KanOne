@@ -3,13 +3,13 @@ package com.educost.kanone.presentation.screens.board
 import app.cash.turbine.test
 import com.educost.kanone.dispatchers.DispatcherProvider
 import com.educost.kanone.dispatchers.TestDispatcherProvider
-import com.educost.kanone.domain.error.InsertDataError
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.KanbanColumn
+import com.educost.kanone.domain.usecase.CreateCardResult
 import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
-import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.state.CardCreationState
+import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.utils.Result
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
@@ -49,7 +49,9 @@ class BoardViewModelCreateCardTest {
             deleteColumnUseCase = mockk(),
             restoreColumnUseCase = mockk(),
             persistBoardPositionsUseCase = mockk(),
-            reorderCardsUseCase = mockk()
+            reorderCardsUseCase = mockk(),
+            updateBoardUseCase = mockk(),
+            deleteBoardUseCase = mockk()
         )
     }
 
@@ -255,7 +257,7 @@ class BoardViewModelCreateCardTest {
             Result.Success(initialBoard)
         )
 
-        coEvery { createCardUseCase(any(), columnId) } returns Result.Success(1)
+        coEvery { createCardUseCase(any(), any(), columnId) } returns CreateCardResult.SUCCESS
 
         runTest(testDispatcher) {
 
@@ -266,7 +268,7 @@ class BoardViewModelCreateCardTest {
 
             coVerify {
                 observeCompleteBoardUseCase(any())
-                createCardUseCase(any(), columnId)
+                createCardUseCase(any(), any(), columnId)
             }
         }
     }
@@ -292,9 +294,7 @@ class BoardViewModelCreateCardTest {
         coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
             Result.Success(initialBoard)
         )
-        coEvery { createCardUseCase(any(), columnId) } returns Result.Error(
-            InsertDataError.UNKNOWN
-        )
+        coEvery { createCardUseCase(any(), any(), columnId) } returns CreateCardResult.GENERIC_ERROR
 
         runTest(testDispatcher) {
             viewModel.sideEffectFlow.test {
@@ -308,7 +308,7 @@ class BoardViewModelCreateCardTest {
                 cancelAndConsumeRemainingEvents()
                 coVerify {
                     observeCompleteBoardUseCase(any())
-                    createCardUseCase(any(), columnId)
+                    createCardUseCase(any(), any(), columnId)
                 }
             }
         }
