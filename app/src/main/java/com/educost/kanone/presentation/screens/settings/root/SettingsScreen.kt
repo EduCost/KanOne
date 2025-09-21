@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.educost.kanone.R
+import com.educost.kanone.presentation.screens.settings.components.SettingItem
 import com.educost.kanone.presentation.screens.settings.components.SettingsTopBar
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
@@ -138,82 +139,49 @@ fun SettingsScreen(
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .verticalScroll(scrollState)
         ) {
-            SettingOption(
-                name = stringResource(R.string.settings_theme),
+            SettingItem(
+                title = stringResource(R.string.settings_theme),
                 icon = Icons.Filled.ColorLens,
+                showIconBackground = true,
+                hasEndIcon = true,
                 onClick = { onIntent(SettingsIntent.OnNavigateToSettingsTheme) }
             )
-            SettingOption(
-                name = "Language",
+            SettingItem(
+                title = "Language",
                 icon = Icons.Filled.Language,
+                showIconBackground = true,
+                hasEndIcon = true,
                 onClick = {
                     toast.cancel()
                     toast.show()
                 }
             )
-            SettingOption(
-                name = "Data",
+            SettingItem(
+                title = "Data",
                 icon = Icons.Filled.Archive,
+                showIconBackground = true,
+                hasEndIcon = true,
                 onClick = {
                     toast.cancel()
                     toast.show()
                 }
             )
-            SettingOption(
-                name = stringResource(R.string.settings_about),
+            SettingItem(
+                title = stringResource(R.string.settings_about),
                 icon = Icons.Filled.Info,
+                showIconBackground = true,
+                hasEndIcon = true,
                 onClick = { onIntent(SettingsIntent.OnNavigateToAbout) }
             )
-            SettingOption(
-                name = stringResource(R.string.settings_logs),
+            SettingItem(
+                title = stringResource(R.string.settings_logs),
                 icon = Icons.AutoMirrored.Filled.ListAlt,
+                showIconBackground = true,
+                hasEndIcon = true,
                 onClick = { onIntent(SettingsIntent.OnNavigateToLog) }
             )
 
         }
-
-    }
-}
-
-@Composable
-private fun SettingOption(
-    modifier: Modifier = Modifier,
-    name: String,
-    icon: ImageVector,
-    onClick: () -> Unit
-) {
-
-    Row(
-        modifier = modifier
-            .height(76.dp)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            modifier = Modifier
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.secondaryContainer)
-                .padding(6.dp),
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSecondaryContainer
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Text(
-            text = name,
-            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp)
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Icon(
-            modifier = Modifier.size(28.dp),
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-        )
 
     }
 }
