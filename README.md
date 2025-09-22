@@ -27,9 +27,20 @@ KanOne is a offline kanban app, designed to help you organize tasks and manage p
 
 <br>
 
-## Tech Stack
+## 🛠️ Tech Stack
 - Jetpack Compose
 - Dagger Hilt
 - RoomDB
 - Coil
 - Preferences DataStore
+
+<br>
+
+## ⬇️ Dowload
+
+- Download the latest stable version from [GitHub releases](https://github.com/EduCost/KanOne/releases/latest)
+
+<br>
+
+## 📃 License
+This project is licensed under [GPL-3.0](https://github.com/EduCost/KanOne/blob/main/LICENSE)
