@@ -1,5 +1,7 @@
 package com.educost.kanone.presentation.screens.board
 
+import app.cash.turbine.Turbine
+import app.cash.turbine.TurbineContext
 import app.cash.turbine.TurbineTestContext
 import app.cash.turbine.test
 import com.educost.kanone.dispatchers.DispatcherProvider
@@ -7,6 +9,7 @@ import com.educost.kanone.dispatchers.TestDispatcherProvider
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.usecase.CreateCardUseCase
+import com.educost.kanone.domain.usecase.CreateColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.presentation.screens.board.state.BoardState
 import com.educost.kanone.utils.Result
@@ -29,6 +32,7 @@ open class BoardViewModelTest {
 
     protected lateinit var observeCompleteBoardUseCase: ObserveCompleteBoardUseCase
     protected lateinit var createCardUseCase: CreateCardUseCase
+    protected lateinit var createColumnUseCase: CreateColumnUseCase
 
     protected lateinit var viewModel: BoardViewModel
 
@@ -56,12 +60,13 @@ open class BoardViewModelTest {
         testDispatcher = UnconfinedTestDispatcher()
         dispatcherProvider = TestDispatcherProvider(testDispatcher)
         observeCompleteBoardUseCase = mockk()
+        createColumnUseCase = mockk()
         createCardUseCase = mockk()
 
         viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
             observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = mockk(),
+            createColumnUseCase = createColumnUseCase,
             createCardUseCase = createCardUseCase,
             updateColumnUseCase = mockk(),
             deleteColumnUseCase = mockk(),
@@ -76,6 +81,8 @@ open class BoardViewModelTest {
     fun testBoardViewModelUiState(
         testDispatcher: CoroutineDispatcher = this.testDispatcher,
         board: Board = defaultBoard,
+        testSetUp: TestScope.() -> Unit = {},
+        testValidate: TestScope.() -> Unit = {},
         testBody: suspend TurbineTestContext<BoardState>.() -> Unit
     ) = runTest(testDispatcher) {
 
@@ -83,6 +90,8 @@ open class BoardViewModelTest {
         coEvery {
             observeCompleteBoardUseCase(board.id)
         } returns flowOf(Result.Success(board))
+
+        testSetUp()
 
         viewModel.uiState.test {
             viewModel.onIntent(BoardIntent.ObserveBoard(board.id))
@@ -96,6 +105,7 @@ open class BoardViewModelTest {
 
             // VALIDATE
             cancelAndConsumeRemainingEvents()
+            testValidate()
             coVerify { observeCompleteBoardUseCase(board.id) }
         }
     }
@@ -104,8 +114,8 @@ open class BoardViewModelTest {
         testDispatcher: CoroutineDispatcher = this.testDispatcher,
         board: Board = defaultBoard,
         testSetUp: TestScope.() -> Unit = {},
-        testBody: suspend TurbineTestContext<BoardSideEffect>.() -> Unit,
-        testValidate: TestScope.() -> Unit = {}
+        testValidate: TestScope.() -> Unit = {},
+        testBody: suspend TurbineTestContext<BoardSideEffect>.() -> Unit
     ) = runTest(testDispatcher) {
 
         // SETUP
