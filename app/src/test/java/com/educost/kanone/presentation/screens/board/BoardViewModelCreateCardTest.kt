@@ -3,13 +3,10 @@ package com.educost.kanone.presentation.screens.board
 import com.educost.kanone.domain.usecase.CreateCardResult
 import com.educost.kanone.presentation.screens.board.state.CardCreationState
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
-import com.educost.kanone.utils.Result
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
