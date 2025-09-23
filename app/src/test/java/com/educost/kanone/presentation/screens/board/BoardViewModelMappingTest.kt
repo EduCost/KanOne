@@ -2,31 +2,22 @@ package com.educost.kanone.presentation.screens.board
 
 import androidx.compose.ui.geometry.Offset
 import app.cash.turbine.test
-import com.educost.kanone.dispatchers.DispatcherProvider
-import com.educost.kanone.dispatchers.TestDispatcherProvider
 import com.educost.kanone.domain.error.GenericError
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn
-import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.utils.Result
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.mockk
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("UnusedFlow")

@@ -1,55 +1,20 @@
 package com.educost.kanone.presentation.screens.board
 
 import app.cash.turbine.test
-import com.educost.kanone.dispatchers.DispatcherProvider
-import com.educost.kanone.dispatchers.TestDispatcherProvider
 import com.educost.kanone.domain.error.GenericError
 import com.educost.kanone.domain.model.Board
-import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
 import com.educost.kanone.utils.Result
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.mockk
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Test
 
 @Suppress("UnusedFlow")
 @OptIn(ExperimentalCoroutinesApi::class)
-class BoardViewModelObserveBoardTest {
-
-    private lateinit var testDispatcher: CoroutineDispatcher
-    private lateinit var dispatcherProvider: DispatcherProvider
-    private lateinit var viewModel: BoardViewModel
-    private lateinit var observeCompleteBoardUseCase: ObserveCompleteBoardUseCase
-
-    @Before
-    fun setUp() {
-        testDispatcher = UnconfinedTestDispatcher()
-        dispatcherProvider = TestDispatcherProvider(testDispatcher)
-
-        observeCompleteBoardUseCase = mockk()
-
-        viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = mockk(),
-            createCardUseCase = mockk(),
-            updateColumnUseCase = mockk(),
-            deleteColumnUseCase = mockk(),
-            restoreColumnUseCase = mockk(),
-            persistBoardPositionsUseCase = mockk(),
-            reorderCardsUseCase = mockk(),
-            updateBoardUseCase = mockk(),
-            deleteBoardUseCase = mockk()
-        )
-    }
-
+class BoardViewModelObserveBoardTest : BoardViewModelTest() {
 
     @Test
     fun `SHOULD update loading state to true than to false WHEN observe board is successful`() {
