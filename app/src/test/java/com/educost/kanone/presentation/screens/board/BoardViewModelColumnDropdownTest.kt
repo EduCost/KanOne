@@ -16,89 +16,87 @@ import org.junit.Test
 class BoardViewModelColumnDropdownTest : BoardViewModelTest() {
 
     @Test
-    fun `SHOULD update UI state WHEN open dropdown menu`() = testBoardViewModelUiState {
-        val columnId = column1.id
-
-        viewModel.onIntent(BoardIntent.OpenColumnDropdownMenu(columnId))
-        assertThat(awaitItem().activeDropdownColumnId).isEqualTo(columnId)
-    }
-
-    @Test
-    fun `SHOULD reset UI state WHEN close dropdown menu`() = testBoardViewModelUiState {
-        val columnId = column1.id
-
-        // Open
-        viewModel.onIntent(BoardIntent.OpenColumnDropdownMenu(columnId))
-        skipItems(1)
-
-        // Close
-        viewModel.onIntent(BoardIntent.CloseColumnDropdownMenu)
-        assertThat(awaitItem().activeDropdownColumnId).isEqualTo(null)
-    }
-
-    @Test
-    fun `SHOULD update UI state WHEN rename column is called`() = testBoardViewModelUiState {
-        val columnId = column1.id
-
-        viewModel.onIntent(BoardIntent.OnRenameColumnClicked(columnId))
-
-        val updatedState = awaitItem()
-        assertThat(updatedState.topBarType).isEqualTo(BoardAppBarType.RENAME_COLUMN)
-        assertThat(updatedState.columnEditState.editingColumnId).isEqualTo(columnId)
-        assertThat(updatedState.columnEditState.isRenaming).isTrue()
-    }
-
-    @Test
-    fun `SHOULD send snackbar WHEN did not find column on delete column`() {
-        val boardId = defaultBoard.id
-        val column = column1
-
-        testBoardViewModelSideEffect(
-            testSetUp = {
-                coEvery {
-                    deleteColumnUseCase(column, boardId)
-                } returns false
+    fun `SHOULD update UI state WHEN open dropdown menu`() {
+        val columnId = 1L
+        testBoardViewModelUiState(
+            whenAction = {
+                viewModel.onIntent(BoardIntent.OpenColumnDropdownMenu(columnId))
             },
-            testBody = {
-                val columnId = -1L // Column not found
+            then = {
+                assertThat(awaitItem().activeDropdownColumnId).isEqualTo(columnId)
 
-                viewModel.onIntent(BoardIntent.OnDeleteColumnClicked(columnId))
-                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
-            },
-            testValidate = {
-                coVerify(exactly = 0) { deleteColumnUseCase(column, boardId) }
             }
         )
     }
 
+    @Test
+    fun `SHOULD reset UI state WHEN close dropdown menu`() = testBoardViewModelUiState(
+        whenAction = {
+            // Open
+            viewModel.onIntent(BoardIntent.OpenColumnDropdownMenu(1L))
+            skipItems(1)
+
+            // Close
+            viewModel.onIntent(BoardIntent.CloseColumnDropdownMenu)
+        },
+        then = {
+            assertThat(awaitItem().activeDropdownColumnId).isEqualTo(null)
+        }
+    )
 
     @Test
-    fun `SHOULD call delete column use case WHEN delete column is called`() {
-        runTest(testDispatcher) {
+    fun `SHOULD update UI state WHEN rename column is clicked`() {
+        val columnId = firstColumn.id
 
-            coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
-                Result.Success(defaultBoard)
-            )
-            coEvery { deleteColumnUseCase(column1, defaultBoard.id) } returns true
+        testBoardViewModelUiState(
+            whenAction = {
+                viewModel.onIntent(BoardIntent.OnRenameColumnClicked(columnId))
+            },
+            then = {
+                val updatedState = awaitItem()
+                assertThat(updatedState.topBarType).isEqualTo(BoardAppBarType.RENAME_COLUMN)
+                assertThat(updatedState.columnEditState.editingColumnId).isEqualTo(columnId)
+                assertThat(updatedState.columnEditState.newColumnName).isEqualTo(firstColumn.name)
+                assertThat(updatedState.columnEditState.isRenaming).isTrue()
+            }
+        )
+    }
 
-            viewModel.onIntent(BoardIntent.ObserveBoard(defaultBoard.id))
-            viewModel.onIntent(BoardIntent.OnDeleteColumnClicked(column1.id))
+    @Test
+    fun `SHOULD send snackbar WHEN did not find column on delete column`() {
+        testBoardViewModelSideEffect(
+            given = {
+                coEvery {
+                    deleteColumnUseCase(any(), any())
+                } returns false
+            },
+            whenAction = {
+                val columnId = -1L // Column not found
 
-            coVerify(exactly = 1) { deleteColumnUseCase(column1, defaultBoard.id) }
-        }
+                viewModel.onIntent(BoardIntent.OnDeleteColumnClicked(columnId))
+            },
+            then = {
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify(exactly = 0) { deleteColumnUseCase(any(), any()) }
+            }
+        )
     }
 
     @Test
     fun `SHOULD send snackbar WHEN delete column is successful`() {
         testBoardViewModelSideEffect(
-            testSetUp = {
+            given = {
                 coEvery { deleteColumnUseCase(any(), any()) } returns true // Success
             },
-            testBody = {
+            whenAction = {
                 viewModel.onIntent(BoardIntent.OnDeleteColumnClicked(1L))
-                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
             },
-            testValidate = {
+            then = {
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
                 coVerify(exactly = 1) { deleteColumnUseCase(any(), any()) }
             }
         )
@@ -107,28 +105,30 @@ class BoardViewModelColumnDropdownTest : BoardViewModelTest() {
     @Test
     fun `SHOULD send snackbar WHEN delete column is not successful`() {
         testBoardViewModelSideEffect(
-            testSetUp = {
+            given = {
                 coEvery { deleteColumnUseCase(any(), any()) } returns false // Failure
             },
-            testBody = {
+            whenAction = {
                 viewModel.onIntent(BoardIntent.OnDeleteColumnClicked(1L))
-                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
             },
-            testValidate = {
-                coVerify { deleteColumnUseCase(any(), any()) }
+            then = {
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify(exactly = 1) { deleteColumnUseCase(any(), any()) }
             }
         )
     }
 
     @Test
-    fun `SHOULD send snackbar WHEN use case returns error`() {
+    fun `SHOULD send snackbar WHEN reorder cards use case returns error`() {
         testBoardViewModelSideEffect(
-            testSetUp = {
+            given = {
                 coEvery {
                     reorderCardsUseCase(any(), any(), any())
                 } returns false // Failure
             },
-            testBody = {
+            whenAction = {
                 viewModel.onIntent(
                     BoardIntent.OnOrderByClicked(
                         columnId = 1L,
@@ -136,10 +136,12 @@ class BoardViewModelColumnDropdownTest : BoardViewModelTest() {
                         cardOrder = CardOrder.NAME
                     )
                 )
-                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
             },
-            testValidate = {
-                coVerify {
+            then = {
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
+                coVerify(exactly = 1) {
                     reorderCardsUseCase(any(), any(), any())
                 }
             }
@@ -149,12 +151,12 @@ class BoardViewModelColumnDropdownTest : BoardViewModelTest() {
     @Test
     fun `SHOULD call reorder cards use case WHEN call reorder cards`() {
         testBoardViewModelSideEffect(
-            testSetUp = {
+            given = {
                 coEvery {
                     reorderCardsUseCase(any(), any(), any())
                 } returns true // Success
             },
-            testBody = {
+            whenAction = {
                 viewModel.onIntent(
                     BoardIntent.OnOrderByClicked(
                         columnId = 1L,
@@ -163,7 +165,7 @@ class BoardViewModelColumnDropdownTest : BoardViewModelTest() {
                     )
                 )
             },
-            testValidate = {
+            then = {
                 coVerify(exactly = 1) {
                     reorderCardsUseCase(any(), any(), any())
                 }
@@ -171,29 +173,4 @@ class BoardViewModelColumnDropdownTest : BoardViewModelTest() {
         )
     }
 
-    @Test
-    fun `SHOULD send snackbar WHEN call reorder cards and returns error`() {
-       testBoardViewModelSideEffect(
-           testSetUp = {
-               coEvery {
-                   reorderCardsUseCase(any(), any(), any())
-               } returns false // Failure
-           },
-           testBody = {
-               viewModel.onIntent(
-                   BoardIntent.OnOrderByClicked(
-                       columnId = 1L,
-                       orderType = OrderType.ASCENDING,
-                       cardOrder = CardOrder.NAME
-                   )
-               )
-               assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
-           },
-           testValidate = {
-               coVerify {
-                   reorderCardsUseCase(any(), any(), any())
-               }
-           }
-       )
-    }
 }
