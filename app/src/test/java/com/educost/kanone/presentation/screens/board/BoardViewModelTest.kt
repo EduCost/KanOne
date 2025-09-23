@@ -10,7 +10,9 @@ import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.domain.usecase.CreateCardUseCase
 import com.educost.kanone.domain.usecase.CreateColumnUseCase
+import com.educost.kanone.domain.usecase.DeleteColumnUseCase
 import com.educost.kanone.domain.usecase.ObserveCompleteBoardUseCase
+import com.educost.kanone.domain.usecase.ReorderCardsUseCase
 import com.educost.kanone.presentation.screens.board.state.BoardState
 import com.educost.kanone.utils.Result
 import io.mockk.coEvery
@@ -33,6 +35,8 @@ open class BoardViewModelTest {
     protected lateinit var observeCompleteBoardUseCase: ObserveCompleteBoardUseCase
     protected lateinit var createCardUseCase: CreateCardUseCase
     protected lateinit var createColumnUseCase: CreateColumnUseCase
+    protected lateinit var deleteColumnUseCase: DeleteColumnUseCase
+    protected lateinit var reorderCardsUseCase: ReorderCardsUseCase
 
     protected lateinit var viewModel: BoardViewModel
 
@@ -62,6 +66,8 @@ open class BoardViewModelTest {
         observeCompleteBoardUseCase = mockk()
         createColumnUseCase = mockk()
         createCardUseCase = mockk()
+        deleteColumnUseCase = mockk()
+        reorderCardsUseCase = mockk()
 
         viewModel = BoardViewModel(
             dispatcherProvider = dispatcherProvider,
@@ -69,10 +75,10 @@ open class BoardViewModelTest {
             createColumnUseCase = createColumnUseCase,
             createCardUseCase = createCardUseCase,
             updateColumnUseCase = mockk(),
-            deleteColumnUseCase = mockk(),
+            deleteColumnUseCase = deleteColumnUseCase,
             restoreColumnUseCase = mockk(),
             persistBoardPositionsUseCase = mockk(),
-            reorderCardsUseCase = mockk(),
+            reorderCardsUseCase = reorderCardsUseCase,
             updateBoardUseCase = mockk(),
             deleteBoardUseCase = mockk()
         )
