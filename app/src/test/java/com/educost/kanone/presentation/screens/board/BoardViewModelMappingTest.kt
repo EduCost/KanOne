@@ -21,39 +21,16 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("UnusedFlow")
-class BoardViewModelMappingTest {
-
-    private lateinit var testDispatcher: CoroutineDispatcher
-    private lateinit var dispatcherProvider: DispatcherProvider
-    private lateinit var viewModel: BoardViewModel
-    private lateinit var observeCompleteBoardUseCase: ObserveCompleteBoardUseCase
-
-    @Before
-    fun setUp() {
-        testDispatcher = UnconfinedTestDispatcher()
-        dispatcherProvider = TestDispatcherProvider(testDispatcher)
-        observeCompleteBoardUseCase = mockk()
-        viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
-            observeCompleteBoardUseCase = observeCompleteBoardUseCase,
-            createColumnUseCase = mockk(),
-            createCardUseCase = mockk(),
-            updateColumnUseCase = mockk(),
-            deleteColumnUseCase = mockk(),
-            restoreColumnUseCase = mockk(),
-            persistBoardPositionsUseCase = mockk(),
-            reorderCardsUseCase = mockk(),
-            updateBoardUseCase = mockk(),
-            deleteBoardUseCase = mockk()
-        )
-    }
+class BoardViewModelMappingTest : BoardViewModelTest() {
 
     @Test
     fun `SHOULD map new board to BoardUi WHEN previous board is null`() {
@@ -512,15 +489,20 @@ class BoardViewModelMappingTest {
                 )
                 viewModel.onIntent(BoardIntent.SetCardCoordinates(1, 1, firstCardCoordinates))
                 viewModel.onIntent(BoardIntent.SetCardCoordinates(2, 1, secondCardCoordinates))
-                assertThat(awaitItem().board?.columns[0]?.listCoordinates).isEqualTo(
+                val updatedFirstColumn = awaitItem().board?.columns[0]?.listCoordinates
+                val updatedCards = awaitItem().board?.columns[0]?.cards!!
+                val updatedFirstCard = updatedCards[0].coordinates
+                val updatedSecondCard = updatedCards[1].coordinates
+                assertThat(updatedFirstColumn).isEqualTo(
                     firstColumnCoordinates
                 )
-                assertThat(awaitItem().board?.columns[0]?.cards?.get(0)?.coordinates).isEqualTo(
+                assertThat(updatedFirstCard).isEqualTo(
                     firstCardCoordinates
                 )
-                assertThat(awaitItem().board?.columns[0]?.cards?.get(1)?.coordinates).isEqualTo(
+                assertThat(updatedSecondCard).isEqualTo(
                     secondCardCoordinates
                 )
+
 
                 // Update second column coordinates
                 viewModel.onIntent(
