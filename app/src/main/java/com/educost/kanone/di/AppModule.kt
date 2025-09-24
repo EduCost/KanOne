@@ -89,11 +89,14 @@ object AppModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): KanbanDatabase {
-        return Room.databaseBuilder(
-            context,
-            KanbanDatabase::class.java,
-            KanbanDatabase.DATABASE_NAME
-        ).build()
+        return Room
+            .databaseBuilder(
+                context = context,
+                klass = KanbanDatabase::class.java,
+                name = KanbanDatabase.DATABASE_NAME
+            )
+            .addMigrations(KanbanDatabase.MIGRATION_1_2)
+            .build()
     }
 
     @Provides
