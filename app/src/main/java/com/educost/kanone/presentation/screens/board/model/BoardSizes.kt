@@ -103,4 +103,9 @@ data class BoardSizes(
     val cardBottomRowIconsSpacer = (8f * zoom).dp
 
 
+    // Resizable icon buttons
+    val resizableIconButtonPaddingValues = PaddingValues((12f * zoom).dp)
+    val resizableIconButtonSize = (24f * zoom).dp
+
+
 }

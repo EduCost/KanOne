@@ -44,6 +44,7 @@ import com.educost.kanone.presentation.screens.board.components.AddColumn
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
 import com.educost.kanone.presentation.screens.board.components.BoardColumn
 import com.educost.kanone.presentation.screens.board.components.ColumnCard
+import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
@@ -280,6 +281,7 @@ fun BoardScreen(
                 .width(with(localDensity) { card.coordinates.width.toDp() })
                 .height(with(localDensity) { card.coordinates.height.toDp() }),
             card = card,
+            sizes = state.board?.sizes ?: BoardSizes(),
         )
     }
     state.dragState.draggingColumn?.let { column ->
@@ -296,6 +298,7 @@ fun BoardScreen(
             state = BoardState(),
             columnIndex = -1,
             onIntent = { },
+            sizes = state.board?.sizes ?: BoardSizes()
         )
     }
 }

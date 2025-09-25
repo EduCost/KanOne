@@ -153,14 +153,20 @@ fun ColumnHeader(
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-                IconButton(
-                    onClick = { onIntent(BoardIntent.OpenColumnDropdownMenu(column.id)) }
-                ) {
-                    Icon(
-                        Icons.Filled.MoreVert,
-                        contentDescription = stringResource(R.string.board_column_header_more_options_content_description)
-                    )
-                }
+                ResizableIconButton(
+                    onClick = { onIntent(BoardIntent.OpenColumnDropdownMenu(column.id)) },
+                    icon = Icons.Filled.MoreVert,
+                    contentDescription = stringResource(R.string.board_column_header_more_options_content_description),
+                    sizes = sizes
+                )
+//                IconButton(
+//                    onClick = { onIntent(BoardIntent.OpenColumnDropdownMenu(column.id)) }
+//                ) {
+//                    Icon(
+//                        Icons.Filled.MoreVert,
+//                        contentDescription = stringResource(R.string.board_column_header_more_options_content_description)
+//                    )
+//                }
 
                 Box {
                     ColumnDropdownMenu(
