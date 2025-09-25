@@ -14,8 +14,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -159,14 +157,6 @@ fun ColumnHeader(
                     contentDescription = stringResource(R.string.board_column_header_more_options_content_description),
                     sizes = sizes
                 )
-//                IconButton(
-//                    onClick = { onIntent(BoardIntent.OpenColumnDropdownMenu(column.id)) }
-//                ) {
-//                    Icon(
-//                        Icons.Filled.MoreVert,
-//                        contentDescription = stringResource(R.string.board_column_header_more_options_content_description)
-//                    )
-//                }
 
                 Box {
                     ColumnDropdownMenu(

@@ -45,7 +45,7 @@ import coil3.request.ImageRequest
 import com.educost.kanone.domain.model.Attachment
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.model.Task
-import com.educost.kanone.presentation.components.LabelChip
+import com.educost.kanone.presentation.components.ResizableLabelChip
 import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
@@ -165,7 +165,7 @@ private fun CardLabels(modifier: Modifier = Modifier, labels: List<Label>, sizes
         horizontalArrangement = Arrangement.spacedBy(sizes.cardLabelsSpaceBy)
     ) {
         labels.forEach { label ->
-            LabelChip(label = label, smallVersion = true)
+            ResizableLabelChip(label = label, sizes = sizes)
         }
     }
 }

@@ -3,8 +3,9 @@ package com.educost.kanone.presentation.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -17,16 +18,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.domain.model.Label
+import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.theme.KanOneTheme
 
 @Composable
 fun LabelChip(
     modifier: Modifier = Modifier,
     label: Label,
-    smallVersion: Boolean = false,
     isClickable: Boolean = false,
     onClick: () -> Unit = {}
 ) {
@@ -44,7 +46,6 @@ fun LabelChip(
             text = label.name,
             containerColor = containerColor,
             onContainerColor = onContainerColor,
-            smallVersion = smallVersion,
             isClickable = isClickable,
             onClick = onClick
         )
@@ -54,9 +55,57 @@ fun LabelChip(
         text = label.name,
         containerColor = MaterialTheme.colorScheme.secondaryContainer,
         onContainerColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        smallVersion = smallVersion,
         isClickable = isClickable,
         onClick = onClick
+    )
+
+}
+
+@Composable
+fun ResizableLabelChip(
+    modifier: Modifier = Modifier,
+    label: Label,
+    isClickable: Boolean = false,
+    onClick: () -> Unit = {},
+    sizes: BoardSizes
+) {
+    label.color?.let { colorInt ->
+
+        val containerColor by remember(colorInt) {
+            mutableStateOf(Color(colorInt))
+        }
+        val onContainerColor by remember(colorInt) {
+            mutableStateOf(if (containerColor.luminance() > 0.5f) Color.Black else Color.White)
+        }
+
+        LabelChip(
+            modifier = modifier,
+            text = label.name,
+            containerColor = containerColor,
+            onContainerColor = onContainerColor,
+            isClickable = isClickable,
+            onClick = onClick,
+            textStyle = MaterialTheme.typography.labelMedium.copy(
+                fontSize = sizes.cardLabelsFontSize,
+                lineHeight = sizes.cardLabelsLineHeight
+            ),
+            padding = sizes.cardLabelsPaddingValues,
+            shape = sizes.cardLabelsShape
+        )
+
+    } ?: LabelChip(
+        modifier = modifier,
+        text = label.name,
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        onContainerColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        isClickable = isClickable,
+        onClick = onClick,
+        textStyle = MaterialTheme.typography.labelMedium.copy(
+            fontSize = sizes.cardLabelsFontSize,
+            lineHeight = sizes.cardLabelsLineHeight
+        ),
+        padding = sizes.cardLabelsPaddingValues,
+        shape = sizes.cardLabelsShape
     )
 
 }
@@ -67,30 +116,15 @@ private fun LabelChip(
     text: String,
     containerColor: Color,
     onContainerColor: Color,
-    smallVersion: Boolean,
     isClickable: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    textStyle: TextStyle = MaterialTheme.typography.labelLarge,
+    padding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+    shape: CornerBasedShape = MaterialTheme.shapes.small
 ) {
-
-    val (height, padding) = remember {
-        if (smallVersion) {
-            28.dp to 12.dp
-        } else {
-            32.dp to 16.dp
-        }
-    }
-
-    val textStyle = if (smallVersion) {
-        MaterialTheme.typography.labelMedium
-    } else {
-        MaterialTheme.typography.labelLarge
-    }
-
-
     Box(
         modifier = modifier
-            .height(height)
-            .clip(MaterialTheme.shapes.small)
+            .clip(shape)
             .background(containerColor)
             .then(
                 if (isClickable) {
@@ -102,67 +136,15 @@ private fun LabelChip(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            modifier = Modifier.padding(horizontal = padding),
+            modifier = Modifier.padding(padding),
             text = text,
             style = textStyle,
             color = onContainerColor
         )
     }
 
-
 }
 
-/*@Composable
-fun LabelChip(
-    modifier: Modifier = Modifier,
-    label: Label,
-    isClickable: Boolean = true,
-    onClick: () -> Unit = {}
-) {
-    label.color?.let { colorInt ->
-
-        val color by remember(colorInt) { mutableStateOf(Color(colorInt)) }
-        val selectedLabelColor by remember(colorInt) {
-            mutableStateOf(if (color.luminance() > 0.5f) Color.Black else Color.White)
-        }
-
-        FilterChip(
-            modifier = modifier,
-            selected = true,
-            enabled = isClickable,
-            onClick = onClick,
-            border = BorderStroke(
-                width = 1.dp,
-                color = color
-            ),
-            colors = FilterChipDefaults.filterChipColors(
-                selectedContainerColor = color,
-                selectedLabelColor = selectedLabelColor,
-                selectedTrailingIconColor = selectedLabelColor,
-                disabledSelectedContainerColor = color,
-                disabledLabelColor = selectedLabelColor,
-                disabledTrailingIconColor = selectedLabelColor
-            ),
-            label = {
-                Text(text = label.name)
-            }
-        )
-
-    } ?: FilterChip(
-        modifier = modifier,
-        enabled = isClickable,
-        selected = true,
-        onClick = {},
-        label = {
-            Text(text = label.name)
-        },
-        colors = FilterChipDefaults.filterChipColors(
-            disabledSelectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            disabledLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            disabledLeadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer
-        )
-    )
-}*/
 
 @PreviewLightDark
 @Composable
@@ -202,17 +184,17 @@ private fun LabelChipColoredPreview() {
 
 @PreviewLightDark
 @Composable
-private fun SmallLabelChipPreview() {
+private fun ResizableLabelChipPreview() {
     KanOneTheme {
         Surface {
-            LabelChip(
+            ResizableLabelChip(
                 modifier = Modifier.padding(16.dp),
                 label = Label(
                     id = 0,
                     name = "Label",
                     color = null
                 ),
-                smallVersion = true
+                sizes = BoardSizes(50f)
             )
         }
     }
@@ -220,17 +202,17 @@ private fun SmallLabelChipPreview() {
 
 @PreviewLightDark
 @Composable
-private fun SmallLabelChipColoredPreview() {
+private fun ResizableLabelChipColoredPreview() {
     KanOneTheme {
         Surface {
-            LabelChip(
+            ResizableLabelChip(
                 modifier = Modifier.padding(16.dp),
                 label = Label(
                     id = 0,
                     name = "Label",
                     color = -25787
                 ),
-                smallVersion = true,
+                sizes = BoardSizes(50f)
             )
         }
     }

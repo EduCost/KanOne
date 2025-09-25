@@ -92,6 +92,13 @@ data class BoardSizes(
 
     val cardLabelsSpaceBy = (8f * zoom).dp
     val cardLabelsPaddingTop = (12f * zoom).dp
+    val cardLabelsPaddingValues = PaddingValues(
+        horizontal = (12 * zoom).dp,
+        vertical = (6 * zoom).dp
+    )
+    val cardLabelsShape = RoundedCornerShape((8f * zoom).dp)
+    val cardLabelsFontSize = (12f * zoom).sp
+    val cardLabelsLineHeight = (16f * zoom).sp
 
     val cardHorizontalDividerPaddingValues = PaddingValues(
         top = (8f * zoom).dp,
