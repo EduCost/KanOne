@@ -682,7 +682,7 @@ class BoardViewModel @Inject constructor(
         val board = uiState.value.board ?: return
         val currentZoomPercentage = board.sizes.zoomPercentage
         val updatedZoom = (currentZoomPercentage * zoomChange).coerceIn(
-            minimumValue = 50f,
+            minimumValue = 35f,
             maximumValue = 120f
         )
         _uiState.update {

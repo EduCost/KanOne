@@ -166,7 +166,7 @@ fun BoardScreen(
 
         state.board?.let { board ->
 
-            val contentPadding = remember(state.isOnFullScreen) {
+            val contentPadding = remember(state.isOnFullScreen, board.sizes) {
                 if (state.isOnFullScreen) board.sizes.columnFullScreenPaddingValues
                 else board.sizes.columnPaddingValues
             }

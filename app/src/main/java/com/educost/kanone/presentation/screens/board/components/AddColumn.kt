@@ -16,11 +16,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
@@ -127,25 +125,6 @@ fun AddColumn(
             sizes = sizes
         )
 
-//        OutlinedButton(
-//            modifier = modifier.padding(sizes.addColumnButtonExternalPadding),
-//            onClick = { onIntent(BoardIntent.StartCreatingColumn) },
-//            shape = MaterialTheme.shapes.small,
-//            colors = ButtonDefaults.outlinedButtonColors(
-//                contentColor = MaterialTheme.colorScheme.onSurface,
-//            )
-//        ) {
-//            Icon(
-//                imageVector = Icons.Filled.Add,
-//                contentDescription = null,
-//            )
-//            Spacer(Modifier.padding(4.dp))
-//            Text(
-//                text = stringResource(R.string.board_button_add_column),
-//                fontSize = sizes.addColumnButtonTextSize,
-//                lineHeight = sizes.addColumnButtonLineHeight
-//            )
-//        }
     }
 }
 
@@ -192,7 +171,7 @@ private fun AddColumnButton(
 @PreviewLightDark
 @Composable
 private fun AddColumnButtonPreview() {
-    KanOneTheme() {
+    KanOneTheme {
         Surface {
             AddColumn(
                 modifier = Modifier.padding(16.dp),
@@ -206,7 +185,7 @@ private fun AddColumnButtonPreview() {
 @PreviewLightDark
 @Composable
 private fun AddColumnTextFieldPreview() {
-    KanOneTheme() {
+    KanOneTheme {
         Surface {
             AddColumn(
                 modifier = Modifier.padding(16.dp),
