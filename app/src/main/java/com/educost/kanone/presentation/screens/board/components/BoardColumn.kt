@@ -66,7 +66,7 @@ fun BoardColumn(
 
     Column(
         modifier = modifier
-            .width(300.dp)
+            .width(sizes.columnWidth)
             .clip(RoundedCornerShape(sizes.columnShape))
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))
     ) {
@@ -76,7 +76,8 @@ fun BoardColumn(
                 .fillMaxWidth(),
             column = column,
             state = state,
-            onIntent = onIntent
+            onIntent = onIntent,
+            sizes = sizes
         )
 
         LazyColumn(

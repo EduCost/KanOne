@@ -2,8 +2,9 @@ package com.educost.kanone.presentation.screens.board
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,7 +32,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.educost.kanone.R
@@ -115,6 +115,11 @@ fun BoardScreen(
     snackBarHostState: SnackbarHostState
 ) {
 
+    val transformableState = rememberTransformableState { zoomChange, panChange, _ ->
+        val scrollChange = -panChange.x
+        onIntent(BoardIntent.OnZoomChange(zoomChange, scrollChange))
+    }
+
     BackHandler(enabled = state.hasEditStates || state.isOnFullScreen) {
         when {
             state.isOnFullScreen && state.hasEditStates -> onIntent(BoardIntent.OnBackPressed)
@@ -126,6 +131,7 @@ fun BoardScreen(
     Scaffold(
         modifier = modifier
             .fillMaxSize()
+            .transformable(transformableState)
             .pointerInput(Unit) {
                 detectDragGesturesAfterLongPress(
                     onDrag = { change, _ ->

@@ -38,7 +38,7 @@ data class BoardSizes(
     val columnListPaddingValues = PaddingValues(
         start = (8f * zoom).dp,
         end = (8f * zoom).dp,
-        bottom = (16f * zoom).dp
+        bottom = (8f * zoom).dp
     )
     val columnListSpaceBy = (8f * zoom).dp
 
@@ -49,7 +49,10 @@ data class BoardSizes(
 
     // Card
     val addCardButtonSpacingTop = (8f * zoom).dp
-    val addCardButtonPaddingValues = PaddingValues((8f * zoom).dp)
+    val addCardButtonPaddingValues = PaddingValues(
+        vertical = (8f * zoom).dp,
+        horizontal = (16f * zoom).dp
+    )
     val addCardButtonIconSize = (24f * zoom).dp
     val addCardButtonSpacer = (4f * zoom).dp
     val addCardButtonFontSize = (16f * zoom).sp
@@ -67,6 +70,7 @@ data class BoardSizes(
     val cardImageMaxHeight = (150f * zoom).dp
     val cardImageShape = RoundedCornerShape((8f * zoom).dp)
 
+    val cardTasksProgressIndicatorSize = (4f * zoom).dp
     val cardTasksProgressIndicatorSpacer = (8f * zoom).dp
     val cardTasksIconSize = (12f * zoom).dp
     val cardTasksIconSpacer = (4f * zoom).dp

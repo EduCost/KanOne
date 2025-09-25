@@ -26,6 +26,7 @@ import com.educost.kanone.presentation.screens.board.mapper.toBoardUi
 import com.educost.kanone.presentation.screens.board.mapper.toCardUi
 import com.educost.kanone.presentation.screens.board.mapper.toColumnUi
 import com.educost.kanone.presentation.screens.board.mapper.toKanbanColumn
+import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
@@ -84,6 +85,8 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.OnCardClick -> navigateToCardScreen(intent.cardId)
             is BoardIntent.OnBackPressed -> clearEditAndCreationStates()
             is BoardIntent.OnNavigateBack -> navigateBack()
+
+            is BoardIntent.OnZoomChange -> onZoomChange(intent.zoomChange, intent.scrollChange)
 
             // Full screen
             is BoardIntent.EnterFullScreen -> enterFullScreen()
@@ -673,6 +676,29 @@ class BoardViewModel @Inject constructor(
 
     private fun exitFullScreen() {
         _uiState.update { it.copy(isOnFullScreen = false) }
+    }
+
+    private fun onZoomChange(zoomChange: Float, scrollChange: Float) {
+        val board = uiState.value.board ?: return
+        val currentZoomPercentage = board.sizes.zoomPercentage
+        val updatedZoom = (currentZoomPercentage * zoomChange).coerceIn(
+            minimumValue = 50f,
+            maximumValue = 120f
+        )
+        _uiState.update {
+            it.copy(
+                board = board.copy(
+                    sizes = BoardSizes(updatedZoom)
+                )
+            )
+        }
+        viewModelScope.launch(dispatcherProvider.main) {
+            try {
+                board.listState.scrollBy(scrollChange)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
 

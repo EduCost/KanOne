@@ -10,6 +10,7 @@ sealed interface BoardIntent {
     data class OnCardClick(val cardId: Long) : BoardIntent
     data object OnBackPressed : BoardIntent
     data object OnNavigateBack : BoardIntent
+    data class OnZoomChange(val zoomChange: Float, val scrollChange: Float) : BoardIntent
 
     // Full Screen
     data object EnterFullScreen : BoardIntent

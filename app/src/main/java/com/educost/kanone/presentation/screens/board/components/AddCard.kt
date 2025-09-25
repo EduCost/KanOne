@@ -96,29 +96,35 @@ fun AddCard(
 
 @Composable
 fun AddCardButton(modifier: Modifier = Modifier, onClick: () -> Unit, sizes: BoardSizes) {
-    Row(
+    Box(
         modifier = modifier
-            .padding(sizes.addCardButtonPaddingValues)
             .clip(CircleShape)
             .clickable { onClick() },
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            modifier = Modifier.size(sizes.addCardButtonIconSize),
-            imageVector = Icons.Filled.Add,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface
-        )
-        Spacer(Modifier.width(sizes.addCardButtonSpacer))
-        Text(
-            text = stringResource(R.string.board_column_button_add_card),
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.bodyLarge.copy(
-                fontSize = sizes.addCardButtonFontSize,
-                lineHeight = sizes.addCardButtonLineHeight
-            )
-        )
+        Box(
+            modifier = Modifier.padding(sizes.addCardButtonPaddingValues)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.size(sizes.addCardButtonIconSize),
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(Modifier.width(sizes.addCardButtonSpacer))
+                Text(
+                    text = stringResource(R.string.board_column_button_add_card),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = sizes.addCardButtonFontSize,
+                        lineHeight = sizes.addCardButtonLineHeight
+                    )
+                )
+            }
+        }
     }
 }
 
