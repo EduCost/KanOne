@@ -36,11 +36,13 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.board.BoardIntent
+import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.state.BoardState
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.theme.KanOneTheme
@@ -50,6 +52,7 @@ fun AddColumn(
     modifier: Modifier = Modifier,
     state: BoardState,
     onIntent: (BoardIntent) -> Unit,
+    sizes: BoardSizes = BoardSizes()
 ) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -69,19 +72,19 @@ fun AddColumn(
 
         Box(
             modifier = modifier
-                .width(300.dp)
+                .width(sizes.columnWidth)
                 .clip(MaterialTheme.shapes.medium)
                 .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))
         ) {
-            Card(modifier = Modifier.padding(16.dp)) {
+            Card(modifier = Modifier.padding(sizes.columnHeaderPadding)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box( // Circle
                         modifier = Modifier
-                            .padding(16.dp)
-                            .size(24.dp)
+                            .padding(sizes.columnHeaderCirclePadding)
+                            .size(sizes.columnHeaderCircleSize)
                             .clip(CircleShape)
                             .background(Color.Gray)
                     )
@@ -89,8 +92,11 @@ fun AddColumn(
                     BasicTextField(
                         value = state.creatingColumnName ?: "",
                         onValueChange = { onIntent(BoardIntent.OnColumnNameChanged(it)) },
-                        textStyle = MaterialTheme.typography.bodyLarge.copy(
-                            color = MaterialTheme.colorScheme.onSurface
+                        textStyle = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = sizes.columnHeaderFontSize,
+                            lineHeight = sizes.columnHeaderLineHeight
                         ),
                         cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
                         keyboardOptions = KeyboardOptions(
@@ -111,7 +117,7 @@ fun AddColumn(
     } else {
 
         OutlinedButton(
-            modifier = modifier.padding(16.dp),
+            modifier = modifier.padding(sizes.addColumnPadding),
             onClick = { onIntent(BoardIntent.StartCreatingColumn) },
             shape = MaterialTheme.shapes.small,
             colors = ButtonDefaults.outlinedButtonColors(
@@ -125,6 +131,8 @@ fun AddColumn(
             Spacer(Modifier.padding(4.dp))
             Text(
                 text = stringResource(R.string.board_button_add_column),
+                fontSize = sizes.addColumnTextSize,
+                lineHeight = sizes.addColumnLineHeight
             )
         }
 

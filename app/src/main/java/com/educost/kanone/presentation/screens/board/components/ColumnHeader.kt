@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +43,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.board.BoardIntent
+import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.state.BoardState
@@ -53,6 +55,7 @@ fun ColumnHeader(
     column: ColumnUi,
     state: BoardState,
     onIntent: (BoardIntent) -> Unit,
+    sizes: BoardSizes = BoardSizes()
 ) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -85,6 +88,7 @@ fun ColumnHeader(
     }
 
     Card(
+        shape = sizes.columnHeaderShape,
         modifier = modifier
             .onGloballyPositioned { layoutCoordinates ->
                 onIntent(
@@ -105,8 +109,8 @@ fun ColumnHeader(
         ) {
             Box( // Circle
                 modifier = Modifier
-                    .padding(16.dp)
-                    .size(24.dp)
+                    .padding(sizes.columnHeaderCirclePadding)
+                    .size(sizes.columnHeaderCircleSize)
                     .clip(CircleShape)
                     .background(headerColor)
                     .clickable { onIntent(BoardIntent.StartEditingColumnColor(column.id)) }
@@ -118,7 +122,9 @@ fun ColumnHeader(
                     onValueChange = { onIntent(BoardIntent.OnEditColumnNameChange(it)) },
                     textStyle = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = sizes.columnHeaderFontSize,
+                        lineHeight = sizes.columnHeaderLineHeight
                     ),
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
                     keyboardOptions = KeyboardOptions(
@@ -140,7 +146,11 @@ fun ColumnHeader(
                     text = column.name,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = sizes.columnHeaderFontSize,
+                        lineHeight = sizes.columnHeaderLineHeight
+                    ),
                     color = MaterialTheme.colorScheme.onSurface
                 )
 

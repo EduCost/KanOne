@@ -160,7 +160,8 @@ fun BoardScreen(
         state.board?.let { board ->
 
             val contentPadding = remember(state.isOnFullScreen) {
-                calculatePaddingValues(state.isOnFullScreen)
+                if (state.isOnFullScreen) board.sizes.columnFullScreenPaddingValues
+                else board.sizes.columnPaddingValues
             }
 
             LazyRow(
@@ -179,7 +180,7 @@ fun BoardScreen(
                     .padding(innerPadding)
                     .fillMaxSize(),
                 contentPadding = contentPadding,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(board.sizes.columnsSpaceBy),
                 state = state.board.listState
             ) {
                 itemsIndexed(
@@ -215,14 +216,16 @@ fun BoardScreen(
                         column = column,
                         columnIndex = index,
                         state = state,
-                        onIntent = onIntent
+                        onIntent = onIntent,
+                        sizes = board.sizes
                     )
                 }
 
                 item {
                     AddColumn(
                         state = state,
-                        onIntent = onIntent
+                        onIntent = onIntent,
+                        sizes = board.sizes
                     )
                 }
             }

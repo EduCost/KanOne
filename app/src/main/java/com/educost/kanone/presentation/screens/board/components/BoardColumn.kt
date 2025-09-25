@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.surfaceColorAtElevation
@@ -32,6 +33,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.presentation.screens.board.BoardIntent
+import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
@@ -45,7 +47,8 @@ fun BoardColumn(
     column: ColumnUi,
     columnIndex: Int,
     state: BoardState,
-    onIntent: (BoardIntent) -> Unit
+    onIntent: (BoardIntent) -> Unit,
+    sizes: BoardSizes = BoardSizes()
 ) {
 
     var isAddingCardOnTop by remember(state.cardCreationState) {
@@ -65,12 +68,12 @@ fun BoardColumn(
     Column(
         modifier = modifier
             .width(300.dp)
-            .clip(MaterialTheme.shapes.medium)
+            .clip(RoundedCornerShape(sizes.columnShape))
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))
     ) {
         ColumnHeader(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(sizes.columnHeaderPadding)
                 .fillMaxWidth(),
             column = column,
             state = state,
@@ -91,8 +94,8 @@ fun BoardColumn(
                         )
                     )
                 },
-            contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = sizes.columnListPaddingValues,
+            verticalArrangement = Arrangement.spacedBy(sizes.columnListSpaceBy),
             state = column.listState
         ) {
 
@@ -101,7 +104,8 @@ fun BoardColumn(
                     AddCardTextField(
                         newCardTitle = state.cardCreationState.title ?: "",
                         onTitleChange = { onIntent(BoardIntent.OnCardTitleChange(it)) },
-                        onConfirmCreateCard = { onIntent(BoardIntent.ConfirmCardCreation) }
+                        onConfirmCreateCard = { onIntent(BoardIntent.ConfirmCardCreation) },
+                        sizes = sizes
                     )
                 }
             }
@@ -155,7 +159,8 @@ fun BoardColumn(
                 AddCard(
                     state = state,
                     onIntent = onIntent,
-                    column = column
+                    column = column,
+                    sizes = sizes
                 )
             }
         }

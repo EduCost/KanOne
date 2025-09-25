@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Subject
 import androidx.compose.material.icons.filled.AttachFile
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
@@ -43,6 +45,7 @@ import com.educost.kanone.domain.model.Attachment
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.model.Task
 import com.educost.kanone.presentation.components.LabelChip
+import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.theme.KanOneTheme
@@ -50,21 +53,22 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
+fun ColumnCard(modifier: Modifier = Modifier, card: CardUi, sizes: BoardSizes) {
 
     val cardProperties = remember { getCardProperties(card) }
 
     Column(
         modifier = modifier
-            .clip(MaterialTheme.shapes.small)
+            .clip(sizes.cardShape)
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(7.dp))
     ) {
         card.coverFileName?.let { cover ->
             CardImage(
                 cover = cover,
+                shape = sizes.cardImageShape,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = 150.dp)
+                    .heightIn(max = sizes.cardImageMaxHeight)
             )
         }
 
@@ -72,7 +76,7 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(sizes.cardPaddingValues),
             contentAlignment = Alignment.CenterStart
         ) {
             Column {
@@ -80,12 +84,17 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
                 Text(
                     text = card.title,
                     color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = sizes.cardTitleFontSize,
+                        lineHeight = sizes.cardTitleLineHeight
+                    )
                 )
 
                 if (cardProperties.hasLabels) {
                     CardLabels(
-                        modifier = Modifier.padding(top = 12.dp),
-                        labels = card.labels
+                        modifier = Modifier.padding(top = sizes.cardLabelsPaddingTop),
+                        labels = card.labels,
+                        sizes = sizes
                     )
                 }
 
@@ -97,17 +106,19 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
                     CardTasks(
                         modifier = Modifier.padding(top = 8.dp),
                         taskAmount = taskAmount,
-                        completedTasksAmount = completedTasksAmount
+                        completedTasksAmount = completedTasksAmount,
+                        sizes = sizes
                     )
                 }
 
                 if (cardProperties.hasHorizontalDivider) {
-                    HorizontalDivider(Modifier.padding(top = 8.dp, bottom = 12.dp))
+                    HorizontalDivider(Modifier.padding(sizes.cardHorizontalDividerPaddingValues))
                 }
 
                 CardBottomRow(
                     cardProperties = cardProperties,
-                    card = card
+                    card = card,
+                    sizes = sizes
                 )
             }
         }
@@ -115,7 +126,7 @@ fun ColumnCard(modifier: Modifier = Modifier, card: CardUi) {
 }
 
 @Composable
-private fun CardImage(modifier: Modifier = Modifier, cover: String) {
+private fun CardImage(modifier: Modifier = Modifier, cover: String, shape: RoundedCornerShape) {
     val context = LocalContext.current
     val imageRequest = remember {
         ImageRequest.Builder(context)
@@ -131,7 +142,7 @@ private fun CardImage(modifier: Modifier = Modifier, cover: String) {
         AsyncImage(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(MaterialTheme.shapes.small),
+                .clip(shape),
             model = imageRequest,
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
@@ -142,11 +153,11 @@ private fun CardImage(modifier: Modifier = Modifier, cover: String) {
 }
 
 @Composable
-private fun CardLabels(modifier: Modifier = Modifier, labels: List<Label>) {
+private fun CardLabels(modifier: Modifier = Modifier, labels: List<Label>, sizes: BoardSizes) {
     FlowRow(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(sizes.cardLabelsSpaceBy),
+        horizontalArrangement = Arrangement.spacedBy(sizes.cardLabelsSpaceBy)
     ) {
         labels.forEach { label ->
             LabelChip(label = label, smallVersion = true)
@@ -155,7 +166,12 @@ private fun CardLabels(modifier: Modifier = Modifier, labels: List<Label>) {
 }
 
 @Composable
-private fun CardTasks(modifier: Modifier = Modifier, taskAmount: Int, completedTasksAmount: Int) {
+private fun CardTasks(
+    modifier: Modifier = Modifier,
+    taskAmount: Int,
+    completedTasksAmount: Int,
+    sizes: BoardSizes
+) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -168,27 +184,30 @@ private fun CardTasks(modifier: Modifier = Modifier, taskAmount: Int, completedT
             strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
         )
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(sizes.cardTasksProgressIndicatorSpacer))
 
         Icon(
-            modifier = Modifier.size(12.dp),
+            modifier = Modifier.size(sizes.cardTasksIconSize),
             imageVector = Icons.Filled.DoneAll,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface
         )
 
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(sizes.cardTasksIconSpacer))
 
         Text(
             text = "$completedTasksAmount/$taskAmount",
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontSize = sizes.cardTasksFontSize,
+                lineHeight = sizes.cardTasksLineHeight
+            ),
             color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
 
 @Composable
-private fun CardDueDate(modifier: Modifier = Modifier, dueDate: LocalDateTime) {
+private fun CardDueDate(modifier: Modifier = Modifier, dueDate: LocalDateTime, sizes: BoardSizes) {
     val formatedDate = remember {
         dueDate.format(
             DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -196,43 +215,50 @@ private fun CardDueDate(modifier: Modifier = Modifier, dueDate: LocalDateTime) {
     }
     Box(
         modifier = modifier
-            .clip(MaterialTheme.shapes.small)
+            .clip(sizes.cardDueDateShape)
             .background(MaterialTheme.colorScheme.tertiaryContainer)
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(sizes.cardDueDatePaddingValues)
     ) {
         Text(
             text = formatedDate,
             color = MaterialTheme.colorScheme.onTertiaryContainer,
-            style = MaterialTheme.typography.labelLarge
+            style = MaterialTheme.typography.labelLarge.copy(
+                fontSize = sizes.cardDueDateFontSize,
+                lineHeight = sizes.cardDueDateLineHeight
+            )
         )
     }
 }
 
 @Composable
-private fun CardDescriptionIcon(modifier: Modifier = Modifier) {
+private fun CardDescriptionIcon(modifier: Modifier = Modifier, iconSize: Dp) {
     Icon(
         imageVector = Icons.AutoMirrored.Filled.Subject,
         contentDescription = null,
-        modifier = modifier.size(20.dp),
+        modifier = modifier.size(iconSize),
         tint = MaterialTheme.colorScheme.onSurface
     )
 }
 
 @Composable
-private fun CardAttachments(modifier: Modifier = Modifier, attachmentAmount: String) {
+private fun CardAttachments(modifier: Modifier = Modifier, attachmentAmount: String, sizes: BoardSizes) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            modifier = Modifier.size(18.dp),
+            modifier = Modifier.size(sizes.cardAttachmentIconSize),
             imageVector = Icons.Filled.AttachFile,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = attachmentAmount,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontSize = sizes.cardAttachmentFontSize,
+                lineHeight = sizes.cardAttachmentLineHeight
+            )
         )
     }
 }
@@ -241,16 +267,17 @@ private fun CardAttachments(modifier: Modifier = Modifier, attachmentAmount: Str
 private fun CardBottomRow(
     modifier: Modifier = Modifier,
     cardProperties: CardProperties,
-    card: CardUi
+    card: CardUi,
+    sizes: BoardSizes
 ) {
 
-    val paddingTop = remember {
+    val paddingTop = remember(sizes) {
         if (cardProperties.hasHorizontalDivider || cardProperties.cardIsEmpty) {
             0.dp
         } else if (cardProperties.hasLabels) {
-            12.dp
+            sizes.cardBottomRowPaddingTopWithLabels
         } else {
-            8.dp
+            sizes.cardBottomRowPaddingTop
         }
     }
 
@@ -260,20 +287,21 @@ private fun CardBottomRow(
     ) {
 
         if (cardProperties.hasDescription) {
-            CardDescriptionIcon()
-            Spacer(modifier = Modifier.width(8.dp))
+            CardDescriptionIcon(iconSize = sizes.cardDescriptionIconSize)
+            Spacer(modifier = Modifier.width(sizes.cardBottomRowIconsSpacer))
         }
 
         if (cardProperties.hasAttachments) {
             val attachmentAmount = remember { card.attachments.size.toString() }
-            CardAttachments(attachmentAmount = attachmentAmount)
+            CardAttachments(attachmentAmount = attachmentAmount, sizes = sizes)
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
         card.dueDate?.let { dueDate ->
             CardDueDate(
-                dueDate = dueDate
+                dueDate = dueDate,
+                sizes = sizes
             )
         }
 
@@ -330,6 +358,7 @@ private fun ColumnCardPreview() {
                     ),
                     coordinates = Coordinates()
                 ),
+                sizes = BoardSizes()
             )
         }
     }
