@@ -67,7 +67,7 @@ fun BoardColumn(
     Column(
         modifier = modifier
             .width(sizes.columnWidth)
-            .clip(RoundedCornerShape(sizes.columnShape))
+            .clip(sizes.columnShape)
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))
     ) {
         ColumnHeader(

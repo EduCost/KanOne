@@ -1,6 +1,8 @@
 package com.educost.kanone.presentation.screens.board.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -73,10 +75,13 @@ fun AddColumn(
         Box(
             modifier = modifier
                 .width(sizes.columnWidth)
-                .clip(MaterialTheme.shapes.medium)
+                .clip(sizes.columnShape)
                 .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))
         ) {
-            Card(modifier = Modifier.padding(sizes.columnHeaderPadding)) {
+            Card(
+                shape = sizes.columnHeaderShape,
+                modifier = Modifier.padding(sizes.columnHeaderPadding),
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -116,28 +121,73 @@ fun AddColumn(
         }
     } else {
 
-        OutlinedButton(
-            modifier = modifier.padding(sizes.addColumnPadding),
+        AddColumnButton(
+            modifier = modifier.padding(sizes.addColumnButtonExternalPadding),
             onClick = { onIntent(BoardIntent.StartCreatingColumn) },
-            shape = MaterialTheme.shapes.small,
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = MaterialTheme.colorScheme.onSurface,
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription = null,
-            )
-            Spacer(Modifier.padding(4.dp))
-            Text(
-                text = stringResource(R.string.board_button_add_column),
-                fontSize = sizes.addColumnTextSize,
-                lineHeight = sizes.addColumnLineHeight
-            )
-        }
+            sizes = sizes
+        )
 
+//        OutlinedButton(
+//            modifier = modifier.padding(sizes.addColumnButtonExternalPadding),
+//            onClick = { onIntent(BoardIntent.StartCreatingColumn) },
+//            shape = MaterialTheme.shapes.small,
+//            colors = ButtonDefaults.outlinedButtonColors(
+//                contentColor = MaterialTheme.colorScheme.onSurface,
+//            )
+//        ) {
+//            Icon(
+//                imageVector = Icons.Filled.Add,
+//                contentDescription = null,
+//            )
+//            Spacer(Modifier.padding(4.dp))
+//            Text(
+//                text = stringResource(R.string.board_button_add_column),
+//                fontSize = sizes.addColumnButtonTextSize,
+//                lineHeight = sizes.addColumnButtonLineHeight
+//            )
+//        }
     }
 }
+
+
+@Composable
+private fun AddColumnButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    sizes: BoardSizes
+) {
+    Box(
+        modifier = modifier
+            .border(
+                width = 1.dp,
+                brush = SolidColor(MaterialTheme.colorScheme.outline),
+                shape = sizes.addColumnButtonShape
+            )
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier.padding(sizes.addColumnButtonInternalPaddingValues),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    modifier = Modifier.size(sizes.addColumnButtonIconSize),
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(Modifier.width(sizes.addColumnButtonSpacer))
+                Text(
+                    text = stringResource(R.string.board_button_add_column),
+                    fontSize = sizes.addColumnButtonTextSize,
+                    lineHeight = sizes.addColumnButtonLineHeight
+                )
+            }
+        }
+    }
+}
+
 
 @PreviewLightDark
 @Composable

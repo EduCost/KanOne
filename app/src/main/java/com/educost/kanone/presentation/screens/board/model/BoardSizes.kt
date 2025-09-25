@@ -12,7 +12,7 @@ data class BoardSizes(
 
     val columnWidth = (300f * zoom).dp
     val columnsSpaceBy = (8f * zoom).dp
-    val columnShape = (12f * zoom).dp
+    val columnShape = RoundedCornerShape((12f * zoom).dp)
 
     val columnPaddingValues = PaddingValues(
         start = (16 * zoom).dp,
@@ -42,9 +42,16 @@ data class BoardSizes(
     )
     val columnListSpaceBy = (8f * zoom).dp
 
-    val addColumnPadding = (16f * zoom).dp
-    val addColumnTextSize = (14f * zoom).sp
-    val addColumnLineHeight = (20f * zoom).sp
+    val addColumnButtonExternalPadding = (16f * zoom).dp
+    val addColumnButtonShape = RoundedCornerShape((8f * zoom).dp)
+    val addColumnButtonIconSize = (24f * zoom).dp
+    val addColumnButtonSpacer = (4f * zoom).dp
+    val addColumnButtonInternalPaddingValues = PaddingValues(
+        vertical = (8f * zoom).dp,
+        horizontal = (24f * zoom).dp
+    )
+    val addColumnButtonTextSize = (14f * zoom).sp
+    val addColumnButtonLineHeight = (20f * zoom).sp
 
 
     // Card
