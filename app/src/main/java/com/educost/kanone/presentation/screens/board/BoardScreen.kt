@@ -361,16 +361,3 @@ private fun BoardScreenPreview() {
         )
     }
 }
-
-private fun calculatePaddingValues(isFullScreen: Boolean): PaddingValues {
-    return if (isFullScreen) {
-        PaddingValues(
-            top = 4.dp,
-            start = 16.dp,
-            end = 16.dp,
-            bottom = 8.dp
-        )
-    } else {
-        PaddingValues(16.dp)
-    }
-}

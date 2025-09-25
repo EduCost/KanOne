@@ -53,7 +53,11 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun ColumnCard(modifier: Modifier = Modifier, card: CardUi, sizes: BoardSizes) {
+fun ColumnCard(
+    modifier: Modifier = Modifier,
+    card: CardUi,
+    sizes: BoardSizes = BoardSizes()
+) {
 
     val cardProperties = remember { getCardProperties(card) }
 
