@@ -15,17 +15,35 @@ data class BoardSizes(
     val columnShape = RoundedCornerShape((12f * zoom).dp)
 
     val columnPaddingValues = PaddingValues(
-        start = (16f * zoom).dp,
-        top = (16f * zoom).dp,
-        end = (16f * zoom).dp,
-        bottom = (16f * zoom).dp
+        start = (16f * zoom).coerceIn(
+            minimumValue = 8f,
+            maximumValue = 20f
+        ).dp,
+        top = (16f * zoom).coerceIn(
+            minimumValue = 8f,
+            maximumValue = 20f
+        ).dp,
+        end = (16f * zoom).coerceIn(
+            minimumValue = 8f,
+            maximumValue = 20f
+        ).dp,
+        bottom = (16f * zoom).coerceIn(
+            minimumValue = 8f,
+            maximumValue = 20f
+        ).dp
     )
 
     val columnFullScreenPaddingValues = PaddingValues(
-        start = (16f * zoom).dp,
-        top = (4f * zoom).dp,
-        end = (16f * zoom).dp,
-        bottom = (8f * zoom).dp,
+        start = (16f * zoom).coerceIn(
+            minimumValue = 12f,
+            maximumValue = 20f
+        ).dp,
+        top = 4f.dp,
+        end = (16f * zoom).coerceIn(
+            minimumValue = 12f,
+            maximumValue = 20f
+        ).dp,
+        bottom = 8f.dp,
     )
 
     val columnHeaderPadding = (16f * zoom).dp
