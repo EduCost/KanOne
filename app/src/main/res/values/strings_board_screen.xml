@@ -58,11 +58,11 @@
 <!-- Column -->
 
 
-<!-- Dialogs -->
-
-
-
-<!-- Dialogs -->
+<!-- Board Settings -->
+    <string name="board_settings_zoom">Zoom</string>
+    <string name="board_settings_show_card_images">Show Card Images</string>
+    <string name="board_settings_app_settings">App Settings</string>
+<!-- Board Settings -->
 
 
 <!-- Snackbars -->
