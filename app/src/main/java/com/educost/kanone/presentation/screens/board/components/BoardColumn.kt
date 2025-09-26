@@ -119,7 +119,10 @@ fun BoardColumn(
 
                 ColumnCard(
                     modifier = Modifier
-                        .animateItem()
+                        .then(
+                            if (!state.isChangingZoom) Modifier.animateItem()
+                            else Modifier
+                        )
                         .onGloballyPositioned { layoutCoordinates ->
                             onIntent(
                                 BoardIntent.SetCardCoordinates(

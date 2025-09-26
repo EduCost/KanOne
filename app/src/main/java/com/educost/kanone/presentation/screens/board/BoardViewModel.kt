@@ -678,8 +678,11 @@ class BoardViewModel @Inject constructor(
         _uiState.update { it.copy(isOnFullScreen = false) }
     }
 
+
+    // Zoom
     private fun onZoomChange(zoomChange: Float, scrollChange: Float) {
         val board = uiState.value.board ?: return
+        _uiState.update { it.copy(isChangingZoom = true) }
         val currentZoomPercentage = board.sizes.zoomPercentage
         val updatedZoom = (currentZoomPercentage * zoomChange).coerceIn(
             minimumValue = 35f,
@@ -698,6 +701,26 @@ class BoardViewModel @Inject constructor(
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+        persistZoom()
+    }
+
+    private var persistZoomJob: Job? = null
+    private val persistZoomDebounceTime = 500L
+    private fun persistZoom() {
+        persistZoomJob?.cancel()
+        persistZoomJob = viewModelScope.launch(dispatcherProvider.main) {
+            delay(persistZoomDebounceTime)
+
+            _uiState.update { it.copy(isChangingZoom = false) }
+            val board = uiState.value.board ?: return@launch
+
+            val updatedBoard = board.copy(
+                sizes = board.sizes.copy(zoomPercentage = board.sizes.zoomPercentage)
+            ).toBoard()
+
+            updateBoardUseCase(updatedBoard)
+
         }
     }
 
