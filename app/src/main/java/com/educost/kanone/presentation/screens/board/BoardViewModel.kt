@@ -86,7 +86,9 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.OnBackPressed -> clearEditAndCreationStates()
             is BoardIntent.OnNavigateBack -> navigateBack()
 
+            // Zoom
             is BoardIntent.OnZoomChange -> onZoomChange(intent.zoomChange, intent.scrollChange)
+            is BoardIntent.SetZoom -> setZoom(intent.zoomValue)
 
             // Full screen
             is BoardIntent.EnterFullScreen -> enterFullScreen()
@@ -96,7 +98,13 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.OpenBoardDropdownMenu -> openBoardDropdownMenu()
             is BoardIntent.OnRenameBoardClicked -> onRenameBoardClicked()
             is BoardIntent.OnDeleteBoardClicked -> onDeleteBoardClicked()
+            is BoardIntent.OpenBoardSettings -> openBoardSettings()
             is BoardIntent.CloseBoardDropdownMenu -> clearEditAndCreationStates()
+
+            // Board Settings
+            is BoardIntent.CloseBoardSettings -> clearEditAndCreationStates()
+            is BoardIntent.ToggleShowImages -> setShowImages()
+            is BoardIntent.NavigateToSettings -> navigateToSettings()
 
             // Delete Board
             is BoardIntent.ConfirmBoardDeletion -> deleteBoard()
@@ -212,6 +220,13 @@ class BoardViewModel @Inject constructor(
         }
     }
 
+    private fun navigateToSettings() {
+        clearEditAndCreationStates()
+        viewModelScope.launch(dispatcherProvider.main) {
+            _sideEffectChannel.send(BoardSideEffect.NavigateToSettings)
+        }
+    }
+
     private fun navigateBack() {
         clearEditAndCreationStates()
         viewModelScope.launch(dispatcherProvider.main) {
@@ -235,6 +250,11 @@ class BoardViewModel @Inject constructor(
     private fun onDeleteBoardClicked() {
         clearEditAndCreationStates()
         _uiState.update { it.copy(isShowingDeleteBoardDialog = true) }
+    }
+
+    private fun openBoardSettings() {
+        clearEditAndCreationStates()
+        _uiState.update { it.copy(isModalSheetExpanded = true) }
     }
 
 
@@ -570,7 +590,9 @@ class BoardViewModel @Inject constructor(
                 creatingColumnName = null,
                 isBoardDropdownMenuExpanded = false,
                 isRenamingBoard = false,
-                isShowingDeleteBoardDialog = false
+                isShowingDeleteBoardDialog = false,
+                isChangingZoom = false,
+                isModalSheetExpanded = false
             )
         }
     }
@@ -621,7 +643,9 @@ class BoardViewModel @Inject constructor(
                         }.sortedBy { it.position }
                     )
                         ?: column.toColumnUi()
-                }.sortedBy { it.position }
+                }.sortedBy { it.position },
+                sizes = BoardSizes(zoomPercentage = newBoard.zoomPercentage),
+                showImages = newBoard.showImages
             )
 
             return mappedBoard
@@ -678,6 +702,14 @@ class BoardViewModel @Inject constructor(
         _uiState.update { it.copy(isOnFullScreen = false) }
     }
 
+    private fun setShowImages() {
+        val board = uiState.value.board ?: return
+        viewModelScope.launch(dispatcherProvider.main) {
+            val updatedBoard = board.copy(showImages = !board.showImages).toBoard()
+            updateBoardUseCase(updatedBoard)
+        }
+    }
+
 
     // Zoom
     private fun onZoomChange(zoomChange: Float, scrollChange: Float) {
@@ -702,6 +734,21 @@ class BoardViewModel @Inject constructor(
                 e.printStackTrace()
             }
         }
+        persistZoom()
+    }
+
+    private fun setZoom(zoomValue: Float) {
+        val board = uiState.value.board ?: return
+        _uiState.update { it.copy(isChangingZoom = true) }
+
+        _uiState.update {
+            it.copy(
+                board = board.copy(
+                    sizes = BoardSizes(zoomValue)
+                )
+            )
+        }
+
         persistZoom()
     }
 

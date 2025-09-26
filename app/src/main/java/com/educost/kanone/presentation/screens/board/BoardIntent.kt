@@ -10,7 +10,10 @@ sealed interface BoardIntent {
     data class OnCardClick(val cardId: Long) : BoardIntent
     data object OnBackPressed : BoardIntent
     data object OnNavigateBack : BoardIntent
+
+    // Zoom
     data class OnZoomChange(val zoomChange: Float, val scrollChange: Float) : BoardIntent
+    data class SetZoom(val zoomValue: Float) : BoardIntent
 
     // Full Screen
     data object EnterFullScreen : BoardIntent
@@ -20,7 +23,13 @@ sealed interface BoardIntent {
     data object OpenBoardDropdownMenu : BoardIntent
     data object OnRenameBoardClicked : BoardIntent
     data object OnDeleteBoardClicked : BoardIntent
+    data object OpenBoardSettings : BoardIntent
     data object CloseBoardDropdownMenu : BoardIntent
+
+    // Board Settings
+    data object CloseBoardSettings : BoardIntent
+    data object ToggleShowImages : BoardIntent
+    data object NavigateToSettings : BoardIntent
 
     // Delete Board
     data object ConfirmBoardDeletion : BoardIntent

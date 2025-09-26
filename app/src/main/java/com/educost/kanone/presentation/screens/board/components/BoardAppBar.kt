@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -145,6 +146,18 @@ private fun BoardDropdownMenu(
         )
         DropdownMenuItem(
             text = {
+                Text(stringResource(R.string.board_appbar_dropdown_menu_board_settings))
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = null
+                )
+            },
+            onClick = { onIntent(BoardIntent.OpenBoardSettings) }
+        )
+        DropdownMenuItem(
+            text = {
                 Text(stringResource(R.string.board_appbar_dropdown_menu_delete_board))
             },
             leadingIcon = {
@@ -159,5 +172,6 @@ private fun BoardDropdownMenu(
             ),
             onClick = { onIntent(BoardIntent.OnDeleteBoardClicked) }
         )
+
     }
 }

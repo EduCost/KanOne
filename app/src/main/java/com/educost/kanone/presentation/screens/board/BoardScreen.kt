@@ -43,6 +43,7 @@ import com.educost.kanone.presentation.components.DialogRename
 import com.educost.kanone.presentation.screens.board.components.AddColumn
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
 import com.educost.kanone.presentation.screens.board.components.BoardColumn
+import com.educost.kanone.presentation.screens.board.components.BoardModalBottomSheet
 import com.educost.kanone.presentation.screens.board.components.ColumnCard
 import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.BoardUi
@@ -62,6 +63,7 @@ fun BoardScreen(
     viewModel: BoardViewModel = hiltViewModel(),
     onNavigateToCard: (Long) -> Unit,
     onNavigateBack: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     boardId: Long
 ) {
 
@@ -80,6 +82,8 @@ fun BoardScreen(
             is BoardSideEffect.NavigateToCardScreen -> onNavigateToCard(event.cardId)
 
             is BoardSideEffect.OnNavigateBack -> onNavigateBack()
+
+            is BoardSideEffect.NavigateToSettings -> onNavigateToSettings()
 
             is BoardSideEffect.ShowSnackBar -> {
                 scope.launch {
@@ -235,6 +239,13 @@ fun BoardScreen(
                         sizes = board.sizes
                     )
                 }
+            }
+
+            if (state.isModalSheetExpanded) {
+                BoardModalBottomSheet(
+                    board = board,
+                    onIntent = onIntent
+                )
             }
         }
     }

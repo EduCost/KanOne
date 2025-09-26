@@ -9,6 +9,7 @@
     <!-- Top App Bar - Board more options dropdown menu -->
     <string name="board_appbar_dropdown_menu_rename_board">Rename Board</string>
     <string name="board_appbar_dropdown_menu_delete_board">Delete Board</string>
+    <string name="board_appbar_dropdown_menu_board_settings">Settings</string>
     <!-- Top App Bar - Board more options dropdown menu -->
 
     <!--  Top App Bar - Create Column -->
