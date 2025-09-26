@@ -32,7 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.BoardUi
-import com.educost.kanone.presentation.screens.settings.components.SettingItem
+import com.educost.kanone.presentation.components.SettingItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
