@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.board.BoardIntent
+import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.state.BoardState
 
@@ -43,7 +46,8 @@ fun AddCard(
     modifier: Modifier = Modifier,
     state: BoardState,
     onIntent: (BoardIntent) -> Unit,
-    column: ColumnUi
+    column: ColumnUi,
+    sizes: BoardSizes
 ) {
 
     val isAddingCard by remember(state.cardCreationState) {
@@ -65,37 +69,62 @@ fun AddCard(
             modifier = modifier.fillMaxWidth(),
             newCardTitle = state.cardCreationState.title ?: "",
             onTitleChange = { onIntent(BoardIntent.OnCardTitleChange(it)) },
-            onConfirmCreateCard = { onIntent(BoardIntent.ConfirmCardCreation) }
+            onConfirmCreateCard = { onIntent(BoardIntent.ConfirmCardCreation) },
+            sizes = sizes
         )
     } else {
         Box(
             modifier = modifier
-                .padding(top = 8.dp)
+                .padding(sizes.addCardButtonSpacingTop)
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            AddCardButton { onIntent(BoardIntent.StartCreatingCard(column.id, true)) }
+            AddCardButton(
+                sizes = sizes,
+                onClick = {
+                    onIntent(
+                        BoardIntent.StartCreatingCard(
+                            columnId = column.id,
+                            isAppendingToEnd = true
+                        )
+                    )
+                }
+            )
         }
     }
 }
 
 @Composable
-fun AddCardButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
-    Row(
+fun AddCardButton(modifier: Modifier = Modifier, onClick: () -> Unit, sizes: BoardSizes) {
+    Box(
         modifier = modifier
+            .clip(CircleShape)
             .clickable { onClick() },
-        horizontalArrangement = Arrangement.Center
     ) {
-        Icon(
-            Icons.Filled.Add,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface
-        )
-        Spacer(Modifier.width(4.dp))
-        Text(
-            text = stringResource(R.string.board_column_button_add_card),
-            color = MaterialTheme.colorScheme.onSurface
-        )
+        Box(
+            modifier = Modifier.padding(sizes.addCardButtonPaddingValues)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.size(sizes.addCardButtonIconSize),
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(Modifier.width(sizes.addCardButtonSpacer))
+                Text(
+                    text = stringResource(R.string.board_column_button_add_card),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = sizes.addCardButtonFontSize,
+                        lineHeight = sizes.addCardButtonLineHeight
+                    )
+                )
+            }
+        }
     }
 }
 
@@ -105,6 +134,7 @@ fun AddCardTextField(
     newCardTitle: String,
     onTitleChange: (String) -> Unit,
     onConfirmCreateCard: () -> Unit,
+    sizes: BoardSizes
 ) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -113,13 +143,15 @@ fun AddCardTextField(
         modifier = modifier
             .clip(MaterialTheme.shapes.small)
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(7.dp))
-            .padding(12.dp)
+            .padding(sizes.addCardTextFieldPaddingValues)
     ) {
         BasicTextField(
             value = newCardTitle,
             onValueChange = { onTitleChange(it) },
             textStyle = MaterialTheme.typography.bodyLarge.copy(
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = sizes.cardTitleFontSize,
+                lineHeight = sizes.cardTitleLineHeight
             ),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
             keyboardOptions = KeyboardOptions(

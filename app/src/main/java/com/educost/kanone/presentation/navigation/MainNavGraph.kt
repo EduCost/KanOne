@@ -32,6 +32,9 @@ fun NavGraphBuilder.mainNavGraph(navController: NavHostController) {
                 },
                 onNavigateToCard = { cardId ->
                     navController.navigate(CardDestination(cardId))
+                },
+                onNavigateToSettings = {
+                    navController.navigate(SettingsRootDestination)
                 }
             )
         }

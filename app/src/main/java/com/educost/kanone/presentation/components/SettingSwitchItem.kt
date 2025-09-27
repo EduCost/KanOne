@@ -1,6 +1,5 @@
-package com.educost.kanone.presentation.screens.settings.components
+package com.educost.kanone.presentation.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,20 +8,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Adb
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -30,32 +27,23 @@ import androidx.compose.ui.unit.sp
 import com.educost.kanone.presentation.theme.KanOneTheme
 
 @Composable
-fun SettingItem(
+fun SettingSwitchItem(
     modifier: Modifier = Modifier,
     title: String,
     subtitle: String? = null,
     icon: ImageVector,
-    showIconBackground: Boolean = false,
-    hasEndIcon: Boolean = false,
-    onClick: () -> Unit
+    checked: Boolean,
+    onToggle: () -> Unit
 ) {
-
     Row(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(76.dp)
-            .clickable(onClick = onClick)
+            .clickable(onClick = onToggle)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            modifier = Modifier.then(
-                if (showIconBackground) Modifier
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .padding(6.dp)
-                else Modifier
-            ),
             imageVector = icon,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSecondaryContainer
@@ -82,44 +70,41 @@ fun SettingItem(
 
         }
 
-        if (hasEndIcon) {
-            Icon(
-                modifier = Modifier.size(28.dp),
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
-            )
-        }
-
+        Switch(
+            checked = checked,
+            onCheckedChange = { onToggle() }
+        )
 
     }
 }
 
 @PreviewLightDark
 @Composable
-private fun SettingItemPreview() {
+private fun SettingSwitchItemPreview() {
     KanOneTheme {
         Surface {
-            SettingItem(
-                title = "Settings",
-                subtitle = "This is a subtitle",
-                icon = Icons.Filled.Settings,
-                onClick = {}
+            SettingSwitchItem(
+                title = "Switch item",
+                icon = Icons.Filled.Adb,
+                checked = true,
+                onToggle = {}
             )
         }
     }
 }
 
+
 @PreviewLightDark
 @Composable
-private fun SettingItemPreview2() {
+private fun SettingSwitchItemPreview2() {
     KanOneTheme {
         Surface {
-            SettingItem(
-                title = "Settings",
-                icon = Icons.Filled.Settings,
-                hasEndIcon = true,
-                showIconBackground = true,
-                onClick = {}
+            SettingSwitchItem(
+                title = "Item with subtitle",
+                subtitle = "Subtitle",
+                icon = Icons.Filled.Key,
+                checked = false,
+                onToggle = {}
             )
         }
     }

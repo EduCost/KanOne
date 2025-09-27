@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.educost.kanone.R
-import com.educost.kanone.presentation.screens.settings.components.SettingItem
+import com.educost.kanone.presentation.components.SettingItem
 import com.educost.kanone.presentation.screens.settings.components.SettingsTopBar
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents

@@ -27,6 +27,7 @@ class BoardRepositoryImpl(
         return boardDao.observeAllBoards().map { boards ->
             Result.Success(boards.map { it.toBoard() })
         }.catch { e ->
+            e.printStackTrace()
             logHandler.log(
                 throwable = e,
                 message = "Error fetching all boards",

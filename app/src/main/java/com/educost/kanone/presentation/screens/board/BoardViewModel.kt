@@ -26,6 +26,7 @@ import com.educost.kanone.presentation.screens.board.mapper.toBoardUi
 import com.educost.kanone.presentation.screens.board.mapper.toCardUi
 import com.educost.kanone.presentation.screens.board.mapper.toColumnUi
 import com.educost.kanone.presentation.screens.board.mapper.toKanbanColumn
+import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
@@ -85,6 +86,10 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.OnBackPressed -> clearEditAndCreationStates()
             is BoardIntent.OnNavigateBack -> navigateBack()
 
+            // Zoom
+            is BoardIntent.OnZoomChange -> onZoomChange(intent.zoomChange, intent.scrollChange)
+            is BoardIntent.SetZoom -> setZoom(intent.zoomValue)
+
             // Full screen
             is BoardIntent.EnterFullScreen -> enterFullScreen()
             is BoardIntent.ExitFullScreen -> exitFullScreen()
@@ -93,7 +98,13 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.OpenBoardDropdownMenu -> openBoardDropdownMenu()
             is BoardIntent.OnRenameBoardClicked -> onRenameBoardClicked()
             is BoardIntent.OnDeleteBoardClicked -> onDeleteBoardClicked()
+            is BoardIntent.OpenBoardSettings -> openBoardSettings()
             is BoardIntent.CloseBoardDropdownMenu -> clearEditAndCreationStates()
+
+            // Board Settings
+            is BoardIntent.CloseBoardSettings -> clearEditAndCreationStates()
+            is BoardIntent.ToggleShowImages -> setShowImages()
+            is BoardIntent.NavigateToSettings -> navigateToSettings()
 
             // Delete Board
             is BoardIntent.ConfirmBoardDeletion -> deleteBoard()
@@ -209,6 +220,13 @@ class BoardViewModel @Inject constructor(
         }
     }
 
+    private fun navigateToSettings() {
+        clearEditAndCreationStates()
+        viewModelScope.launch(dispatcherProvider.main) {
+            _sideEffectChannel.send(BoardSideEffect.NavigateToSettings)
+        }
+    }
+
     private fun navigateBack() {
         clearEditAndCreationStates()
         viewModelScope.launch(dispatcherProvider.main) {
@@ -232,6 +250,11 @@ class BoardViewModel @Inject constructor(
     private fun onDeleteBoardClicked() {
         clearEditAndCreationStates()
         _uiState.update { it.copy(isShowingDeleteBoardDialog = true) }
+    }
+
+    private fun openBoardSettings() {
+        clearEditAndCreationStates()
+        _uiState.update { it.copy(isModalSheetExpanded = true) }
     }
 
 
@@ -567,7 +590,9 @@ class BoardViewModel @Inject constructor(
                 creatingColumnName = null,
                 isBoardDropdownMenuExpanded = false,
                 isRenamingBoard = false,
-                isShowingDeleteBoardDialog = false
+                isShowingDeleteBoardDialog = false,
+                isChangingZoom = false,
+                isModalSheetExpanded = false
             )
         }
     }
@@ -618,7 +643,9 @@ class BoardViewModel @Inject constructor(
                         }.sortedBy { it.position }
                     )
                         ?: column.toColumnUi()
-                }.sortedBy { it.position }
+                }.sortedBy { it.position },
+                sizes = BoardSizes(zoomPercentage = newBoard.zoomPercentage),
+                showImages = newBoard.showImages
             )
 
             return mappedBoard
@@ -673,6 +700,75 @@ class BoardViewModel @Inject constructor(
 
     private fun exitFullScreen() {
         _uiState.update { it.copy(isOnFullScreen = false) }
+    }
+
+    private fun setShowImages() {
+        val board = uiState.value.board ?: return
+        viewModelScope.launch(dispatcherProvider.main) {
+            val updatedBoard = board.copy(showImages = !board.showImages).toBoard()
+            updateBoardUseCase(updatedBoard)
+        }
+    }
+
+
+    // Zoom
+    private fun onZoomChange(zoomChange: Float, scrollChange: Float) {
+        val board = uiState.value.board ?: return
+        _uiState.update { it.copy(isChangingZoom = true) }
+        val currentZoomPercentage = board.sizes.zoomPercentage
+        val updatedZoom = (currentZoomPercentage * zoomChange).coerceIn(
+            minimumValue = 35f,
+            maximumValue = 120f
+        )
+        _uiState.update {
+            it.copy(
+                board = board.copy(
+                    sizes = BoardSizes(updatedZoom)
+                )
+            )
+        }
+        viewModelScope.launch(dispatcherProvider.main) {
+            try {
+                board.listState.scrollBy(scrollChange)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        persistZoom()
+    }
+
+    private fun setZoom(zoomValue: Float) {
+        val board = uiState.value.board ?: return
+        _uiState.update { it.copy(isChangingZoom = true) }
+
+        _uiState.update {
+            it.copy(
+                board = board.copy(
+                    sizes = BoardSizes(zoomValue)
+                )
+            )
+        }
+
+        persistZoom()
+    }
+
+    private var persistZoomJob: Job? = null
+    private val persistZoomDebounceTime = 500L
+    private fun persistZoom() {
+        persistZoomJob?.cancel()
+        persistZoomJob = viewModelScope.launch(dispatcherProvider.main) {
+            delay(persistZoomDebounceTime)
+
+            _uiState.update { it.copy(isChangingZoom = false) }
+            val board = uiState.value.board ?: return@launch
+
+            val updatedBoard = board.copy(
+                sizes = board.sizes.copy(zoomPercentage = board.sizes.zoomPercentage)
+            ).toBoard()
+
+            updateBoardUseCase(updatedBoard)
+
+        }
     }
 
 

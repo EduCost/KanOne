@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.educost.kanone.BuildConfig
 import com.educost.kanone.R
-import com.educost.kanone.presentation.screens.settings.components.SettingItem
+import com.educost.kanone.presentation.components.SettingItem
 import com.educost.kanone.presentation.screens.settings.components.SettingsTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)

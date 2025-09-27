@@ -18,6 +18,8 @@ data class BoardState(
     val isBoardDropdownMenuExpanded: Boolean = false,
     val isRenamingBoard: Boolean = false,
     val isShowingDeleteBoardDialog: Boolean = false,
+    val isChangingZoom: Boolean = false,
+    val isModalSheetExpanded: Boolean = false,
 ) {
     val hasEditStates = topBarType != BoardAppBarType.DEFAULT ||
             activeDropdownColumnId != null ||

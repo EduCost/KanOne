@@ -1,0 +1,143 @@
+package com.educost.kanone.presentation.screens.board.model
+
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+data class BoardSizes(
+    val zoomPercentage: Float = 100f
+) {
+    private val zoom = zoomPercentage / 100f
+
+    val columnWidth = (300f * zoom).dp
+    val columnsSpaceBy = (8f * zoom).dp
+    val columnShape = RoundedCornerShape((12f * zoom).dp)
+
+    val columnPaddingValues = PaddingValues(
+        start = (16f * zoom).coerceIn(
+            minimumValue = 8f,
+            maximumValue = 20f
+        ).dp,
+        top = (16f * zoom).coerceIn(
+            minimumValue = 8f,
+            maximumValue = 20f
+        ).dp,
+        end = (16f * zoom).coerceIn(
+            minimumValue = 8f,
+            maximumValue = 20f
+        ).dp,
+        bottom = (16f * zoom).coerceIn(
+            minimumValue = 8f,
+            maximumValue = 20f
+        ).dp
+    )
+
+    val columnFullScreenPaddingValues = PaddingValues(
+        start = (16f * zoom).coerceIn(
+            minimumValue = 12f,
+            maximumValue = 20f
+        ).dp,
+        top = 4f.dp,
+        end = (16f * zoom).coerceIn(
+            minimumValue = 12f,
+            maximumValue = 20f
+        ).dp,
+        bottom = 8f.dp,
+    )
+
+    val columnHeaderPadding = (16f * zoom).dp
+    val columnHeaderShape = RoundedCornerShape((12f * zoom).dp)
+    val columnHeaderCircleSize = (24f * zoom).dp
+    val columnHeaderCirclePadding = (16f * zoom).dp
+    val columnHeaderFontSize = (18f * zoom).sp
+    val columnHeaderLineHeight = (24f * zoom).sp
+
+    val columnListPaddingValues = PaddingValues(
+        start = (8f * zoom).dp,
+        end = (8f * zoom).dp,
+        bottom = (8f * zoom).dp
+    )
+    val columnListSpaceBy = (8f * zoom).dp
+
+    val addColumnButtonExternalPadding = (16f * zoom).dp
+    val addColumnButtonShape = RoundedCornerShape((8f * zoom).dp)
+    val addColumnButtonIconSize = (24f * zoom).dp
+    val addColumnButtonSpacer = (4f * zoom).dp
+    val addColumnButtonInternalPaddingValues = PaddingValues(
+        vertical = (8f * zoom).dp,
+        horizontal = (24f * zoom).dp
+    )
+    val addColumnButtonTextSize = (14f * zoom).sp
+    val addColumnButtonLineHeight = (20f * zoom).sp
+
+
+    // Card
+    val addCardButtonSpacingTop = (8f * zoom).dp
+    val addCardButtonPaddingValues = PaddingValues(
+        vertical = (8f * zoom).dp,
+        horizontal = (16f * zoom).dp
+    )
+    val addCardButtonIconSize = (24f * zoom).dp
+    val addCardButtonSpacer = (4f * zoom).dp
+    val addCardButtonFontSize = (16f * zoom).sp
+    val addCardButtonLineHeight = (24f * zoom).sp
+
+    val addCardTextFieldPaddingValues = PaddingValues((12f * zoom).dp)
+
+
+    val cardTitleFontSize = (16f * zoom).sp
+    val cardTitleLineHeight = (24f * zoom).sp
+
+    val cardShape = RoundedCornerShape((8f * zoom).dp)
+    val cardPaddingValues = PaddingValues((12f * zoom).dp)
+
+    val cardImageMaxHeight = (150f * zoom).dp
+    val cardImageShape = RoundedCornerShape((8f * zoom).dp)
+
+    val cardTasksProgressIndicatorSize = (4f * zoom).dp
+    val cardTasksProgressIndicatorSpacer = (8f * zoom).dp
+    val cardTasksIconSize = (12f * zoom).dp
+    val cardTasksIconSpacer = (4f * zoom).dp
+    val cardTasksFontSize = (11f * zoom).sp
+    val cardTasksLineHeight = (16f * zoom).sp
+
+    val cardDueDatePaddingValues = PaddingValues(
+        horizontal = (8f * zoom).dp,
+        vertical = (4f * zoom).dp
+    )
+    val cardDueDateShape = RoundedCornerShape((8f * zoom).dp)
+    val cardDueDateFontSize = (14f * zoom).sp
+    val cardDueDateLineHeight = (20f * zoom).sp
+
+    val cardDescriptionIconSize = (20f * zoom).dp
+    val cardAttachmentIconSize = (18f * zoom).dp
+    val cardAttachmentFontSize = (14f * zoom).sp
+    val cardAttachmentLineHeight = (20f * zoom).sp
+
+    val cardLabelsSpaceBy = (8f * zoom).dp
+    val cardLabelsPaddingTop = (12f * zoom).dp
+    val cardLabelsPaddingValues = PaddingValues(
+        horizontal = (12 * zoom).dp,
+        vertical = (6 * zoom).dp
+    )
+    val cardLabelsShape = RoundedCornerShape((8f * zoom).dp)
+    val cardLabelsFontSize = (12f * zoom).sp
+    val cardLabelsLineHeight = (16f * zoom).sp
+
+    val cardHorizontalDividerPaddingValues = PaddingValues(
+        top = (8f * zoom).dp,
+        bottom = (12f * zoom).dp
+    )
+
+    val cardBottomRowPaddingTop = (8f * zoom).dp
+    val cardBottomRowPaddingTopWithLabels = (12f * zoom).dp
+    val cardBottomRowIconsSpacer = (8f * zoom).dp
+
+
+    // Resizable icon buttons
+    val resizableIconButtonPaddingValues = PaddingValues((12f * zoom).dp)
+    val resizableIconButtonSize = (24f * zoom).dp
+
+
+}

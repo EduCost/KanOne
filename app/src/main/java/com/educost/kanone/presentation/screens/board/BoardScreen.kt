@@ -2,8 +2,9 @@ package com.educost.kanone.presentation.screens.board
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,7 +32,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.educost.kanone.R
@@ -43,7 +43,9 @@ import com.educost.kanone.presentation.components.DialogRename
 import com.educost.kanone.presentation.screens.board.components.AddColumn
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
 import com.educost.kanone.presentation.screens.board.components.BoardColumn
+import com.educost.kanone.presentation.screens.board.components.BoardModalBottomSheet
 import com.educost.kanone.presentation.screens.board.components.ColumnCard
+import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
@@ -61,6 +63,7 @@ fun BoardScreen(
     viewModel: BoardViewModel = hiltViewModel(),
     onNavigateToCard: (Long) -> Unit,
     onNavigateBack: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     boardId: Long
 ) {
 
@@ -79,6 +82,8 @@ fun BoardScreen(
             is BoardSideEffect.NavigateToCardScreen -> onNavigateToCard(event.cardId)
 
             is BoardSideEffect.OnNavigateBack -> onNavigateBack()
+
+            is BoardSideEffect.NavigateToSettings -> onNavigateToSettings()
 
             is BoardSideEffect.ShowSnackBar -> {
                 scope.launch {
@@ -115,6 +120,11 @@ fun BoardScreen(
     snackBarHostState: SnackbarHostState
 ) {
 
+    val transformableState = rememberTransformableState { zoomChange, panChange, _ ->
+        val scrollChange = -panChange.x
+        onIntent(BoardIntent.OnZoomChange(zoomChange, scrollChange))
+    }
+
     BackHandler(enabled = state.hasEditStates || state.isOnFullScreen) {
         when {
             state.isOnFullScreen && state.hasEditStates -> onIntent(BoardIntent.OnBackPressed)
@@ -126,6 +136,7 @@ fun BoardScreen(
     Scaffold(
         modifier = modifier
             .fillMaxSize()
+            .transformable(transformableState)
             .pointerInput(Unit) {
                 detectDragGesturesAfterLongPress(
                     onDrag = { change, _ ->
@@ -159,8 +170,9 @@ fun BoardScreen(
 
         state.board?.let { board ->
 
-            val contentPadding = remember(state.isOnFullScreen) {
-                calculatePaddingValues(state.isOnFullScreen)
+            val contentPadding = remember(state.isOnFullScreen, board.sizes) {
+                if (state.isOnFullScreen) board.sizes.columnFullScreenPaddingValues
+                else board.sizes.columnPaddingValues
             }
 
             LazyRow(
@@ -179,7 +191,7 @@ fun BoardScreen(
                     .padding(innerPadding)
                     .fillMaxSize(),
                 contentPadding = contentPadding,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(board.sizes.columnsSpaceBy),
                 state = state.board.listState
             ) {
                 itemsIndexed(
@@ -215,16 +227,26 @@ fun BoardScreen(
                         column = column,
                         columnIndex = index,
                         state = state,
-                        onIntent = onIntent
+                        onIntent = onIntent,
+                        sizes = board.sizes
                     )
                 }
 
                 item {
                     AddColumn(
                         state = state,
-                        onIntent = onIntent
+                        onIntent = onIntent,
+                        sizes = board.sizes
                     )
                 }
+            }
+
+            if (state.isModalSheetExpanded) {
+                BoardModalBottomSheet(
+                    board = board,
+                    isFullScreen = state.isOnFullScreen,
+                    onIntent = onIntent
+                )
             }
         }
     }
@@ -271,6 +293,8 @@ fun BoardScreen(
                 .width(with(localDensity) { card.coordinates.width.toDp() })
                 .height(with(localDensity) { card.coordinates.height.toDp() }),
             card = card,
+            showImage = state.board?.showImages ?: true,
+            sizes = state.board?.sizes ?: BoardSizes(),
         )
     }
     state.dragState.draggingColumn?.let { column ->
@@ -287,6 +311,7 @@ fun BoardScreen(
             state = BoardState(),
             columnIndex = -1,
             onIntent = { },
+            sizes = state.board?.sizes ?: BoardSizes()
         )
     }
 }
@@ -356,18 +381,5 @@ private fun BoardScreenPreview() {
             snackBarHostState = SnackbarHostState()
 
         )
-    }
-}
-
-private fun calculatePaddingValues(isFullScreen: Boolean): PaddingValues {
-    return if (isFullScreen) {
-        PaddingValues(
-            top = 4.dp,
-            start = 16.dp,
-            end = 16.dp,
-            bottom = 8.dp
-        )
-    } else {
-        PaddingValues(16.dp)
     }
 }

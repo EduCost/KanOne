@@ -26,6 +26,9 @@ android {
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
     }
+    sourceSets {
+        getByName("androidTest").assets.srcDirs("$projectDir/schemas")
+    }
 
     buildTypes {
         release {
@@ -60,6 +63,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -97,4 +101,5 @@ dependencies {
     testImplementation(libs.mockk)
     androidTestImplementation(libs.truth)
     androidTestImplementation(libs.turbine)
+    androidTestImplementation(libs.androidx.room.testing)
 }

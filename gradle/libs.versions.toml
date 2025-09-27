@@ -24,6 +24,7 @@ coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.7"
 gson = "2.13.2"
 aboutLibraries = "13.0.0-rc01"
+material3 = "1.5.0-alpha04"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,6 +41,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 
 # Viel Model
@@ -59,9 +61,9 @@ hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", ve
 hilt-navigation-viewmodel-compose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "hiltNavigationCompose" }
 
 # RoomDB
-androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomDb" }
-androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomDb" }
-androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomDb" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomDb" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomDb" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomDb" }
 
 # Navigation
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
@@ -91,6 +93,7 @@ truth = { module = "com.google.truth:truth", version.ref = "truth" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "roomDb" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -7,5 +7,7 @@ data class BoardUi(
     val name: String,
     val columns: List<ColumnUi>,
     val coordinates: Coordinates = Coordinates(),
-    val listState: LazyListState = LazyListState()
+    val listState: LazyListState = LazyListState(),
+    val sizes: BoardSizes = BoardSizes(),
+    val showImages: Boolean = true,
 )
