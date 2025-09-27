@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -40,37 +43,55 @@ import com.educost.kanone.presentation.screens.board.model.BoardUi
 fun BoardModalBottomSheet(
     modifier: Modifier = Modifier,
     board: BoardUi,
+    isFullScreen: Boolean,
     onIntent: (BoardIntent) -> Unit
 ) {
+
+    val scrollState = rememberScrollState()
 
     ModalBottomSheet(
         modifier = modifier,
         onDismissRequest = { onIntent(BoardIntent.CloseBoardSettings) }
     ) {
 
-        ZoomSlider(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            zoomPercentage = board.sizes.zoomPercentage,
-            onZoomChange = {
-                onIntent(BoardIntent.SetZoom(it))
-            }
-        )
+        Column(
+            modifier = Modifier.verticalScroll(scrollState)
+        ) {
 
-        Spacer(Modifier.height(8.dp))
+            ZoomSlider(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                zoomPercentage = board.sizes.zoomPercentage,
+                onZoomChange = {
+                    onIntent(BoardIntent.SetZoom(it))
+                }
+            )
 
-        SettingSwitchItem(
-            title = stringResource(R.string.board_settings_show_card_images),
-            icon = Icons.Filled.Image,
-            checked = board.showImages,
-            onToggle = { onIntent(BoardIntent.ToggleShowImages) }
-        )
+            Spacer(Modifier.height(8.dp))
 
-        SettingItem(
-            title = stringResource(R.string.board_settings_app_settings),
-            icon = Icons.Filled.Settings,
-            onClick = { onIntent(BoardIntent.NavigateToSettings) },
-            hasEndIcon = true
-        )
+            SettingSwitchItem(
+                title = stringResource(R.string.board_settings_show_card_images),
+                icon = Icons.Filled.Image,
+                checked = board.showImages,
+                onToggle = { onIntent(BoardIntent.ToggleShowImages) }
+            )
+
+            SettingSwitchItem(
+                title = stringResource(R.string.board_settings_full_screen),
+                icon = Icons.Filled.Fullscreen,
+                checked = isFullScreen,
+                onToggle = {
+                    if (isFullScreen) onIntent(BoardIntent.ExitFullScreen)
+                    else onIntent(BoardIntent.EnterFullScreen)
+                }
+            )
+
+            SettingItem(
+                title = stringResource(R.string.board_settings_app_settings),
+                icon = Icons.Filled.Settings,
+                onClick = { onIntent(BoardIntent.NavigateToSettings) },
+                hasEndIcon = true
+            )
+        }
     }
 }
 

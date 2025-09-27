@@ -244,6 +244,7 @@ fun BoardScreen(
             if (state.isModalSheetExpanded) {
                 BoardModalBottomSheet(
                     board = board,
+                    isFullScreen = state.isOnFullScreen,
                     onIntent = onIntent
                 )
             }
