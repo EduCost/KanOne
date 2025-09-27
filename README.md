@@ -22,6 +22,7 @@ KanOne is a offline kanban app, designed to help you organize tasks and manage p
 - **Create labels**
 - **Attach images** 
 - **Drag & Drop**
+- **Zoom in & Zoom out**
 - **Material You**
 - **Offline**
 
@@ -44,3 +45,8 @@ KanOne is a offline kanban app, designed to help you organize tasks and manage p
 
 ## 📃 License
 This project is licensed under [GPL-3.0](https://github.com/EduCost/KanOne/blob/main/LICENSE)
+
+<br>
+
+> [!Warning]
+> This project is currently in **alpha stage**. Features are still being developed and things may change or break between updates.
