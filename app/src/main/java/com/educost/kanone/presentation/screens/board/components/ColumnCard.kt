@@ -57,6 +57,7 @@ import java.time.format.DateTimeFormatter
 fun ColumnCard(
     modifier: Modifier = Modifier,
     card: CardUi,
+    showImage: Boolean,
     sizes: BoardSizes = BoardSizes()
 ) {
 
@@ -68,13 +69,15 @@ fun ColumnCard(
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(7.dp))
     ) {
         card.coverFileName?.let { cover ->
-            CardImage(
-                cover = cover,
-                shape = sizes.cardImageShape,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = sizes.cardImageMaxHeight)
-            )
+            if (showImage) {
+                CardImage(
+                    cover = cover,
+                    shape = sizes.cardImageShape,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = sizes.cardImageMaxHeight)
+                )
+            }
         }
 
 
@@ -369,6 +372,7 @@ private fun ColumnCardPreview() {
                     ),
                     coordinates = Coordinates()
                 ),
+                showImage = true,
                 sizes = BoardSizes()
             )
         }

@@ -293,6 +293,7 @@ fun BoardScreen(
                 .width(with(localDensity) { card.coordinates.width.toDp() })
                 .height(with(localDensity) { card.coordinates.height.toDp() }),
             card = card,
+            showImage = state.board?.showImages ?: true,
             sizes = state.board?.sizes ?: BoardSizes(),
         )
     }

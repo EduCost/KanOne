@@ -154,6 +154,7 @@ fun BoardColumn(
                             )
                         },
                     card = card,
+                    showImage = state.board?.showImages ?: true,
                     sizes = sizes
                 )
             }
