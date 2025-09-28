@@ -152,7 +152,7 @@ class BoardViewModel @Inject constructor(
 
 
             /*  Others  */
-            is BoardIntent.OnBackPressed -> clearEditAndCreationStates()
+            is BoardIntent.OnBackPressed -> onBackPressed()
 
             // navigation
             is BoardIntent.OnNavigateBack -> navigateBack()
@@ -195,6 +195,7 @@ class BoardViewModel @Inject constructor(
         }
     }
 
+
     private fun observeBoard(boardId: Long) {
 
         _uiState.update { it.copy(isLoading = true) }
@@ -226,8 +227,6 @@ class BoardViewModel @Inject constructor(
             }
         }
     }
-
-
 
 
     // Delete board
@@ -775,6 +774,15 @@ class BoardViewModel @Inject constructor(
 
 
     /*  Others  */
+    private fun onBackPressed() {
+        val state = uiState.value
+        when {
+            state.isOnFullScreen && state.hasEditStates -> clearEditAndCreationStates()
+            state.isOnFullScreen -> onIntent(BoardIntent.ExitFullScreen)
+            else -> clearEditAndCreationStates()
+        }
+    }
+
     private fun openBoardDropdownMenu() {
         clearEditAndCreationStates()
         _uiState.update { it.copy(isBoardDropdownMenuExpanded = true) }

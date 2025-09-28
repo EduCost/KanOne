@@ -6,6 +6,57 @@ import org.junit.Test
 class BoardViewModelOthersTest : BoardViewModelTest() {
 
     @Test
+    fun `SHOULD clear states and keep full screen WHEN is on full screen and has edit states`() {
+        testBoardViewModelUiState(
+            whenAction = {
+                viewModel.onIntent(BoardIntent.EnterFullScreen)
+                skipItems(1)
+
+                viewModel.onIntent(BoardIntent.OnRenameBoardClicked)
+                skipItems(1)
+
+                viewModel.onIntent(BoardIntent.OnBackPressed)
+            },
+            then = {
+                val currentState = awaitItem()
+
+                assertThat(currentState.isRenamingBoard).isFalse()
+                assertThat(currentState.isOnFullScreen).isTrue()
+            }
+        )
+    }
+
+    @Test
+    fun `SHOULD exit full screen WHEN is on full screen and does not have edit states`() {
+        testBoardViewModelUiState(
+            whenAction = {
+                viewModel.onIntent(BoardIntent.EnterFullScreen)
+                skipItems(1)
+
+                viewModel.onIntent(BoardIntent.OnBackPressed)
+            },
+            then = {
+                assertThat(awaitItem().isOnFullScreen).isFalse()
+            }
+        )
+    }
+
+    @Test
+    fun `SHOULD clear states WHEN has edit states and is not on full screen`() {
+        testBoardViewModelUiState(
+            whenAction = {
+                viewModel.onIntent(BoardIntent.OnRenameBoardClicked)
+                skipItems(1)
+
+                viewModel.onIntent(BoardIntent.OnBackPressed)
+            },
+            then = {
+                assertThat(awaitItem().isRenamingBoard).isFalse()
+            }
+        )
+    }
+
+    @Test
     fun `SHOULD navigate back WHEN navigate back is called`() {
         testBoardViewModelSideEffect(
             whenAction = {
