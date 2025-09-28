@@ -82,9 +82,32 @@ class BoardViewModel @Inject constructor(
     fun onIntent(intent: BoardIntent) {
         when (intent) {
             is BoardIntent.ObserveBoard -> observeBoard(intent.boardId)
+
+            // Navigation
             is BoardIntent.OnCardClick -> navigateToCardScreen(intent.cardId)
             is BoardIntent.OnBackPressed -> clearEditAndCreationStates()
             is BoardIntent.OnNavigateBack -> navigateBack()
+            is BoardIntent.NavigateToSettings -> navigateToSettings()
+
+            // App bar dropdown menu
+            is BoardIntent.OpenBoardDropdownMenu -> openBoardDropdownMenu()
+            is BoardIntent.CloseBoardDropdownMenu -> clearEditAndCreationStates()
+
+            // Rename Board
+            is BoardIntent.OnRenameBoardClicked -> onRenameBoardClicked()
+            is BoardIntent.ConfirmBoardRename -> confirmBoardRename(intent.newName)
+            is BoardIntent.CancelBoardRename -> clearEditAndCreationStates()
+
+            // Delete Board
+            is BoardIntent.OnDeleteBoardClicked -> onDeleteBoardClicked()
+            is BoardIntent.ConfirmBoardDeletion -> deleteBoard()
+            is BoardIntent.CancelBoardDeletion -> clearEditAndCreationStates()
+
+
+            /*  Board Settings  */
+            is BoardIntent.OpenBoardSettings -> openBoardSettings()
+            is BoardIntent.CloseBoardSettings -> clearEditAndCreationStates()
+            is BoardIntent.ToggleShowImages -> setShowImages()
 
             // Zoom
             is BoardIntent.OnZoomChange -> onZoomChange(intent.zoomChange, intent.scrollChange)
@@ -93,41 +116,8 @@ class BoardViewModel @Inject constructor(
             // Full screen
             is BoardIntent.EnterFullScreen -> enterFullScreen()
             is BoardIntent.ExitFullScreen -> exitFullScreen()
+            /*  Board Settings  */
 
-            // App bar
-            is BoardIntent.OpenBoardDropdownMenu -> openBoardDropdownMenu()
-            is BoardIntent.OnRenameBoardClicked -> onRenameBoardClicked()
-            is BoardIntent.OnDeleteBoardClicked -> onDeleteBoardClicked()
-            is BoardIntent.OpenBoardSettings -> openBoardSettings()
-            is BoardIntent.CloseBoardDropdownMenu -> clearEditAndCreationStates()
-
-            // Board Settings
-            is BoardIntent.CloseBoardSettings -> clearEditAndCreationStates()
-            is BoardIntent.ToggleShowImages -> setShowImages()
-            is BoardIntent.NavigateToSettings -> navigateToSettings()
-
-            // Delete Board
-            is BoardIntent.ConfirmBoardDeletion -> deleteBoard()
-            is BoardIntent.CancelBoardDeletion -> clearEditAndCreationStates()
-
-            // Rename Board
-            is BoardIntent.ConfirmBoardRename -> confirmBoardRename(intent.newName)
-            is BoardIntent.CancelBoardRename -> clearEditAndCreationStates()
-
-            // Drag and drop
-            is BoardIntent.OnDragStart -> onDragStart(intent.offset)
-            is BoardIntent.OnDrag -> onDrag(intent.position)
-            is BoardIntent.OnDragStop -> onDragStop()
-
-            // Create card
-            is BoardIntent.StartCreatingCard -> startCreatingCard(
-                intent.columnId,
-                intent.isAppendingToEnd
-            )
-
-            is BoardIntent.OnCardTitleChange -> onCardTitleChange(intent.title)
-            is BoardIntent.CancelCardCreation -> clearEditAndCreationStates()
-            is BoardIntent.ConfirmCardCreation -> confirmCardCreation()
 
             // Create column
             is BoardIntent.StartCreatingColumn -> startCreatingColumn()
@@ -135,26 +125,46 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.CancelColumnCreation -> clearEditAndCreationStates()
             is BoardIntent.ConfirmColumnCreation -> confirmColumnCreation()
 
-            // Edit column
-            is BoardIntent.OnEditColumnNameChange -> onEditColumnNameChange(intent.name)
-            is BoardIntent.CancelColumnRename -> clearEditAndCreationStates()
-            is BoardIntent.ConfirmColumnRename -> confirmColumnRename()
-
-            is BoardIntent.StartEditingColumnColor -> startEditingColumnColor(intent.columnId)
-            is BoardIntent.CancelColumnColorEdit -> clearEditAndCreationStates()
-            is BoardIntent.ConfirmColumnColorEdit -> confirmColorEdit(intent.newColor)
-
-
-            // Dropdown menu
+            // Column dropdown menu
             is BoardIntent.OpenColumnDropdownMenu -> openColumnDropdownMenu(intent.columnId)
             is BoardIntent.CloseColumnDropdownMenu -> closeColumnDropdownMenu()
-            is BoardIntent.OnRenameColumnClicked -> onRenameColumnClicked(intent.columnId)
             is BoardIntent.OnDeleteColumnClicked -> onDeleteColumnClicked(intent.columnId)
             is BoardIntent.OnOrderByClicked -> reorderCardsInColumn(
                 columnId = intent.columnId,
                 orderType = intent.orderType,
                 cardOrder = intent.cardOrder
             )
+
+
+            /*  Edit Column  */
+            // Column rename
+            is BoardIntent.OnRenameColumnClicked -> onRenameColumnClicked(intent.columnId)
+            is BoardIntent.OnEditColumnNameChange -> onEditColumnNameChange(intent.name)
+            is BoardIntent.CancelColumnRename -> clearEditAndCreationStates()
+            is BoardIntent.ConfirmColumnRename -> confirmColumnRename()
+
+            // Column color
+            is BoardIntent.StartEditingColumnColor -> startEditingColumnColor(intent.columnId)
+            is BoardIntent.CancelColumnColorEdit -> clearEditAndCreationStates()
+            is BoardIntent.ConfirmColumnColorEdit -> confirmColorEdit(intent.newColor)
+            /*  Edit Column  */
+
+
+            // Create card
+            is BoardIntent.StartCreatingCard -> startCreatingCard(
+                columnId = intent.columnId,
+                isAppendingToEnd = intent.isAppendingToEnd
+            )
+
+            is BoardIntent.OnCardTitleChange -> onCardTitleChange(intent.title)
+            is BoardIntent.CancelCardCreation -> clearEditAndCreationStates()
+            is BoardIntent.ConfirmCardCreation -> confirmCardCreation()
+
+
+            // Drag and drop
+            is BoardIntent.OnDragStart -> onDragStart(intent.offset)
+            is BoardIntent.OnDrag -> onDrag(intent.position)
+            is BoardIntent.OnDragStop -> onDragStop()
 
             // Set coordinates
             is BoardIntent.SetBoardCoordinates -> setBoardCoordinates(intent.coordinates)
