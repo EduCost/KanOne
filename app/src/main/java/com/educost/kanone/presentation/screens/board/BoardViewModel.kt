@@ -278,6 +278,7 @@ class BoardViewModel @Inject constructor(
             if (wasBoardDeleted) {
                 _sideEffectChannel.send(BoardSideEffect.OnNavigateBack)
             } else {
+                clearEditAndCreationStates()
                 sendSnackbar(
                     SnackbarEvent(
                         message = UiText.StringResource(R.string.snackbar_delete_board_error),
