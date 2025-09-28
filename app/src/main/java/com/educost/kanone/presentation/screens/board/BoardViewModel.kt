@@ -97,7 +97,7 @@ class BoardViewModel @Inject constructor(
             /*  Board Settings  */
             is BoardIntent.OpenBoardSettings -> openBoardSettings()
             is BoardIntent.CloseBoardSettings -> clearEditAndCreationStates()
-            is BoardIntent.ToggleShowImages -> setShowImages()
+            is BoardIntent.ToggleShowImages -> toggleShowImages()
 
             // Zoom
             is BoardIntent.OnZoomChange -> onZoomChange(intent.zoomChange, intent.scrollChange)
@@ -717,7 +717,7 @@ class BoardViewModel @Inject constructor(
         _uiState.update { it.copy(isOnFullScreen = false) }
     }
 
-    private fun setShowImages() {
+    private fun toggleShowImages() {
         val board = uiState.value.board ?: return
         viewModelScope.launch(dispatcherProvider.main) {
             val updatedBoard = board.copy(showImages = !board.showImages).toBoard()
