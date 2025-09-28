@@ -177,7 +177,7 @@ class BoardViewModel @Inject constructor(
                 coordinates = intent.coordinates
             )
 
-            is BoardIntent.SetColumnBodyCoordinates -> setColumnListCoordinates(
+            is BoardIntent.SetColumnListCoordinates -> setColumnListCoordinates(
                 columnId = intent.columnId,
                 coordinates = intent.coordinates
             )

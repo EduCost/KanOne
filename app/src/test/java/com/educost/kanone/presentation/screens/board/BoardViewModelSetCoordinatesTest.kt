@@ -47,7 +47,7 @@ class BoardViewModelSetCoordinatesTest : BoardViewModelTest() {
         testBoardViewModelUiState(
             whenAction = {
                 val columnId = firstColumn.id
-                viewModel.onIntent(BoardIntent.SetColumnBodyCoordinates(columnId, newCoordinates))
+                viewModel.onIntent(BoardIntent.SetColumnListCoordinates(columnId, newCoordinates))
 
             },
             then = {

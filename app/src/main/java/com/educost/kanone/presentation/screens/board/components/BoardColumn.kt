@@ -83,7 +83,7 @@ fun BoardColumn(
             modifier = Modifier
                 .onGloballyPositioned { layoutCoordinates ->
                     onIntent(
-                        BoardIntent.SetColumnBodyCoordinates(
+                        BoardIntent.SetColumnListCoordinates(
                             columnId = column.id,
                             coordinates = Coordinates(
                                 position = layoutCoordinates.positionInRoot(),

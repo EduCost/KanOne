@@ -100,7 +100,7 @@ sealed interface BoardIntent {
     data class SetColumnHeaderCoordinates(val columnId: Long, val coordinates: Coordinates) :
         BoardIntent
 
-    data class SetColumnBodyCoordinates(val columnId: Long, val coordinates: Coordinates) :
+    data class SetColumnListCoordinates(val columnId: Long, val coordinates: Coordinates) :
         BoardIntent
 
     data class SetColumnCoordinates(val columnId: Long, val coordinates: Coordinates) : BoardIntent

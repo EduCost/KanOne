@@ -203,7 +203,7 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
                 val secondColumnCoordinates = Coordinates(30, 70, Offset(x = 200f, y = 300f))
 
                 viewModel.onIntent(
-                    BoardIntent.SetColumnBodyCoordinates(
+                    BoardIntent.SetColumnListCoordinates(
                         1,
                         firstColumnCoordinates
                     )
@@ -213,7 +213,7 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
                 )
 
                 viewModel.onIntent(
-                    BoardIntent.SetColumnBodyCoordinates(
+                    BoardIntent.SetColumnListCoordinates(
                         2,
                         secondColumnCoordinates
                     )
@@ -473,7 +473,7 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
 
                 // Update first column coordinates
                 viewModel.onIntent(
-                    BoardIntent.SetColumnBodyCoordinates(
+                    BoardIntent.SetColumnListCoordinates(
                         1,
                         firstColumnCoordinates
                     )
@@ -497,7 +497,7 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
 
                 // Update second column coordinates
                 viewModel.onIntent(
-                    BoardIntent.SetColumnBodyCoordinates(
+                    BoardIntent.SetColumnListCoordinates(
                         2,
                         secondColumnCoordinates
                     )
