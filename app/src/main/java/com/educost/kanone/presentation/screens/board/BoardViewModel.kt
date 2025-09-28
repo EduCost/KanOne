@@ -83,16 +83,6 @@ class BoardViewModel @Inject constructor(
         when (intent) {
             is BoardIntent.ObserveBoard -> observeBoard(intent.boardId)
 
-            // Navigation
-            is BoardIntent.OnCardClick -> navigateToCardScreen(intent.cardId)
-            is BoardIntent.OnBackPressed -> clearEditAndCreationStates()
-            is BoardIntent.OnNavigateBack -> navigateBack()
-            is BoardIntent.NavigateToSettings -> navigateToSettings()
-
-            // App bar dropdown menu
-            is BoardIntent.OpenBoardDropdownMenu -> openBoardDropdownMenu()
-            is BoardIntent.CloseBoardDropdownMenu -> clearEditAndCreationStates()
-
             // Rename Board
             is BoardIntent.OnRenameBoardClicked -> onRenameBoardClicked()
             is BoardIntent.ConfirmBoardRename -> confirmBoardRename(intent.newName)
@@ -159,6 +149,20 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.OnCardTitleChange -> onCardTitleChange(intent.title)
             is BoardIntent.CancelCardCreation -> clearEditAndCreationStates()
             is BoardIntent.ConfirmCardCreation -> confirmCardCreation()
+
+
+            /*  Others  */
+            is BoardIntent.OnBackPressed -> clearEditAndCreationStates()
+
+            // navigation
+            is BoardIntent.OnNavigateBack -> navigateBack()
+            is BoardIntent.OnCardClick -> navigateToCardScreen(intent.cardId)
+            is BoardIntent.NavigateToSettings -> navigateToSettings()
+
+            // App bar dropdown menu
+            is BoardIntent.OpenBoardDropdownMenu -> openBoardDropdownMenu()
+            is BoardIntent.CloseBoardDropdownMenu -> clearEditAndCreationStates()
+            /*  Others  */
 
 
             // Drag and drop

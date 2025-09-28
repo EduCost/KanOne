@@ -9,18 +9,6 @@ sealed interface BoardIntent {
     data class ObserveBoard(val boardId: Long) : BoardIntent
 
 
-    // Navigation
-    data class OnCardClick(val cardId: Long) : BoardIntent
-    data object OnBackPressed : BoardIntent
-    data object OnNavigateBack : BoardIntent
-    data object NavigateToSettings : BoardIntent
-
-
-    // App bar dropdown menu
-    data object OpenBoardDropdownMenu : BoardIntent
-    data object CloseBoardDropdownMenu : BoardIntent
-
-
     // Rename Board
     data object OnRenameBoardClicked : BoardIntent
     data class ConfirmBoardRename(val newName: String) : BoardIntent
@@ -85,6 +73,20 @@ sealed interface BoardIntent {
     data class OnCardTitleChange(val title: String) : BoardIntent
     data object ConfirmCardCreation : BoardIntent
     data object CancelCardCreation : BoardIntent
+
+
+    /*  Others  */
+    data object OnBackPressed : BoardIntent
+
+    // Navigation
+    data object OnNavigateBack : BoardIntent
+    data class OnCardClick(val cardId: Long) : BoardIntent
+    data object NavigateToSettings : BoardIntent
+
+    // App bar dropdown menu
+    data object OpenBoardDropdownMenu : BoardIntent
+    data object CloseBoardDropdownMenu : BoardIntent
+    /*  Others  */
 
 
     // Drag and drop
