@@ -25,6 +25,7 @@ datastorePreferences = "1.1.7"
 gson = "2.13.2"
 aboutLibraries = "13.0.0-rc01"
 material3 = "1.5.0-alpha04"
+adaptive = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -86,6 +87,9 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 # About Libraries
 aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
+
+# Adaptive
+androidx-compose-material3-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive", version.ref = "adaptive" }
 
 
 # testing

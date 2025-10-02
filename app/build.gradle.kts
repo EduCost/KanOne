@@ -96,6 +96,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.aboutlibraries.core)
     implementation(libs.aboutlibraries.compose.m3)
+    implementation(libs.androidx.compose.material3.adaptive)
 
 
 
