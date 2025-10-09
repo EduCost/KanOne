@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.educost.kanone.presentation.screens.home
 
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -22,6 +27,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,10 +41,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.educost.kanone.R
 import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.CardItem
@@ -48,6 +56,8 @@ import com.educost.kanone.presentation.screens.home.components.BoardCard
 import com.educost.kanone.presentation.screens.home.components.CreateBoardDialog
 import com.educost.kanone.presentation.screens.home.components.HomeTopBar
 import com.educost.kanone.presentation.theme.KanOneTheme
+import com.educost.kanone.presentation.theme.ThemeData
+import com.educost.kanone.presentation.theme.ThemeType
 import com.educost.kanone.presentation.util.ObserveAsEvents
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -94,7 +104,6 @@ fun HomeScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -144,34 +153,11 @@ fun HomeScreen(
                     }
                 }
 
-                else -> {
-                    val fabHeight = remember { 72.dp }
-                    LazyColumn(
-                        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        contentPadding = PaddingValues(
-                            top = 12.dp,
-                            start = 12.dp,
-                            end = 12.dp,
-                            bottom = fabHeight + 12.dp,
-                        ),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        items(state.boards) { board ->
-                            BoardCard(
-                                board = board,
-                                onNavigateToBoard = {
-                                    onIntent(HomeIntent.NavigateToBoardScreen(board.id))
-                                },
-                                onRenameBoard = {
-                                    onIntent(HomeIntent.RenameBoardClicked(board.id))
-                                },
-                                onDeleteBoard = {
-                                    onIntent(HomeIntent.DeleteBoardClicked(board.id))
-                                }
-                            )
-                        }
-                    }
-                }
+                else -> BoardsList(
+                    scrollBehavior = scrollBehavior,
+                    state = state,
+                    onIntent = onIntent
+                )
             }
         }
     }
@@ -195,80 +181,315 @@ fun HomeScreen(
     }
 
     if (state.boardBeingDeleted != null) {
-        DeleteBoardDialog (
+        DeleteBoardDialog(
             onDismiss = { onIntent(HomeIntent.OnCancelDeleteBoard) },
             onDelete = { onIntent(HomeIntent.OnConfirmDeleteBoard) },
         )
     }
 }
 
-@PreviewLightDark
 @Composable
-private fun HomeScreenPreview() {
+private fun BoardsList(
+    modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior,
+    state: HomeUiState,
+    onIntent: (HomeIntent) -> Unit
+) {
+
+    val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
+    val fabHeight = remember { 72.dp }
+    val contentPadding = remember {
+        PaddingValues(
+            top = 12.dp,
+            start = 12.dp,
+            end = 12.dp,
+            bottom = fabHeight + 12.dp,
+        )
+    }
+
+    when (windowWidthSizeClass) {
+        WindowWidthSizeClass.COMPACT -> {
+            LazyColumn(
+                modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                contentPadding = contentPadding,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(state.boards) { board ->
+                    BoardCard(
+                        board = board,
+                        onNavigateToBoard = {
+                            onIntent(HomeIntent.NavigateToBoardScreen(board.id))
+                        },
+                        onRenameBoard = {
+                            onIntent(HomeIntent.RenameBoardClicked(board.id))
+                        },
+                        onDeleteBoard = {
+                            onIntent(HomeIntent.DeleteBoardClicked(board.id))
+                        }
+                    )
+                }
+            }
+        }
+
+        else -> {
+            LazyVerticalGrid(
+                modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                columns = GridCells.Adaptive(320.dp),
+                contentPadding = contentPadding,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(state.boards) { board ->
+                    BoardCard(
+                        board = board,
+                        onNavigateToBoard = {
+                            onIntent(HomeIntent.NavigateToBoardScreen(board.id))
+                        },
+                        onRenameBoard = {
+                            onIntent(HomeIntent.RenameBoardClicked(board.id))
+                        },
+                        onDeleteBoard = {
+                            onIntent(HomeIntent.DeleteBoardClicked(board.id))
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@PreviewScreenSizes
+@Composable
+private fun HomeScreenPreviewLight() {
     KanOneTheme {
         HomeScreen(
             state = HomeUiState(
-                boards = listOf(
-                    Board(
-                        id = 0,
-                        name = "Demo",
-                        columns = listOf(
-                            KanbanColumn(
-                                id = 0,
-                                name = "Column 1",
-                                position = 0,
-                                cards = listOf(
-                                    CardItem(
-                                        id = 0,
-                                        title = "Card 1",
-                                        position = 0,
-                                        createdAt = LocalDateTime.now()
-                                    ),
-                                    CardItem(
-                                        id = 1,
-                                        title = "Card 2",
-                                        position = 1,
-                                        createdAt = LocalDateTime.now()
-                                    ),
-                                    CardItem(
-                                        id = 2,
-                                        title = "Card 3",
-                                        position = 2,
-                                        createdAt = LocalDateTime.now()
-                                    ),
-                                    CardItem(
-                                        id = 3,
-                                        title = "Card 4",
-                                        position = 3,
-                                        createdAt = LocalDateTime.now()
-                                    ),
-                                )
-                            ),
-                            KanbanColumn(
-                                id = 0,
-                                name = "Column 1",
-                                position = 0,
-                                cards = listOf(
-                                    CardItem(
-                                        id = 0,
-                                        title = "Card 1",
-                                        position = 0,
-                                        createdAt = LocalDateTime.now()
-                                    ),
-                                    CardItem(
-                                        id = 1,
-                                        title = "Card 2",
-                                        position = 1,
-                                        createdAt = LocalDateTime.now()
-                                    )
-                                )
-                            ),
-                        )
-                    )
-                )
+                boards = previewBoards
             ),
             onIntent = {},
             snackBarHostState = SnackbarHostState()
         )
     }
 }
+
+@PreviewScreenSizes
+@Composable
+private fun HomeScreenPreviewDark() {
+    KanOneTheme(themeData = ThemeData(ThemeType.DARK)) {
+        HomeScreen(
+            state = HomeUiState(
+                boards = previewBoards
+            ),
+            onIntent = {},
+            snackBarHostState = SnackbarHostState()
+        )
+    }
+}
+
+private val previewBoards = listOf(
+    Board(
+        id = 2,
+        name = "Demo",
+        columns = listOf(
+            KanbanColumn(
+                id = 0,
+                name = "Column 1",
+                position = 0,
+                cards = listOf(
+                    CardItem(
+                        id = 0,
+                        title = "Card 1",
+                        position = 0,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 1,
+                        title = "Card 2",
+                        position = 1,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 2,
+                        title = "Card 3",
+                        position = 2,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 3,
+                        title = "Card 4",
+                        position = 3,
+                        createdAt = LocalDateTime.now()
+                    ),
+                )
+            ),
+            KanbanColumn(
+                id = 0,
+                name = "Column 1",
+                position = 0,
+                cards = listOf(
+                    CardItem(
+                        id = 0,
+                        title = "Card 1",
+                        position = 0,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 1,
+                        title = "Card 2",
+                        position = 1,
+                        createdAt = LocalDateTime.now()
+                    )
+                )
+            ),
+            KanbanColumn(
+                id = 0,
+                name = "Column 1",
+                position = 0,
+                cards = listOf(
+                    CardItem(
+                        id = 0,
+                        title = "Card 1",
+                        position = 0,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 1,
+                        title = "Card 2",
+                        position = 1,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 2,
+                        title = "Card 3",
+                        position = 2,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 3,
+                        title = "Card 4",
+                        position = 3,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 4,
+                        title = "Card 5",
+                        position = 2,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 5,
+                        title = "Card 6",
+                        position = 3,
+                        createdAt = LocalDateTime.now()
+                    ),
+                )
+            ),
+            KanbanColumn(
+                id = 0,
+                name = "Column 1",
+                position = 0,
+                cards = listOf(
+                    CardItem(
+                        id = 0,
+                        title = "Card 1",
+                        position = 0,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 1,
+                        title = "Card 2",
+                        position = 1,
+                        createdAt = LocalDateTime.now()
+                    )
+                )
+            ),
+        )
+    ),
+    Board(
+        id = 1,
+        name = "Demo",
+        columns = emptyList()
+    ),
+    Board(
+        id = 0,
+        name = "Demo",
+        columns = listOf(
+            KanbanColumn(
+                id = 0,
+                name = "Column 1",
+                position = 0,
+                cards = listOf(
+                    CardItem(
+                        id = 0,
+                        title = "Card 1",
+                        position = 0,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 1,
+                        title = "Card 2",
+                        position = 1,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 2,
+                        title = "Card 3",
+                        position = 2,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 3,
+                        title = "Card 4",
+                        position = 3,
+                        createdAt = LocalDateTime.now()
+                    ),
+                )
+            ),
+            KanbanColumn(
+                id = 0,
+                name = "Column 1",
+                position = 0,
+                cards = listOf(
+                    CardItem(
+                        id = 0,
+                        title = "Card 1",
+                        position = 0,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 1,
+                        title = "Card 2",
+                        position = 1,
+                        createdAt = LocalDateTime.now()
+                    )
+                )
+            ),
+        )
+    ),
+    Board(
+        id = 3,
+        name = "Demo",
+        columns = listOf(
+            KanbanColumn(
+                id = 0,
+                name = "Column 1",
+                position = 0,
+                cards = listOf(
+                    CardItem(
+                        id = 0,
+                        title = "Card 1",
+                        position = 0,
+                        createdAt = LocalDateTime.now()
+                    ),
+                    CardItem(
+                        id = 1,
+                        title = "Card 2",
+                        position = 1,
+                        createdAt = LocalDateTime.now()
+                    )
+                )
+            ),
+        )
+    )
+)
