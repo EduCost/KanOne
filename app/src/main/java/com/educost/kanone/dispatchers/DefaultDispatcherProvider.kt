@@ -1,6 +1,5 @@
 package com.educost.kanone.dispatchers
 
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
 class DefaultDispatcherProvider(

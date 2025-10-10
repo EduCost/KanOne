@@ -54,7 +54,7 @@ fun LabelDialog(
         if (label != null) mutableStateOf(label.name) else mutableStateOf("")
     }
     var newColorInt by rememberSaveable {
-        if (label != null) mutableStateOf(label.color) else mutableStateOf<Int?>(null)
+        if (label != null) mutableStateOf(label.color) else mutableStateOf(null)
     }
     var isPickingColor by rememberSaveable { mutableStateOf(false) }
 

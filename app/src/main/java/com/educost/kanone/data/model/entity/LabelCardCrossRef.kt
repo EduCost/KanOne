@@ -2,7 +2,6 @@ package com.educost.kanone.data.model.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
 
 @Entity(
     tableName = "labels_and_cards",
