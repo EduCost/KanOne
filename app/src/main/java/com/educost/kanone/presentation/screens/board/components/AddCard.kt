@@ -141,7 +141,7 @@ fun AddCardTextField(
 
     Row(
         modifier = modifier
-            .clip(MaterialTheme.shapes.small)
+            .clip(sizes.cardShape)
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(7.dp))
             .padding(sizes.addCardTextFieldPaddingValues)
     ) {
