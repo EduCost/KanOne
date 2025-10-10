@@ -4,6 +4,7 @@ package com.educost.kanone.presentation.screens.board.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
@@ -17,12 +18,16 @@ import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.window.core.layout.WindowHeightSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.educost.kanone.R
 import com.educost.kanone.presentation.components.ActionTopBar
 import com.educost.kanone.presentation.components.NavigateBackIcon
@@ -40,6 +45,11 @@ fun BoardAppBar(
 ) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val isPhoneLandscape = remember(windowSizeClass) {
+        windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.MEDIUM &&
+                windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
+    }
 
     when (type) {
         BoardAppBarType.DEFAULT -> {
@@ -60,14 +70,16 @@ fun BoardAppBar(
                         NavigateBackIcon { onIntent(BoardIntent.OnNavigateBack) }
                     },
                     actions = {
-//                        IconButton(
-//                            onClick = { onIntent(BoardIntent.EnterFullScreen) }
-//                        ) {
-//                            Icon(
-//                                imageVector = Icons.Filled.Fullscreen,
-//                                contentDescription = stringResource(R.string.board_appbar_full_screen_content_description)
-//                            )
-//                        }
+                        if (isPhoneLandscape) {
+                            IconButton(
+                                onClick = { onIntent(BoardIntent.EnterFullScreen) }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Fullscreen,
+                                    contentDescription = stringResource(R.string.board_appbar_full_screen_content_description)
+                                )
+                            }
+                        }
                         IconButton(
                             onClick = { onIntent(BoardIntent.OpenBoardDropdownMenu) }
                         ) {

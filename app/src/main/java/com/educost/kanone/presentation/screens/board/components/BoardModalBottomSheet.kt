@@ -26,12 +26,15 @@ import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowHeightSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.educost.kanone.R
 import com.educost.kanone.presentation.components.SettingItem
 import com.educost.kanone.presentation.components.SettingSwitchItem
@@ -48,6 +51,11 @@ fun BoardModalBottomSheet(
 ) {
 
     val scrollState = rememberScrollState()
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val isPhoneLandscape = remember(windowSizeClass) {
+        windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.MEDIUM &&
+                windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
+    }
 
     ModalBottomSheet(
         modifier = modifier,
@@ -75,15 +83,17 @@ fun BoardModalBottomSheet(
                 onToggle = { onIntent(BoardIntent.ToggleShowImages) }
             )
 
-            SettingSwitchItem(
-                title = stringResource(R.string.board_settings_full_screen),
-                icon = Icons.Filled.Fullscreen,
-                checked = isFullScreen,
-                onToggle = {
-                    if (isFullScreen) onIntent(BoardIntent.ExitFullScreen)
-                    else onIntent(BoardIntent.EnterFullScreen)
-                }
-            )
+            if (!isPhoneLandscape) {
+                SettingSwitchItem(
+                    title = stringResource(R.string.board_settings_full_screen),
+                    icon = Icons.Filled.Fullscreen,
+                    checked = isFullScreen,
+                    onToggle = {
+                        if (isFullScreen) onIntent(BoardIntent.ExitFullScreen)
+                        else onIntent(BoardIntent.EnterFullScreen)
+                    }
+                )
+            }
 
             SettingItem(
                 title = stringResource(R.string.board_settings_app_settings),
