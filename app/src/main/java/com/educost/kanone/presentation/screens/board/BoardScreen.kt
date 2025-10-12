@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -120,161 +121,16 @@ fun BoardScreen(
     snackBarHostState: SnackbarHostState
 ) {
 
-    val transformableState = rememberTransformableState { zoomChange, panChange, _ ->
-        val scrollChange = -panChange.x
-        onIntent(BoardIntent.OnZoomChange(zoomChange, scrollChange))
-    }
-
-    BackHandler(enabled = state.hasEditStates || state.isOnFullScreen) {
-        onIntent(BoardIntent.OnBackPressed)
-    }
-
-    Scaffold(
-        modifier = modifier
-            .fillMaxSize()
-            .transformable(transformableState)
-            .pointerInput(Unit) {
-                detectDragGesturesAfterLongPress(
-                    onDrag = { change, _ ->
-                        onIntent(BoardIntent.OnDrag(change.position))
-                    },
-                    onDragStart = { offset ->
-                        onIntent(BoardIntent.OnDragStart(offset))
-                    },
-                    onDragEnd = {
-                        onIntent(BoardIntent.OnDragStop)
-                    },
-                    onDragCancel = {
-                        onIntent(BoardIntent.OnDragStop)
-                    }
-                )
-            },
-        containerColor = MaterialTheme.colorScheme.surface,
-        topBar = {
-            state.board?.let { board ->
-                BoardAppBar(
-                    boardName = board.name,
-                    type = state.topBarType,
-                    isDropdownMenuExpanded = state.isBoardDropdownMenuExpanded,
-                    isFullScreen = state.isOnFullScreen,
-                    onIntent = onIntent
-                )
-            }
-        },
-        snackbarHost = { SnackbarHost(snackBarHostState) }
-    ) { innerPadding ->
-
-        state.board?.let { board ->
-
-            val contentPadding = remember(state.isOnFullScreen, board.sizes) {
-                if (state.isOnFullScreen) board.sizes.columnFullScreenPaddingValues
-                else board.sizes.columnPaddingValues
-            }
-
-            LazyRow(
-                modifier = Modifier
-                    .onGloballyPositioned { layoutCoordinates ->
-                        onIntent(
-                            BoardIntent.SetBoardCoordinates(
-                                coordinates = Coordinates(
-                                    position = layoutCoordinates.positionInRoot(),
-                                    width = layoutCoordinates.size.width,
-                                    height = layoutCoordinates.size.height
-                                )
-                            )
-                        )
-                    }
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                contentPadding = contentPadding,
-                horizontalArrangement = Arrangement.spacedBy(board.sizes.columnsSpaceBy),
-                state = state.board.listState
-            ) {
-                itemsIndexed(
-                    items = board.columns,
-                    key = { index, column -> "${column.id}_$index" }
-                ) { index, column ->
-                    val isDraggingColumn = state.dragState.draggingColumn?.id == column.id
-                    BoardColumn(
-                        modifier = Modifier
-                            .onGloballyPositioned { layoutCoordinates ->
-                                onIntent(
-                                    BoardIntent.SetColumnCoordinates(
-                                        columnId = column.id,
-                                        coordinates = Coordinates(
-                                            position = layoutCoordinates.positionInRoot(),
-                                            width = layoutCoordinates.size.width,
-                                            height = layoutCoordinates.size.height
-                                        )
-                                    )
-                                )
-                            }
-                            .then(
-                                if (isDraggingColumn) {
-                                    Modifier
-                                        .graphicsLayer {
-                                            colorFilter = ColorFilter.tint(Color.Gray)
-                                            alpha = 0.05f
-                                        }
-                                } else {
-                                    Modifier
-                                }
-                            ),
-                        column = column,
-                        columnIndex = index,
-                        state = state,
-                        onIntent = onIntent,
-                        sizes = board.sizes
-                    )
-                }
-
-                item {
-                    AddColumn(
-                        state = state,
-                        onIntent = onIntent,
-                        sizes = board.sizes
-                    )
-                }
-            }
-
-            if (state.isModalSheetExpanded) {
-                BoardModalBottomSheet(
-                    board = board,
-                    isFullScreen = state.isOnFullScreen,
-                    onIntent = onIntent
-                )
-            }
+    Surface(modifier = Modifier.fillMaxSize()) {
+        state.board?.let {
+            BoardScreen(
+                modifier = modifier,
+                board = state.board,
+                state = state,
+                onIntent = onIntent,
+                snackBarHostState = snackBarHostState
+            )
         }
-    }
-
-    if (state.columnEditState.isShowingColorPicker) {
-
-        val initialColor = remember {
-            state.board?.columns?.find {
-                it.id == state.columnEditState.editingColumnId
-            }?.color
-        }
-
-        ColorPickerDialog(
-            initialColor = initialColor,
-            onDismiss = { onIntent(BoardIntent.CancelColumnColorEdit) },
-            onConfirm = { onIntent(BoardIntent.ConfirmColumnColorEdit(it)) }
-        )
-    }
-
-    if (state.isRenamingBoard) {
-        DialogRename(
-            onDismiss = { onIntent(BoardIntent.CancelBoardRename) },
-            onConfirm = { onIntent(BoardIntent.ConfirmBoardRename(it)) },
-            title = stringResource(R.string.dialog_rename_board_title),
-        )
-    }
-
-    if (state.isShowingDeleteBoardDialog) {
-        DeleteBoardDialog(
-            onDismiss = { onIntent(BoardIntent.CancelBoardDeletion) },
-            onDelete = { onIntent(BoardIntent.ConfirmBoardDeletion) }
-        )
     }
 
     val localDensity = LocalDensity.current
@@ -309,6 +165,170 @@ fun BoardScreen(
             onIntent = { },
             sizes = state.board?.sizes ?: BoardSizes()
         )
+    }
+}
+
+@Composable
+fun BoardScreen(
+    modifier: Modifier = Modifier,
+    board: BoardUi,
+    state: BoardState,
+    onIntent: (BoardIntent) -> Unit,
+    snackBarHostState: SnackbarHostState
+) {
+
+    val transformableState = rememberTransformableState { zoomChange, panChange, _ ->
+        val scrollChange = -panChange.x
+        onIntent(BoardIntent.OnZoomChange(zoomChange, scrollChange))
+    }
+
+    BackHandler(enabled = state.hasEditStates || state.isOnFullScreen) {
+        onIntent(BoardIntent.OnBackPressed)
+    }
+
+
+    Scaffold(
+        modifier = modifier
+            .fillMaxSize()
+            .transformable(transformableState)
+            .pointerInput(Unit) {
+                detectDragGesturesAfterLongPress(
+                    onDrag = { change, _ ->
+                        onIntent(BoardIntent.OnDrag(change.position))
+                    },
+                    onDragStart = { offset ->
+                        onIntent(BoardIntent.OnDragStart(offset))
+                    },
+                    onDragEnd = {
+                        onIntent(BoardIntent.OnDragStop)
+                    },
+                    onDragCancel = {
+                        onIntent(BoardIntent.OnDragStop)
+                    }
+                )
+            },
+        containerColor = MaterialTheme.colorScheme.surface,
+        topBar = {
+            BoardAppBar(
+                boardName = board.name,
+                type = state.topBarType,
+                isDropdownMenuExpanded = state.isBoardDropdownMenuExpanded,
+                isFullScreen = state.isOnFullScreen,
+                onIntent = onIntent
+            )
+        },
+        snackbarHost = { SnackbarHost(snackBarHostState) }
+    ) { innerPadding ->
+
+
+        val contentPadding = remember(state.isOnFullScreen, board.sizes) {
+            if (state.isOnFullScreen) board.sizes.columnFullScreenPaddingValues
+            else board.sizes.columnPaddingValues
+        }
+
+        LazyRow(
+            modifier = Modifier
+                .onGloballyPositioned { layoutCoordinates ->
+                    onIntent(
+                        BoardIntent.SetBoardCoordinates(
+                            coordinates = Coordinates(
+                                position = layoutCoordinates.positionInRoot(),
+                                width = layoutCoordinates.size.width,
+                                height = layoutCoordinates.size.height
+                            )
+                        )
+                    )
+                }
+                .padding(innerPadding)
+                .fillMaxSize(),
+            contentPadding = contentPadding,
+            horizontalArrangement = Arrangement.spacedBy(board.sizes.columnsSpaceBy),
+            state = board.listState
+        ) {
+            itemsIndexed(
+                items = board.columns,
+                key = { index, column -> "${column.id}_$index" }
+            ) { index, column ->
+                val isDraggingColumn = state.dragState.draggingColumn?.id == column.id
+                BoardColumn(
+                    modifier = Modifier
+                        .onGloballyPositioned { layoutCoordinates ->
+                            onIntent(
+                                BoardIntent.SetColumnCoordinates(
+                                    columnId = column.id,
+                                    coordinates = Coordinates(
+                                        position = layoutCoordinates.positionInRoot(),
+                                        width = layoutCoordinates.size.width,
+                                        height = layoutCoordinates.size.height
+                                    )
+                                )
+                            )
+                        }
+                        .then(
+                            if (isDraggingColumn) {
+                                Modifier
+                                    .graphicsLayer {
+                                        colorFilter = ColorFilter.tint(Color.Gray)
+                                        alpha = 0.05f
+                                    }
+                            } else {
+                                Modifier
+                            }
+                        ),
+                    column = column,
+                    columnIndex = index,
+                    state = state,
+                    onIntent = onIntent,
+                    sizes = board.sizes
+                )
+            }
+
+            item {
+                AddColumn(
+                    state = state,
+                    onIntent = onIntent,
+                    sizes = board.sizes
+                )
+            }
+        }
+
+        if (state.isModalSheetExpanded) {
+            BoardModalBottomSheet(
+                board = board,
+                isFullScreen = state.isOnFullScreen,
+                onIntent = onIntent
+            )
+        }
+
+        if (state.columnEditState.isShowingColorPicker) {
+
+            val initialColor = remember {
+                state.board?.columns?.find {
+                    it.id == state.columnEditState.editingColumnId
+                }?.color
+            }
+
+            ColorPickerDialog(
+                initialColor = initialColor,
+                onDismiss = { onIntent(BoardIntent.CancelColumnColorEdit) },
+                onConfirm = { onIntent(BoardIntent.ConfirmColumnColorEdit(it)) }
+            )
+        }
+
+        if (state.isRenamingBoard) {
+            DialogRename(
+                onDismiss = { onIntent(BoardIntent.CancelBoardRename) },
+                onConfirm = { onIntent(BoardIntent.ConfirmBoardRename(it)) },
+                title = stringResource(R.string.dialog_rename_board_title),
+            )
+        }
+
+        if (state.isShowingDeleteBoardDialog) {
+            DeleteBoardDialog(
+                onDismiss = { onIntent(BoardIntent.CancelBoardDeletion) },
+                onDelete = { onIntent(BoardIntent.ConfirmBoardDeletion) }
+            )
+        }
     }
 }
 
