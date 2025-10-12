@@ -1,6 +1,7 @@
 package com.educost.kanone.presentation.screens.board.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,7 +59,8 @@ fun ColumnCard(
     modifier: Modifier = Modifier,
     card: CardUi,
     showImage: Boolean,
-    sizes: BoardSizes = BoardSizes()
+    sizes: BoardSizes = BoardSizes(),
+    onClick: () -> Unit = {}
 ) {
 
     val cardProperties = remember { getCardProperties(card) }
@@ -67,6 +69,7 @@ fun ColumnCard(
         modifier = modifier
             .clip(sizes.cardShape)
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(7.dp))
+            .clickable(onClick = onClick)
     ) {
         card.coverFileName?.let { cover ->
             if (showImage) {

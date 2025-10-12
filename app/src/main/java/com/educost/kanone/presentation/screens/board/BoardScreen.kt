@@ -4,48 +4,45 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.educost.kanone.R
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.model.Task
 import com.educost.kanone.presentation.components.ColorPickerDialog
 import com.educost.kanone.presentation.components.DeleteBoardDialog
 import com.educost.kanone.presentation.components.DialogRename
-import com.educost.kanone.presentation.screens.board.components.AddColumn
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
 import com.educost.kanone.presentation.screens.board.components.BoardColumn
 import com.educost.kanone.presentation.screens.board.components.BoardModalBottomSheet
 import com.educost.kanone.presentation.screens.board.components.ColumnCard
+import com.educost.kanone.presentation.screens.board.components.HorizontalBoardLayout
+import com.educost.kanone.presentation.screens.board.components.VerticalBoardLayout
 import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
@@ -181,6 +178,13 @@ fun BoardScreen(
         val scrollChange = -panChange.x
         onIntent(BoardIntent.OnZoomChange(zoomChange, scrollChange))
     }
+    val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
+
+    val isOnVerticalLayout by remember {
+        derivedStateOf {
+            board.isOnListView && windowWidthSizeClass == WindowWidthSizeClass.COMPACT
+        }
+    }
 
     BackHandler(enabled = state.hasEditStates || state.isOnFullScreen) {
         onIntent(BoardIntent.OnBackPressed)
@@ -220,77 +224,24 @@ fun BoardScreen(
         snackbarHost = { SnackbarHost(snackBarHostState) }
     ) { innerPadding ->
 
-
-        val contentPadding = remember(state.isOnFullScreen, board.sizes) {
-            if (state.isOnFullScreen) board.sizes.columnFullScreenPaddingValues
-            else board.sizes.columnPaddingValues
-        }
-
-        LazyRow(
-            modifier = Modifier
-                .onGloballyPositioned { layoutCoordinates ->
-                    onIntent(
-                        BoardIntent.SetBoardCoordinates(
-                            coordinates = Coordinates(
-                                position = layoutCoordinates.positionInRoot(),
-                                width = layoutCoordinates.size.width,
-                                height = layoutCoordinates.size.height
-                            )
-                        )
-                    )
-                }
-                .padding(innerPadding)
-                .fillMaxSize(),
-            contentPadding = contentPadding,
-            horizontalArrangement = Arrangement.spacedBy(board.sizes.columnsSpaceBy),
-            state = board.listState
-        ) {
-            itemsIndexed(
-                items = board.columns,
-                key = { index, column -> "${column.id}_$index" }
-            ) { index, column ->
-                val isDraggingColumn = state.dragState.draggingColumn?.id == column.id
-                BoardColumn(
-                    modifier = Modifier
-                        .onGloballyPositioned { layoutCoordinates ->
-                            onIntent(
-                                BoardIntent.SetColumnCoordinates(
-                                    columnId = column.id,
-                                    coordinates = Coordinates(
-                                        position = layoutCoordinates.positionInRoot(),
-                                        width = layoutCoordinates.size.width,
-                                        height = layoutCoordinates.size.height
-                                    )
-                                )
-                            )
-                        }
-                        .then(
-                            if (isDraggingColumn) {
-                                Modifier
-                                    .graphicsLayer {
-                                        colorFilter = ColorFilter.tint(Color.Gray)
-                                        alpha = 0.05f
-                                    }
-                            } else {
-                                Modifier
-                            }
-                        ),
-                    column = column,
-                    columnIndex = index,
+        when {
+            isOnVerticalLayout -> {
+                VerticalBoardLayout(
+                    modifier = Modifier.padding(innerPadding),
+                    board = board,
                     state = state,
-                    onIntent = onIntent,
-                    sizes = board.sizes
+                    onIntent = onIntent
                 )
             }
 
-            item {
-                AddColumn(
-                    state = state,
-                    onIntent = onIntent,
-                    sizes = board.sizes
-                )
-            }
+            else -> HorizontalBoardLayout(
+                modifier = Modifier.padding(innerPadding),
+                board = board,
+                state = state,
+                onIntent = onIntent
+            )
         }
+
 
         if (state.isModalSheetExpanded) {
             BoardModalBottomSheet(
@@ -390,6 +341,74 @@ private fun BoardScreenPreview() {
                             )
                         )
                     )
+                ),
+                topBarType = BoardAppBarType.DEFAULT
+            ),
+            onIntent = {},
+            snackBarHostState = SnackbarHostState()
+
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun BoardScreenListPreview() {
+    KanOneTheme {
+        BoardScreen(
+            state = BoardState(
+                board = BoardUi(
+                    id = 0,
+                    name = "Board name",
+                    columns = listOf(
+                        ColumnUi(
+                            id = 0,
+                            name = "Backlog",
+                            position = 0,
+                            color = null,
+                            cards = listOf(
+                                CardUi(
+                                    id = 0,
+                                    title = "Card title",
+                                    position = 0,
+                                    color = null,
+                                    description = "Some description",
+                                    dueDate = LocalDateTime.now().plusDays(3),
+                                    createdAt = LocalDateTime.now(),
+                                    coverFileName = null,
+                                    tasks = listOf(
+                                        Task(
+                                            id = 0,
+                                            description = "Example",
+                                            isCompleted = false,
+                                            position = 0
+                                        ),
+                                        Task(
+                                            id = 1,
+                                            description = "Completed task",
+                                            isCompleted = true,
+                                            position = 1
+                                        )
+                                    ),
+                                    attachments = emptyList(),
+                                    labels = listOf(
+                                        Label(
+                                            id = 0,
+                                            name = "Label",
+                                            color = null
+                                        ),
+                                        Label(
+                                            id = 1,
+                                            name = "Another label",
+                                            color = -4221
+                                        )
+                                    ),
+                                    coordinates = Coordinates()
+                                )
+                            )
+                        )
+                    ),
+                    isOnListView = true
                 ),
                 topBarType = BoardAppBarType.DEFAULT
             ),
