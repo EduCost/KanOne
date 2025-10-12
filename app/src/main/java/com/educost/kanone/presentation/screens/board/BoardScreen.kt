@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -102,66 +103,16 @@ fun BoardScreen(
     }
 
 
-    BoardScreen(
-        modifier = modifier,
-        state = state,
-        onIntent = viewModel::onIntent,
-        snackBarHostState = snackBarHostState
-    )
-}
-
-@Composable
-fun BoardScreen(
-    modifier: Modifier = Modifier,
-    state: BoardState,
-    onIntent: (BoardIntent) -> Unit,
-    snackBarHostState: SnackbarHostState
-) {
-
     Surface(modifier = Modifier.fillMaxSize()) {
-        state.board?.let {
+        state.board?.let { board ->
             BoardScreen(
                 modifier = modifier,
-                board = state.board,
+                board = board,
                 state = state,
-                onIntent = onIntent,
+                onIntent = viewModel::onIntent,
                 snackBarHostState = snackBarHostState
             )
         }
-    }
-
-    val localDensity = LocalDensity.current
-    state.dragState.draggingCard?.let { card ->
-        ColumnCard(
-            modifier = Modifier
-                .graphicsLayer {
-                    translationY = state.dragState.itemOffset.y
-                    translationX = state.dragState.itemOffset.x
-                    rotationZ = 2f
-                }
-                .width(with(localDensity) { card.coordinates.width.toDp() })
-                .height(with(localDensity) { card.coordinates.height.toDp() }),
-            card = card,
-            showImage = state.board?.showImages ?: true,
-            sizes = state.board?.sizes ?: BoardSizes(),
-        )
-    }
-    state.dragState.draggingColumn?.let { column ->
-        BoardColumn(
-            modifier = Modifier
-                .graphicsLayer {
-                    translationY = state.dragState.itemOffset.y
-                    translationX = state.dragState.itemOffset.x
-                    rotationZ = 2f
-                }
-                .width(with(localDensity) { column.coordinates.width.toDp() })
-                .height(with(localDensity) { column.coordinates.height.toDp() }),
-            column = column,
-            state = BoardState(),
-            columnIndex = -1,
-            onIntent = { },
-            sizes = state.board?.sizes ?: BoardSizes()
-        )
     }
 }
 
@@ -280,68 +231,53 @@ fun BoardScreen(
                 onDelete = { onIntent(BoardIntent.ConfirmBoardDeletion) }
             )
         }
+
+        val localDensity = LocalDensity.current
+        state.dragState.draggingCard?.let { card ->
+            ColumnCard(
+                modifier = Modifier
+                    .graphicsLayer {
+                        translationY = state.dragState.itemOffset.y
+                        translationX = state.dragState.itemOffset.x
+                        rotationZ = 2f
+                    }
+                    .width(with(localDensity) { card.coordinates.width.toDp() })
+                    .height(with(localDensity) { card.coordinates.height.toDp() }),
+                card = card,
+                showImage = state.board?.showImages ?: true,
+                sizes = state.board?.sizes ?: BoardSizes(),
+            )
+        }
+        state.dragState.draggingColumn?.let { column ->
+            BoardColumn(
+                modifier = Modifier
+                    .graphicsLayer {
+                        translationY = state.dragState.itemOffset.y
+                        translationX = state.dragState.itemOffset.x
+                        rotationZ = 2f
+                    }
+                    .width(with(localDensity) { column.coordinates.width.toDp() })
+                    .height(with(localDensity) { column.coordinates.height.toDp() }),
+                column = column,
+                state = BoardState(),
+                columnIndex = -1,
+                onIntent = { },
+                sizes = state.board?.sizes ?: BoardSizes()
+            )
+        }
     }
+
 }
 
 
 @PreviewLightDark
 @Composable
-private fun BoardScreenPreview() {
+private fun HorizontalBoardScreenPreview() {
     KanOneTheme {
         BoardScreen(
+            board = previewBoard,
             state = BoardState(
-                board = BoardUi(
-                    id = 0,
-                    name = "Board name",
-                    columns = listOf(
-                        ColumnUi(
-                            id = 0,
-                            name = "Backlog",
-                            position = 0,
-                            color = null,
-                            cards = listOf(
-                                CardUi(
-                                    id = 0,
-                                    title = "Card title",
-                                    position = 0,
-                                    color = null,
-                                    description = "Some description",
-                                    dueDate = LocalDateTime.now().plusDays(3),
-                                    createdAt = LocalDateTime.now(),
-                                    coverFileName = null,
-                                    tasks = listOf(
-                                        Task(
-                                            id = 0,
-                                            description = "Example",
-                                            isCompleted = false,
-                                            position = 0
-                                        ),
-                                        Task(
-                                            id = 1,
-                                            description = "Completed task",
-                                            isCompleted = true,
-                                            position = 1
-                                        )
-                                    ),
-                                    attachments = emptyList(),
-                                    labels = listOf(
-                                        Label(
-                                            id = 0,
-                                            name = "Label",
-                                            color = null
-                                        ),
-                                        Label(
-                                            id = 1,
-                                            name = "Another label",
-                                            color = -4221
-                                        )
-                                    ),
-                                    coordinates = Coordinates()
-                                )
-                            )
-                        )
-                    )
-                ),
+                board = previewBoard,
                 topBarType = BoardAppBarType.DEFAULT
             ),
             onIntent = {},
@@ -353,68 +289,70 @@ private fun BoardScreenPreview() {
 
 @PreviewLightDark
 @Composable
-private fun BoardScreenListPreview() {
+private fun VerticalBoardScreenPreview() {
     KanOneTheme {
         BoardScreen(
+            board = previewBoard,
             state = BoardState(
-                board = BoardUi(
+                board = previewBoard,
+                topBarType = BoardAppBarType.DEFAULT
+            ),
+            onIntent = {},
+            snackBarHostState = SnackbarHostState()
+
+        )
+    }
+}
+
+private val previewBoard = BoardUi(
+    id = 0,
+    name = "Board name",
+    columns = listOf(
+        ColumnUi(
+            id = 0,
+            name = "Backlog",
+            position = 0,
+            color = null,
+            cards = listOf(
+                CardUi(
                     id = 0,
-                    name = "Board name",
-                    columns = listOf(
-                        ColumnUi(
+                    title = "Card title",
+                    position = 0,
+                    color = null,
+                    description = "Some description",
+                    dueDate = LocalDateTime.now().plusDays(3),
+                    createdAt = LocalDateTime.now(),
+                    coverFileName = null,
+                    tasks = listOf(
+                        Task(
                             id = 0,
-                            name = "Backlog",
-                            position = 0,
-                            color = null,
-                            cards = listOf(
-                                CardUi(
-                                    id = 0,
-                                    title = "Card title",
-                                    position = 0,
-                                    color = null,
-                                    description = "Some description",
-                                    dueDate = LocalDateTime.now().plusDays(3),
-                                    createdAt = LocalDateTime.now(),
-                                    coverFileName = null,
-                                    tasks = listOf(
-                                        Task(
-                                            id = 0,
-                                            description = "Example",
-                                            isCompleted = false,
-                                            position = 0
-                                        ),
-                                        Task(
-                                            id = 1,
-                                            description = "Completed task",
-                                            isCompleted = true,
-                                            position = 1
-                                        )
-                                    ),
-                                    attachments = emptyList(),
-                                    labels = listOf(
-                                        Label(
-                                            id = 0,
-                                            name = "Label",
-                                            color = null
-                                        ),
-                                        Label(
-                                            id = 1,
-                                            name = "Another label",
-                                            color = -4221
-                                        )
-                                    ),
-                                    coordinates = Coordinates()
-                                )
-                            )
+                            description = "Example",
+                            isCompleted = false,
+                            position = 0
+                        ),
+                        Task(
+                            id = 1,
+                            description = "Completed task",
+                            isCompleted = true,
+                            position = 1
                         )
                     ),
-                    isOnListView = true
-                ),
-                topBarType = BoardAppBarType.DEFAULT
-            ),
-            onIntent = {},
-            snackBarHostState = SnackbarHostState()
-
+                    attachments = emptyList(),
+                    labels = listOf(
+                        Label(
+                            id = 0,
+                            name = "Label",
+                            color = null
+                        ),
+                        Label(
+                            id = 1,
+                            name = "Another label",
+                            color = -4221
+                        )
+                    ),
+                    coordinates = Coordinates()
+                )
+            )
         )
-    }
-}
+    )
+)
