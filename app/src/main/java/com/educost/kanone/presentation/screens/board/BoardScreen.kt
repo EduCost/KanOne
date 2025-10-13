@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -233,12 +232,12 @@ fun BoardScreen(
         }
 
         val localDensity = LocalDensity.current
-        state.dragState.draggingCard?.let { card ->
+        state.dragState.cardBeingDragged?.let { card ->
             ColumnCard(
                 modifier = Modifier
                     .graphicsLayer {
-                        translationY = state.dragState.itemOffset.y
-                        translationX = state.dragState.itemOffset.x
+                        translationY = state.dragState.itemBeingDraggedOffset.y
+                        translationX = state.dragState.itemBeingDraggedOffset.x
                         rotationZ = 2f
                     }
                     .width(with(localDensity) { card.coordinates.width.toDp() })
@@ -248,19 +247,18 @@ fun BoardScreen(
                 sizes = state.board?.sizes ?: BoardSizes(),
             )
         }
-        state.dragState.draggingColumn?.let { column ->
+        state.dragState.columnBeingDragged?.let { column ->
             BoardColumn(
                 modifier = Modifier
                     .graphicsLayer {
-                        translationY = state.dragState.itemOffset.y
-                        translationX = state.dragState.itemOffset.x
+                        translationY = state.dragState.itemBeingDraggedOffset.y
+                        translationX = state.dragState.itemBeingDraggedOffset.x
                         rotationZ = 2f
                     }
                     .width(with(localDensity) { column.coordinates.width.toDp() })
                     .height(with(localDensity) { column.coordinates.height.toDp() }),
                 column = column,
                 state = BoardState(),
-                columnIndex = -1,
                 onIntent = { },
                 sizes = state.board?.sizes ?: BoardSizes()
             )

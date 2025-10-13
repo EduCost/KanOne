@@ -41,7 +41,6 @@ import java.time.LocalDateTime
 fun BoardColumn(
     modifier: Modifier = Modifier,
     column: ColumnUi,
-    columnIndex: Int,
     state: BoardState,
     onIntent: (BoardIntent) -> Unit,
     sizes: BoardSizes = BoardSizes()
@@ -112,8 +111,7 @@ fun BoardColumn(
                 key = { index, card -> card.id }
             ) { index, card ->
 
-                val isDraggingCard = state.dragState.draggingCardIndex == index &&
-                        state.dragState.selectedColumnIndex == columnIndex
+                val isDraggingCard = state.dragState.isCardBeingDragged(card.id)
 
                 ColumnCard(
                     modifier = Modifier
@@ -195,7 +193,6 @@ private fun BoardColumnPreview() {
                     )
                 ),
                 state = BoardState(),
-                columnIndex = 0,
                 onIntent = {}
             )
         }

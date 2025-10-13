@@ -3,7 +3,7 @@ package com.educost.kanone.presentation.screens.board.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -48,11 +48,11 @@ fun HorizontalBoardLayout(
         horizontalArrangement = Arrangement.spacedBy(board.sizes.columnsSpaceBy),
         state = board.listState
     ) {
-        itemsIndexed(
+        items(
             items = board.columns,
-            key = { index, column -> "${column.id}_$index" }
-        ) { index, column ->
-            val isDraggingColumn = state.dragState.draggingColumn?.id == column.id
+        ) { column ->
+            val isDraggingColumn = state.dragState.isColumnBeingDragged(column.id)
+
             BoardColumn(
                 modifier = Modifier
                     .onGloballyPositioned { layoutCoordinates ->
@@ -79,7 +79,6 @@ fun HorizontalBoardLayout(
                         }
                     ),
                 column = column,
-                columnIndex = index,
                 state = state,
                 onIntent = onIntent,
                 sizes = board.sizes
