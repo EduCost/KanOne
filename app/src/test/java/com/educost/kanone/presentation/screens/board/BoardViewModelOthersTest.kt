@@ -1,6 +1,12 @@
 package com.educost.kanone.presentation.screens.board
 
+import app.cash.turbine.test
+import com.educost.kanone.domain.error.GenericError
+import com.educost.kanone.utils.Result
 import com.google.common.truth.Truth.assertThat
+import io.mockk.coEvery
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class BoardViewModelOthersTest : BoardViewModelTest() {
@@ -116,5 +122,24 @@ class BoardViewModelOthersTest : BoardViewModelTest() {
                 assertThat(awaitItem().isBoardDropdownMenuExpanded).isFalse()
             }
         )
+    }
+
+    @Test
+    fun `SHOULD send snackbar WHEN observe board returns error`() {
+
+        coEvery { observeCompleteBoardUseCase(any()) } returns flowOf(
+            Result.Error(GenericError)
+        )
+
+        runTest(testDispatcher) {
+            viewModel.sideEffectFlow.test {
+
+                viewModel.onIntent(BoardIntent.ObserveBoard(1))
+                assertThat(awaitItem()).isInstanceOf(BoardSideEffect.ShowSnackBar::class.java)
+
+                cancelAndConsumeRemainingEvents()
+            }
+        }
+
     }
 }

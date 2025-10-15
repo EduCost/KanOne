@@ -33,7 +33,7 @@ import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
-import com.educost.kanone.presentation.screens.board.state.BoardState
+import com.educost.kanone.presentation.screens.board.state.BoardUiState
 import com.educost.kanone.presentation.theme.KanOneTheme
 import java.time.LocalDateTime
 
@@ -41,7 +41,7 @@ import java.time.LocalDateTime
 fun BoardColumn(
     modifier: Modifier = Modifier,
     column: ColumnUi,
-    state: BoardState,
+    state: BoardUiState,
     onIntent: (BoardIntent) -> Unit,
     sizes: BoardSizes = BoardSizes()
 ) {
@@ -192,7 +192,7 @@ private fun BoardColumnPreview() {
                         )
                     )
                 ),
-                state = BoardState(),
+                state = BoardUiState(),
                 onIntent = {}
             )
         }

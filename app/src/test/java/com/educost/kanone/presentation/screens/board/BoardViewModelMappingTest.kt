@@ -32,10 +32,8 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
-                assertThat(awaitItem().board).isNull()
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
-
-                awaitItem() // Loading state
+                skipItems(1)
 
                 val newBoard = awaitItem().board
                 assertThat(newBoard?.id).isEqualTo(1)
@@ -55,10 +53,8 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
-
-                assertThat(awaitItem().board).isNull()
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
-                awaitItem() // Loading state
+                skipItems(1)
 
                 boardFlow.emit(Result.Success(Board(id = 1, name = "test", emptyList())))
                 val firstBoard = awaitItem().board
@@ -116,10 +112,8 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
-                assertThat(awaitItem().board).isNull()
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
-
-                awaitItem() // Loading state
+                skipItems(1)
 
                 val updatedBoard = awaitItem().board
                 assertThat(updatedBoard?.id).isEqualTo(1)
@@ -189,10 +183,8 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
-
-                assertThat(awaitItem().board).isNull()
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
-                awaitItem() // Loading state
+                skipItems(1)
 
                 boardFlow.emit(firstEmission)
                 val firstBoard = awaitItem().board
@@ -298,10 +290,8 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
-                assertThat(awaitItem().board).isNull()
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
-
-                awaitItem() // Loading state
+                skipItems(1)
 
                 val updatedBoard = awaitItem().board
                 assertThat(updatedBoard?.id).isEqualTo(1)
@@ -453,10 +443,8 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
 
         runTest(testDispatcher) {
             viewModel.uiState.test {
-
-                assertThat(awaitItem().board).isNull()
                 viewModel.onIntent(BoardIntent.ObserveBoard(1))
-                awaitItem() // Loading state
+                skipItems(1)
 
                 boardFlow.emit(firstEmission)
                 val firstBoard = awaitItem().board

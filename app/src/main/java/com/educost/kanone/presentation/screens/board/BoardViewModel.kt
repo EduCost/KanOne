@@ -31,7 +31,7 @@ import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
-import com.educost.kanone.presentation.screens.board.state.BoardState
+import com.educost.kanone.presentation.screens.board.state.BoardUiState
 import com.educost.kanone.presentation.screens.board.state.CardCreationState
 import com.educost.kanone.presentation.screens.board.state.ColumnEditState
 import com.educost.kanone.presentation.screens.board.state.DragState
@@ -70,7 +70,7 @@ class BoardViewModel @Inject constructor(
     private val deleteBoardUseCase: DeleteBoardUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(BoardState())
+    private val _uiState = MutableStateFlow(BoardUiState())
     val uiState = _uiState.asStateFlow()
 
     private val _sideEffectChannel = Channel<BoardSideEffect>(Channel.BUFFERED)
@@ -198,9 +198,6 @@ class BoardViewModel @Inject constructor(
 
 
     private fun observeBoard(boardId: Long) {
-
-        _uiState.update { it.copy(isLoading = true) }
-
         viewModelScope.launch(dispatcherProvider.main) {
             observeCompleteBoardUseCase(boardId).collect { result ->
                 when (result) {
@@ -212,18 +209,15 @@ class BoardViewModel @Inject constructor(
                                 oldBoard = currentState.board
                             )
 
-                            currentState.copy(board = newBoard, isLoading = false)
+                            currentState.copy(board = newBoard)
                         }
                     }
 
-                    is Result.Error -> {
-                        sendSnackbar(
-                            SnackbarEvent(
-                                message = UiText.StringResource(R.string.board_snackbar_fetch_board_error)
-                            )
+                    is Result.Error -> sendSnackbar(
+                        SnackbarEvent(
+                            message = UiText.StringResource(R.string.board_snackbar_fetch_board_error)
                         )
-                        _uiState.update { it.copy(isLoading = false) }
-                    }
+                    )
                 }
             }
         }
@@ -350,7 +344,7 @@ class BoardViewModel @Inject constructor(
     /*  Board Settings  */
 
 
-    // Create column
+// Create column
 
     private fun startCreatingColumn() {
         clearEditAndCreationStates()
@@ -388,7 +382,7 @@ class BoardViewModel @Inject constructor(
     }
 
 
-    // Column dropdown menu
+// Column dropdown menu
 
     private fun openColumnDropdownMenu(columnId: Long) {
         clearEditAndCreationStates()
@@ -578,7 +572,7 @@ class BoardViewModel @Inject constructor(
     /*  Edit Column  */
 
 
-    // Create card
+// Create card
 
     private fun startCreatingCard(columnId: Long, isAppendingToEnd: Boolean) {
         clearEditAndCreationStates()
@@ -641,7 +635,7 @@ class BoardViewModel @Inject constructor(
     }
 
 
-    // Helper functions
+// Helper functions
 
     private fun restoreDeletedColumn(column: ColumnUi) {
         val boardId = uiState.value.board?.id ?: return
@@ -812,7 +806,7 @@ class BoardViewModel @Inject constructor(
     /*  Others  */
 
 
-    // Drag and drop
+// Drag and drop
 
     private fun onDragStart(offset: Offset) {
         clearEditAndCreationStates()
@@ -1169,7 +1163,7 @@ class BoardViewModel @Inject constructor(
     }
 
 
-    // Auto scroll
+// Auto scroll
 
     private fun handleVerticalScroll(
         selectedCard: CardUi,

@@ -39,12 +39,12 @@ import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
-import com.educost.kanone.presentation.screens.board.state.BoardState
+import com.educost.kanone.presentation.screens.board.state.BoardUiState
 
 @Composable
 fun AddCard(
     modifier: Modifier = Modifier,
-    state: BoardState,
+    state: BoardUiState,
     onIntent: (BoardIntent) -> Unit,
     column: ColumnUi,
     sizes: BoardSizes

@@ -15,13 +15,13 @@ import androidx.compose.ui.layout.positionInRoot
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
-import com.educost.kanone.presentation.screens.board.state.BoardState
+import com.educost.kanone.presentation.screens.board.state.BoardUiState
 
 @Composable
 fun HorizontalBoardLayout(
     modifier: Modifier = Modifier,
     board: BoardUi,
-    state: BoardState,
+    state: BoardUiState,
     onIntent: (BoardIntent) -> Unit
 ) {
 

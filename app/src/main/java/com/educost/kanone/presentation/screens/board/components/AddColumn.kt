@@ -43,14 +43,14 @@ import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.BoardSizes
-import com.educost.kanone.presentation.screens.board.state.BoardState
+import com.educost.kanone.presentation.screens.board.state.BoardUiState
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.theme.KanOneTheme
 
 @Composable
 fun AddColumn(
     modifier: Modifier = Modifier,
-    state: BoardState,
+    state: BoardUiState,
     onIntent: (BoardIntent) -> Unit,
     sizes: BoardSizes = BoardSizes()
 ) {
@@ -175,7 +175,7 @@ private fun AddColumnButtonPreview() {
         Surface {
             AddColumn(
                 modifier = Modifier.padding(16.dp),
-                state = BoardState(),
+                state = BoardUiState(),
                 onIntent = {}
             )
         }
@@ -189,7 +189,7 @@ private fun AddColumnTextFieldPreview() {
         Surface {
             AddColumn(
                 modifier = Modifier.padding(16.dp),
-                state = BoardState(topBarType = BoardAppBarType.ADD_COLUMN),
+                state = BoardUiState(topBarType = BoardAppBarType.ADD_COLUMN),
                 onIntent = {}
             )
         }

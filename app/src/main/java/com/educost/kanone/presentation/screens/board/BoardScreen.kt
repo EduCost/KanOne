@@ -48,7 +48,7 @@ import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
-import com.educost.kanone.presentation.screens.board.state.BoardState
+import com.educost.kanone.presentation.screens.board.state.BoardUiState
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
@@ -119,7 +119,7 @@ fun BoardScreen(
 fun BoardScreen(
     modifier: Modifier = Modifier,
     board: BoardUi,
-    state: BoardState,
+    state: BoardUiState,
     onIntent: (BoardIntent) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
@@ -258,7 +258,7 @@ fun BoardScreen(
                     .width(with(localDensity) { column.coordinates.width.toDp() })
                     .height(with(localDensity) { column.coordinates.height.toDp() }),
                 column = column,
-                state = BoardState(),
+                state = BoardUiState(),
                 onIntent = { },
                 sizes = state.board?.sizes ?: BoardSizes()
             )
@@ -274,7 +274,7 @@ private fun HorizontalBoardScreenPreview() {
     KanOneTheme {
         BoardScreen(
             board = previewBoard,
-            state = BoardState(
+            state = BoardUiState(
                 board = previewBoard,
                 topBarType = BoardAppBarType.DEFAULT
             ),
@@ -291,7 +291,7 @@ private fun VerticalBoardScreenPreview() {
     KanOneTheme {
         BoardScreen(
             board = previewBoard,
-            state = BoardState(
+            state = BoardUiState(
                 board = previewBoard,
                 topBarType = BoardAppBarType.DEFAULT
             ),

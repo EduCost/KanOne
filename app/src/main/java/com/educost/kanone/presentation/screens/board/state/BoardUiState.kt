@@ -3,9 +3,8 @@ package com.educost.kanone.presentation.screens.board.state
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 
-data class BoardState(
+data class BoardUiState(
     val board: BoardUi? = null,
-    val isLoading: Boolean = false,
     val dragState: DragState = DragState(),
     val isOnFullScreen: Boolean = false,
 
@@ -21,6 +20,8 @@ data class BoardState(
     val isChangingZoom: Boolean = false,
     val isModalSheetExpanded: Boolean = false,
 ) {
+
+    // Variable used for disabling back button
     val hasEditStates = topBarType != BoardAppBarType.DEFAULT ||
             activeDropdownColumnId != null ||
             creatingColumnName != null ||
@@ -29,6 +30,7 @@ data class BoardState(
             isBoardDropdownMenuExpanded ||
             isRenamingBoard ||
             isShowingDeleteBoardDialog
+
 }
 
 data class CardCreationState(

@@ -17,7 +17,7 @@ import com.educost.kanone.domain.usecase.ReorderCardsUseCase
 import com.educost.kanone.domain.usecase.RestoreColumnUseCase
 import com.educost.kanone.domain.usecase.UpdateBoardUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
-import com.educost.kanone.presentation.screens.board.state.BoardState
+import com.educost.kanone.presentation.screens.board.state.BoardUiState
 import com.educost.kanone.utils.Result
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -156,8 +156,8 @@ open class BoardViewModelTest {
     fun testBoardViewModelUiState(
         testDispatcher: CoroutineDispatcher = this.testDispatcher,
         given: TestScope.() -> Unit = {},
-        whenAction: suspend TurbineTestContext<BoardState>.() -> Unit,
-        then: suspend TurbineTestContext<BoardState>.() -> Unit
+        whenAction: suspend TurbineTestContext<BoardUiState>.() -> Unit,
+        then: suspend TurbineTestContext<BoardUiState>.() -> Unit
     ) = runTest(testDispatcher) {
 
         // GIVEN
@@ -171,7 +171,7 @@ open class BoardViewModelTest {
         // WHEN
         viewModel.uiState.test {
             viewModel.onIntent(BoardIntent.ObserveBoard(board.id))
-            skipItems(3) // Loading state = true  ->  New Board  ->  Loading state = false
+            skipItems(2)
 
             whenAction()
 

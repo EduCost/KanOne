@@ -43,14 +43,14 @@ import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
-import com.educost.kanone.presentation.screens.board.state.BoardState
+import com.educost.kanone.presentation.screens.board.state.BoardUiState
 import com.educost.kanone.presentation.theme.KanOneTheme
 
 @Composable
 fun ColumnHeader(
     modifier: Modifier = Modifier,
     column: ColumnUi,
-    state: BoardState,
+    state: BoardUiState,
     onIntent: (BoardIntent) -> Unit,
     sizes: BoardSizes = BoardSizes()
 ) {
@@ -185,7 +185,7 @@ private fun ColumnHeaderPreview() {
                     color = null,
                     cards = emptyList()
                 ),
-                state = BoardState(),
+                state = BoardUiState(),
                 onIntent = {}
             )
         }

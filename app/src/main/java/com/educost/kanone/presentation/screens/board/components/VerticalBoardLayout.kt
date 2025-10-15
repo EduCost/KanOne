@@ -21,13 +21,13 @@ import androidx.compose.ui.unit.dp
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
-import com.educost.kanone.presentation.screens.board.state.BoardState
+import com.educost.kanone.presentation.screens.board.state.BoardUiState
 
 @Composable
 fun VerticalBoardLayout(
     modifier: Modifier = Modifier,
     board: BoardUi,
-    state: BoardState,
+    state: BoardUiState,
     onIntent: (BoardIntent) -> Unit
 ) {
     LazyColumn(
@@ -57,7 +57,7 @@ fun VerticalBoardLayout(
 
 fun LazyListScope.verticalViewBoardColumns(
     board: BoardUi,
-    state: BoardState,
+    state: BoardUiState,
     onIntent: (BoardIntent) -> Unit
 ) {
     board.columns.forEach { column ->
