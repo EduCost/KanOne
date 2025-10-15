@@ -77,8 +77,7 @@ class BoardViewModel @Inject constructor(
     val sideEffectFlow = _sideEffectChannel.receiveAsFlow()
 
     private val scrollState = ScrollState()
-    private var verticalOverScrollJob: Job? = null
-    private var horizontalOverScrollJob: Job? = null
+
 
     fun onIntent(intent: BoardIntent) {
         when (intent) {
@@ -1203,7 +1202,7 @@ class BoardViewModel @Inject constructor(
 
                 scrollState.isVerticalScrolling = true
 
-                verticalOverScrollJob = viewModelScope.launch {
+                scrollState.verticalOverScrollJob = viewModelScope.launch {
                     while (scrollState.isVerticalScrolling) {
                         try {
                             delay(16)
@@ -1252,7 +1251,7 @@ class BoardViewModel @Inject constructor(
             if (!scrollState.isHorizontalScrolling) {
                 scrollState.isHorizontalScrolling = true
 
-                horizontalOverScrollJob = viewModelScope.launch {
+                scrollState.horizontalOverScrollJob = viewModelScope.launch {
                     while (scrollState.isHorizontalScrolling) {
                         try {
                             delay(16)
@@ -1275,15 +1274,15 @@ class BoardViewModel @Inject constructor(
         scrollState.isVerticalScrolling = false
         scrollState.verticalSpeed = 0f
         scrollState.scrollingColumnIndex = null
-        verticalOverScrollJob?.cancel()
-        verticalOverScrollJob = null
+        scrollState.verticalOverScrollJob?.cancel()
+        scrollState.verticalOverScrollJob = null
     }
 
     private fun cancelHorizontalScroll() {
         scrollState.isHorizontalScrolling = false
         scrollState.horizontalSpeed = 0f
-        horizontalOverScrollJob?.cancel()
-        horizontalOverScrollJob = null
+        scrollState.horizontalOverScrollJob?.cancel()
+        scrollState.horizontalOverScrollJob = null
     }
 
     private fun cancelAutoScroll() {
