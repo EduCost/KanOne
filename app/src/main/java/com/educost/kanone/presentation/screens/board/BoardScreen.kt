@@ -290,7 +290,7 @@ private fun HorizontalBoardScreenPreview() {
 private fun VerticalBoardScreenPreview() {
     KanOneTheme {
         BoardScreen(
-            board = previewBoard,
+            board = previewBoard.copy(isOnListView = true),
             state = BoardUiState(
                 board = previewBoard,
                 topBarType = BoardAppBarType.DEFAULT
@@ -351,6 +351,147 @@ private val previewBoard = BoardUi(
                     coordinates = Coordinates()
                 )
             )
-        )
+        ),
+        ColumnUi(
+            id = 1,
+            name = "Doing",
+            position = 1,
+            color = -4466,
+            cards = listOf(
+                CardUi(
+                    id = 0,
+                    title = "Card Title",
+                    position = 0,
+                    color = null,
+                    description = "Some description",
+                    dueDate = LocalDateTime.now().plusDays(3),
+                    createdAt = LocalDateTime.now(),
+                    coverFileName = null,
+                    tasks = listOf(
+                        Task(
+                            id = 0,
+                            description = "Example",
+                            isCompleted = true,
+                            position = 0
+                        ),
+                        Task(
+                            id = 1,
+                            description = "Completed task",
+                            isCompleted = true,
+                            position = 1
+                        )
+                    ),
+                    attachments = emptyList(),
+                    labels = listOf(
+                        Label(
+                            id = 0,
+                            name = "Label",
+                            color = null
+                        )
+                    ),
+                    coordinates = Coordinates()
+                ),
+                CardUi(
+                    id = 1,
+                    title = "Card Title",
+                    position = 1,
+                    color = null,
+                    description = "Some description",
+                    dueDate = LocalDateTime.now().plusDays(3),
+                    createdAt = LocalDateTime.now(),
+                    coverFileName = null,
+                    tasks = listOf(
+                        Task(
+                            id = 0,
+                            description = "Example",
+                            isCompleted = true,
+                            position = 0
+                        ),
+                        Task(
+                            id = 1,
+                            description = "Completed task",
+                            isCompleted = true,
+                            position = 1
+                        )
+                    ),
+                    attachments = emptyList(),
+                    labels = listOf(
+                        Label(
+                            id = 0,
+                            name = "Label",
+                            color = null
+                        )
+                    ),
+                    coordinates = Coordinates()
+                ),
+                CardUi(
+                    id = 2,
+                    title = "Card Title",
+                    position = 2,
+                    color = null,
+                    description = "Some description",
+                    dueDate = LocalDateTime.now().plusDays(3),
+                    createdAt = LocalDateTime.now(),
+                    coverFileName = null,
+                    tasks = listOf(
+                        Task(
+                            id = 0,
+                            description = "Example",
+                            isCompleted = true,
+                            position = 0
+                        ),
+                        Task(
+                            id = 1,
+                            description = "Completed task",
+                            isCompleted = true,
+                            position = 1
+                        )
+                    ),
+                    attachments = emptyList(),
+                    labels = listOf(
+                        Label(
+                            id = 0,
+                            name = "Label",
+                            color = null
+                        )
+                    ),
+                    coordinates = Coordinates()
+                ),
+                CardUi(
+                    id = 3,
+                    title = "Card Title",
+                    position = 3,
+                    color = null,
+                    description = "Some description",
+                    dueDate = LocalDateTime.now().plusDays(3),
+                    createdAt = LocalDateTime.now(),
+                    coverFileName = null,
+                    tasks = listOf(
+                        Task(
+                            id = 0,
+                            description = "Example",
+                            isCompleted = true,
+                            position = 0
+                        ),
+                        Task(
+                            id = 1,
+                            description = "Completed task",
+                            isCompleted = true,
+                            position = 1
+                        )
+                    ),
+                    attachments = emptyList(),
+                    labels = listOf(
+                        Label(
+                            id = 0,
+                            name = "Label",
+                            color = null
+                        )
+                    ),
+                    coordinates = Coordinates()
+                ),
+
+            )
+        ),
     )
 )

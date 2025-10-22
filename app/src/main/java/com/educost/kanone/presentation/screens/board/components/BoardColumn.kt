@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,7 +44,8 @@ fun BoardColumn(
     column: ColumnUi,
     state: BoardUiState,
     onIntent: (BoardIntent) -> Unit,
-    sizes: BoardSizes = BoardSizes()
+    sizes: BoardSizes = BoardSizes(),
+    cardColumnHeight: Int? = null
 ) {
 
     var isAddingCardOnTop by remember(state.cardCreationState) {
@@ -78,6 +80,12 @@ fun BoardColumn(
 
         LazyColumn(
             modifier = Modifier
+                .then(
+                    other = if (cardColumnHeight != null)
+                        Modifier.heightIn(max = cardColumnHeight.dp)
+                    else
+                        Modifier
+                )
                 .onGloballyPositioned { layoutCoordinates ->
                     onIntent(
                         BoardIntent.SetColumnListCoordinates(

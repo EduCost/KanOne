@@ -1,20 +1,16 @@
 package com.educost.kanone.presentation.screens.board.components
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.unit.dp
@@ -44,48 +40,20 @@ fun VerticalBoardLayout(
                 )
             }
             .fillMaxSize(),
-        contentPadding = PaddingValues(start = 8.dp, bottom = 8.dp, end = 8.dp),
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         state = board.listState
     ) {
-        verticalViewBoardColumns(
-            board = board,
-            state = state,
-            onIntent = onIntent
-        )
-    }
-}
+        items(board.columns) { column ->
 
-fun LazyListScope.verticalViewBoardColumns(
-    board: BoardUi,
-    state: BoardUiState,
-    onIntent: (BoardIntent) -> Unit
-) {
-    board.columns.forEach { column ->
+            val isDraggingColumn = state.dragState.isColumnBeingDragged(column.id)
 
-        item {
-            ColumnHeader(
+            BoardColumn(
                 modifier = Modifier
-                    .padding(top = 8.dp)
-                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
-                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))
-                    .padding(8.dp)
-                    .padding(bottom = 4.dp)
-                    .fillMaxWidth(),
-                column = column,
-                state = state,
-                onIntent = onIntent,
-            )
-        }
-
-        items(column.cards) { card ->
-            val isTheLastCard = remember { card.id == column.cards.last().id }
-
-            ColumnCard(
-                modifier = Modifier
+                    .fillMaxWidth()
                     .onGloballyPositioned { layoutCoordinates ->
                         onIntent(
-                            BoardIntent.SetCardCoordinates(
-                                cardId = card.id,
+                            BoardIntent.SetColumnCoordinates(
                                 columnId = column.id,
                                 coordinates = Coordinates(
                                     position = layoutCoordinates.positionInRoot(),
@@ -96,26 +64,21 @@ fun LazyListScope.verticalViewBoardColumns(
                         )
                     }
                     .then(
-                        if (isTheLastCard) {
-                            Modifier.clip(
-                                RoundedCornerShape(
-                                    bottomStart = 12.dp,
-                                    bottomEnd = 12.dp
-                                )
-                            )
+                        if (isDraggingColumn) {
+                            Modifier
+                                .graphicsLayer {
+                                    colorFilter = ColorFilter.tint(Color.Gray)
+                                    alpha = 0.05f
+                                }
                         } else {
                             Modifier
                         }
-                    )
-                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 8.dp)
-                    .fillMaxWidth(),
-                card = card,
-                showImage = board.showImages,
-                onClick = { onIntent(BoardIntent.OnCardClick(card.id)) }
+                    ),
+                column = column,
+                state = state,
+                onIntent = onIntent,
+                cardColumnHeight = 600
             )
         }
-
     }
 }
