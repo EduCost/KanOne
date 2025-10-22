@@ -1,7 +1,6 @@
 package com.educost.kanone.presentation.screens.board
 
 import androidx.compose.foundation.gestures.scrollBy
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
@@ -38,7 +37,6 @@ import com.educost.kanone.presentation.screens.board.state.DragState
 import com.educost.kanone.presentation.screens.board.state.ScrollState
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.utils.CardOrder
-import com.educost.kanone.presentation.screens.board.utils.ItemWithIndex
 import com.educost.kanone.presentation.screens.board.utils.OrderType
 import com.educost.kanone.presentation.util.SnackbarAction
 import com.educost.kanone.presentation.util.SnackbarEvent
@@ -809,60 +807,33 @@ class BoardViewModel @Inject constructor(
 
     private fun onDragStart(offset: Offset) {
         clearEditAndCreationStates()
-        _uiState.update { currentState ->
-            val board = currentState.board ?: return
-
-            val targetColumn = findColumnWithIndex(
-                offsetX = offset.x,
-                columns = board.columns,
-                lazyRowState = currentState.board.listState
-            ) ?: return
-
-
-            val isSelectingHeader = isHeaderPressed(targetColumn.item, offset.y)
-            if (isSelectingHeader) {
-                val newOffset = targetColumn.item.getNewHeaderCenteredOffset(offset)
-                return@update currentState.copy(
-                    dragState = currentState.dragState.copy(
-                        itemBeingDraggedOffset = newOffset,
-                        columnBeingDragged = targetColumn.item,
-                        columnBeingDraggedIndex = targetColumn.index
-                    )
-                )
-            }
-
-
-            val targetCard = findCardWithIndex(
-                column = targetColumn.item,
-                offsetY = offset.y,
-            ) ?: return
-
-            val newOffset = targetCard.item.getNewCenteredOffset(offset)
-
-
-            currentState.copy(
-                dragState = currentState.dragState.copy(
-                    itemBeingDraggedOffset = newOffset,
-                    cardBeingDragged = targetCard.item,
-                    cardBeingDraggedIndex = targetCard.index,
-                    cardBeingDraggedColumn = targetColumn.item,
-                    cardBeingDraggedColumnIndex = targetColumn.index,
-                )
-            )
-        }
+        _uiState.update { it.onDragStart(offset) }
     }
 
-    private fun onDrag(position: Offset?) {
-        val dragState = uiState.value.dragState
+    private fun onDrag(offset: Offset?) {
+        _uiState.update { state ->
 
-        if (dragState.shouldDragColumn()) {
-            return dragColumn(position)
+            if (state.dragState.shouldDragColumn()) {
+                val column = state.dragState.columnBeingDragged ?: return
+
+                handleHorizontalScroll(column.coordinates.width)
+            }
+
+            if (state.dragState.shouldDragCard()) {
+                val currentCard = state.dragState.cardBeingDragged ?: return
+                val currentColumn = state.dragState.cardBeingDraggedColumn ?: return
+                val currentColumnIndex = state.dragState.cardBeingDraggedColumnIndex ?: return
+
+                handleVerticalScroll(
+                    selectedCard = currentCard,
+                    selectedColumn = currentColumn,
+                    selectedColumnIndex = currentColumnIndex
+                )
+                handleHorizontalScroll(currentCard.coordinates.width)
+            }
+
+            return@update state.onDrag(offset)
         }
-
-        if (dragState.shouldDragCard()) {
-            return dragCard(position)
-        }
-
     }
 
     private fun onDragStop() {
@@ -871,298 +842,8 @@ class BoardViewModel @Inject constructor(
         updatePositions()
     }
 
-    private fun dragColumn(position: Offset?) {
-        _uiState.update { state ->
-            val board = state.board ?: return
-            val dragState = state.dragState
 
-            val columns = board.columns
-            val column = dragState.columnBeingDragged ?: return
-            val columnIndex = dragState.columnBeingDraggedIndex ?: return
-
-
-            handleHorizontalScroll(column.coordinates.width)
-
-
-            val newOffset =
-                if (position != null) column.getNewHeaderCenteredOffset(position)
-                else dragState.itemBeingDraggedOffset
-
-            val newState = state.copy(
-                dragState = dragState.copy(itemBeingDraggedOffset = newOffset)
-            )
-
-
-            val columnCenterX = column.getNewCenterX(newOffset)
-
-
-            val targetColumn = findColumnWithIndex(
-                offsetX = columnCenterX,
-                columns = columns,
-                lazyRowState = board.listState
-            ) ?: return@update newState
-
-            if (targetColumn.index == columnIndex) return@update newState
-
-
-            val targetColumnCenterX = targetColumn.item.getCenterX()
-
-
-            if (shouldSwapColumns(
-                    currentColumnCenterX = columnCenterX,
-                    targetColumnCenterX = targetColumnCenterX,
-                    currentColumnIndex = columnIndex,
-                    targetColumnIndex = targetColumn.index
-                )
-            ) {
-                val newColumns = columns.toMutableList().apply {
-                    add(targetColumn.index, removeAt(columnIndex))
-                }
-
-                return@update state.copy(
-                    board = state.board.copy(columns = newColumns),
-                    dragState = state.dragState.copy(
-                        columnBeingDraggedIndex = targetColumn.index,
-                    )
-                )
-            }
-
-            return@update newState
-        }
-    }
-
-    private fun dragCard(position: Offset?) {
-        _uiState.update { state ->
-            val board = state.board ?: return
-            val currentCard = state.dragState.cardBeingDragged ?: return
-            val currentCardIndex = state.dragState.cardBeingDraggedIndex ?: return
-            val currentColumn = state.dragState.cardBeingDraggedColumn ?: return
-            val currentColumnIndex = state.dragState.cardBeingDraggedColumnIndex ?: return
-
-
-            handleVerticalScroll(
-                selectedCard = currentCard,
-                selectedColumn = currentColumn,
-                selectedColumnIndex = currentColumnIndex
-            )
-            handleHorizontalScroll(currentCard.coordinates.width)
-
-
-            val newOffset =
-                if (position != null) currentCard.getNewCenteredOffset(position)
-                else state.dragState.itemBeingDraggedOffset
-
-            val newState = state.copy(
-                dragState = state.dragState.copy(itemBeingDraggedOffset = newOffset)
-            )
-
-
-            val cardCenterX = currentCard.getNewCenterX(newOffset)
-            val cardCenterY = currentCard.getNewCenterY(newOffset)
-
-
-            val targetColumn = findColumnWithIndex(
-                offsetX = cardCenterX,
-                columns = board.columns,
-                lazyRowState = board.listState
-            ) ?: return@update newState
-
-
-            val shouldTransferCardToAnotherColumn = currentColumnIndex != targetColumn.index
-            if (shouldTransferCardToAnotherColumn) {
-                val newCardIndex = determineDropIndexInColumn(
-                    cardOffsetY = cardCenterY,
-                    targetColumn = targetColumn.item
-                )
-
-                val currentColumnCards = currentColumn.cards.toMutableList().apply {
-                    remove(currentCard)
-                }
-                val targetColumnCards = targetColumn.item.cards.toMutableList().apply {
-                    add(newCardIndex, currentCard)
-                }
-
-                val newColumns = board.columns.toMutableList().apply {
-                    set(currentColumnIndex, currentColumn.copy(cards = currentColumnCards))
-                    set(targetColumn.index, targetColumn.item.copy(cards = targetColumnCards))
-                }
-
-
-                return@update state.copy(
-                    board = board.copy(columns = newColumns),
-                    dragState = state.dragState.copy(
-                        itemBeingDraggedOffset = newOffset,
-                        cardBeingDraggedColumn = targetColumn.item,
-                        cardBeingDraggedIndex = newCardIndex,
-                        cardBeingDraggedColumnIndex = targetColumn.index
-                    )
-                )
-            }
-
-
-            val targetCard = findCardWithIndex(
-                column = targetColumn.item,
-                offsetY = cardCenterY
-            ) ?: return@update newState
-
-
-            val targetCardCenterY = targetCard.item.getCenterY()
-
-
-            if (shouldSwapCards(
-                    currentCardCenterY = cardCenterY,
-                    targetCardCenterY = targetCardCenterY,
-                    currentCardIndex = currentCardIndex,
-                    targetCardIndex = targetCard.index
-                )
-            ) {
-                val newColumns = board.columns.toMutableList()
-
-
-                val newCards = newColumns[currentColumnIndex].cards.toMutableList().apply {
-                    add(
-                        index = targetCard.index,
-                        element = removeAt(currentCardIndex)
-                    )
-                }.toList()
-
-
-                val updatedColumn = newColumns[currentColumnIndex].copy(cards = newCards)
-                newColumns[currentColumnIndex] = updatedColumn
-
-
-                return@update state.copy(
-                    board = board.copy(columns = newColumns),
-                    dragState = state.dragState.copy(
-                        itemBeingDraggedOffset = newOffset,
-                        cardBeingDraggedIndex = targetCard.index
-                    )
-                )
-            }
-
-
-            return@update newState
-        }
-    }
-
-    private fun shouldSwapColumns(
-        currentColumnCenterX: Float,
-        targetColumnCenterX: Float,
-        currentColumnIndex: Int,
-        targetColumnIndex: Int
-    ): Boolean {
-        val isCurrentColumnAfterTarget = currentColumnCenterX > targetColumnCenterX
-        val isCurrentColumnBeforeTarget = currentColumnCenterX < targetColumnCenterX
-
-        val isCurrentIndexGreaterThanTargetIndex = currentColumnIndex > targetColumnIndex
-        val isCurrentIndexLessThanTargetIndex = currentColumnIndex < targetColumnIndex
-
-        val shouldMoveRight = isCurrentColumnAfterTarget && isCurrentIndexLessThanTargetIndex
-        val shouldMoveLeft = isCurrentColumnBeforeTarget && isCurrentIndexGreaterThanTargetIndex
-
-        return shouldMoveRight || shouldMoveLeft
-    }
-
-    private fun shouldSwapCards(
-        currentCardCenterY: Float,
-        targetCardCenterY: Float,
-        currentCardIndex: Int,
-        targetCardIndex: Int,
-    ): Boolean {
-        val isCurrentCardBelowTarget = currentCardCenterY > targetCardCenterY
-        val isCurrentCardAboveTarget = currentCardCenterY < targetCardCenterY
-
-        val isCurrentIndexGreaterThanTargetIndex = currentCardIndex > targetCardIndex
-        val isCurrentIndexLessThanTargetIndex = currentCardIndex < targetCardIndex
-
-        val shouldMoveDown = isCurrentCardBelowTarget && isCurrentIndexLessThanTargetIndex
-        val shouldMoveUp = isCurrentCardAboveTarget && isCurrentIndexGreaterThanTargetIndex
-
-        return shouldMoveDown || shouldMoveUp
-    }
-
-    private fun isHeaderPressed(
-        column: ColumnUi,
-        offsetY: Float,
-    ): Boolean {
-        val headerTop = column.headerCoordinates.position.y
-        val headerBottom = column.headerCoordinates.position.y + column.headerCoordinates.height
-        return offsetY in headerTop..headerBottom
-    }
-
-    private fun determineDropIndexInColumn(
-        cardOffsetY: Float,
-        targetColumn: ColumnUi
-    ): Int {
-        val potentialTargetIndex = findCardWithIndex(
-            column = targetColumn,
-            offsetY = cardOffsetY
-        )?.index ?: -1
-
-        val targetNotFound = potentialTargetIndex == -1
-        val columnHasCards = targetColumn.cards.isNotEmpty()
-
-        if (targetNotFound && columnHasCards) {
-            val lastCardInColumn = targetColumn.cards.last()
-            val lastCardCenterY = lastCardInColumn.coordinates.position.y +
-                    lastCardInColumn.coordinates.height / 2
-
-            return if (cardOffsetY > lastCardCenterY) {
-                targetColumn.cards.size
-            } else {
-                0
-            }
-        } else if (targetNotFound) { // Didn't found card and column has no cards
-            return 0
-        } else {
-            return potentialTargetIndex
-        }
-    }
-
-    private fun findColumnWithIndex(
-        offsetX: Float,
-        columns: List<ColumnUi>,
-        lazyRowState: LazyListState
-    ): ItemWithIndex<ColumnUi>? {
-        val columnsOnScreen = lazyRowState.layoutInfo.visibleItemsInfo.map { it.index }
-
-        val targetColumn = columns.filterIndexed { index, column ->
-            val columnStart = column.coordinates.position.x
-            val columnEnd = column.coordinates.position.x + column.coordinates.width
-            val columnRange = columnStart..columnEnd
-
-            offsetX in columnRange && index in columnsOnScreen
-        }.firstOrNull() ?: return null
-
-        val targetColumnIndex = columns
-            .indexOfFirst { it.id == targetColumn.id }
-            .takeIf { it != -1 }
-            ?: return null
-
-        return ItemWithIndex(targetColumn, targetColumnIndex)
-    }
-
-    private fun findCardWithIndex(column: ColumnUi, offsetY: Float): ItemWithIndex<CardUi>? {
-        val cardsOnScreen = column.listState.layoutInfo.visibleItemsInfo.map { it.index }
-
-        val targetCard = column.cards.filterIndexed { index, card ->
-            val cardStart = card.coordinates.position.y
-            val cardEnd = card.coordinates.position.y + card.coordinates.height
-            val cardRange = cardStart..cardEnd
-
-            offsetY in cardRange && index in cardsOnScreen
-        }.firstOrNull() ?: return null
-
-        val targetCardIndex = column.cards
-            .indexOfFirst { it.id == targetCard.id }
-            .takeIf { it != -1 }
-            ?: return null
-
-        return ItemWithIndex(targetCard, targetCardIndex)
-    }
-
-
-// Auto scroll
+    // Auto scroll
 
     private fun handleVerticalScroll(
         selectedCard: CardUi,
