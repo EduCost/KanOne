@@ -44,7 +44,7 @@ fun VerticalBoardLayout(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         state = board.listState
     ) {
-        items(board.columns) { column ->
+        items(items = board.columns) { column ->
 
             val isDraggingColumn = state.dragState.isColumnBeingDragged(column.id)
 
@@ -77,7 +77,8 @@ fun VerticalBoardLayout(
                 column = column,
                 state = state,
                 onIntent = onIntent,
-                cardColumnHeight = 600
+                isOnVerticalLayout = true,
+                showCardImages = board.showImages
             )
         }
     }

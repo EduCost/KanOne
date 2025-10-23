@@ -148,10 +148,10 @@ fun BoardScreen(
             .pointerInput(Unit) {
                 detectDragGesturesAfterLongPress(
                     onDrag = { change, _ ->
-                        onIntent(BoardIntent.OnDrag(change.position))
+                        onIntent(BoardIntent.OnDrag(change.position, isOnVerticalLayout))
                     },
                     onDragStart = { offset ->
-                        onIntent(BoardIntent.OnDragStart(offset))
+                        onIntent(BoardIntent.OnDragStart(offset, isOnVerticalLayout))
                     },
                     onDragEnd = {
                         onIntent(BoardIntent.OnDragStop)
@@ -243,8 +243,10 @@ fun BoardScreen(
                     .width(with(localDensity) { card.coordinates.width.toDp() })
                     .height(with(localDensity) { card.coordinates.height.toDp() }),
                 card = card,
-                showImage = state.board?.showImages ?: true,
-                sizes = state.board?.sizes ?: BoardSizes(),
+                showImage = board.showImages,
+                sizes =
+                    if (isOnVerticalLayout) BoardSizes()
+                    else board.sizes,
             )
         }
         state.dragState.columnBeingDragged?.let { column ->
@@ -260,7 +262,11 @@ fun BoardScreen(
                 column = column,
                 state = BoardUiState(),
                 onIntent = { },
-                sizes = state.board?.sizes ?: BoardSizes()
+                sizes =
+                    if (isOnVerticalLayout) BoardSizes()
+                    else board.sizes,
+                isOnVerticalLayout = isOnVerticalLayout,
+                showCardImages = board.showImages
             )
         }
     }
@@ -491,7 +497,7 @@ private val previewBoard = BoardUi(
                     coordinates = Coordinates()
                 ),
 
-            )
+                )
         ),
     )
 )

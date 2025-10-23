@@ -15,14 +15,22 @@ data class ColumnUi(
     val listState: LazyListState = LazyListState()
 ) {
 
-    fun getNewHeaderCenteredOffset(newOffset: Offset): Offset {
+    fun adjustOffsetToCenter(newOffset: Offset): Offset {
         val newX = newOffset.x - coordinates.width / 2
         val newY = newOffset.y - headerCoordinates.height / 2
         return Offset(newX, newY)
     }
 
-    fun getNewCenterX(newOffset: Offset): Float = newOffset.x + coordinates.width / 2
+    fun getCenter(): Offset {
+        val centerX = coordinates.position.x + coordinates.width / 2
+        val centerY = coordinates.position.y + headerCoordinates.height / 2
+        return Offset(centerX, centerY)
+    }
 
-    fun getCenterX(): Float = coordinates.position.x + coordinates.width / 2
+    fun getNewHeaderCenter(newOffset: Offset): Offset {
+        val centerX = newOffset.x + coordinates.width / 2
+        val centerY = newOffset.y + headerCoordinates.height / 2
+        return Offset(centerX, centerY)
+    }
 
 }

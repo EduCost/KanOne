@@ -16,11 +16,11 @@ data class DragState(
     val columnBeingDraggedIndex: Int? = null,
 ) {
 
-    fun shouldDragColumn(): Boolean {
+    fun isDraggingColumn(): Boolean {
         return columnBeingDragged != null && columnBeingDraggedIndex != null
     }
 
-    fun shouldDragCard(): Boolean {
+    fun isDraggingCard(): Boolean {
         return cardBeingDragged != null &&
                 cardBeingDraggedIndex != null &&
                 cardBeingDraggedColumn != null &&

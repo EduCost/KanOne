@@ -21,16 +21,19 @@ data class CardUi(
     val coordinates: Coordinates
 ) {
 
-    fun getNewCenteredOffset(newOffset: Offset): Offset {
+    fun adjustOffsetToCenter(newOffset: Offset): Offset {
         return Offset(
             x = newOffset.x - coordinates.width / 2,
             y = newOffset.y - coordinates.height / 2
         )
     }
 
-    fun getNewCenterX(newOffset: Offset): Float = newOffset.x + coordinates.width / 2
-
-    fun getNewCenterY(newOffset: Offset): Float = newOffset.y + coordinates.height / 2
+    fun getNewCenter(newOffset: Offset): Offset {
+        return Offset(
+            x = newOffset.x + coordinates.width / 2,
+            y = newOffset.y + coordinates.height / 2
+        )
+    }
 
     fun getCenterY(): Float = coordinates.position.y + coordinates.height / 2
 }

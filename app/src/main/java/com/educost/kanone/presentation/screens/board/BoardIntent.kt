@@ -90,8 +90,8 @@ sealed interface BoardIntent {
 
 
     // Drag and drop
-    data class OnDragStart(val offset: Offset) : BoardIntent
-    data class OnDrag(val position: Offset) : BoardIntent
+    data class OnDragStart(val offset: Offset, val isOnVerticalLayout: Boolean) : BoardIntent
+    data class OnDrag(val position: Offset, val isOnVerticalLayout: Boolean) : BoardIntent
     data object OnDragStop : BoardIntent
 
 

@@ -24,6 +24,8 @@ data class BoardUiState(
     val isShowingDeleteBoardDialog: Boolean = false,
     val isChangingZoom: Boolean = false,
     val isModalSheetExpanded: Boolean = false,
+
+    val center: Offset = Offset.Zero
 ) {
 
     // Variable used for disabling back button
@@ -37,19 +39,20 @@ data class BoardUiState(
             isShowingDeleteBoardDialog
 
 
-    fun onDragStart(offset: Offset): BoardUiState {
+    fun onDragStart(offset: Offset, isOnVerticalLayout: Boolean): BoardUiState {
         if (board == null) return this
 
         val targetColumn = findColumnWithIndex(
-            offsetX = offset.x,
+            isOnVerticalLayout = isOnVerticalLayout,
+            offset = offset,
             columns = board.columns,
-            lazyRowState = board.listState
+            lazyListState = board.listState
         ) ?: return this
 
 
         val isSelectingHeader = isHeaderPressed(targetColumn.item, offset.y)
         if (isSelectingHeader) {
-            val newOffset = targetColumn.item.getNewHeaderCenteredOffset(offset)
+            val newOffset = targetColumn.item.adjustOffsetToCenter(offset)
             return this.copy(
                 dragState = dragState.copy(
                     itemBeingDraggedOffset = newOffset,
@@ -65,7 +68,7 @@ data class BoardUiState(
             offsetY = offset.y,
         ) ?: return this
 
-        val newOffset = targetCard.item.getNewCenteredOffset(offset)
+        val newOffset = targetCard.item.adjustOffsetToCenter(offset)
 
 
         return this.copy(
@@ -79,28 +82,29 @@ data class BoardUiState(
         )
     }
 
-    fun onDrag(offset: Offset?): BoardUiState {
+    fun onDrag(offset: Offset?, isOnVerticalLayout: Boolean): BoardUiState {
 
-        if (dragState.shouldDragColumn()) {
-            return dragColumn(offset)
+        if (dragState.isDraggingColumn()) {
+            return dragColumn(offset, isOnVerticalLayout)
         }
 
-        if (dragState.shouldDragCard()) {
-            return dragCard(offset)
+        if (dragState.isDraggingCard()) {
+            return dragCard(offset, isOnVerticalLayout)
         }
 
         return this
     }
 
-    private fun dragColumn(offset: Offset?): BoardUiState {
+    private fun dragColumn(offset: Offset?, isOnVerticalLayout: Boolean): BoardUiState {
         if (board == null) return this
 
         val columns = board.columns
         val column = dragState.columnBeingDragged ?: return this
         val columnIndex = dragState.columnBeingDraggedIndex ?: return this
 
+
         val newOffset =
-            if (offset != null) column.getNewHeaderCenteredOffset(offset)
+            if (offset != null) column.adjustOffsetToCenter(offset)
             else dragState.itemBeingDraggedOffset
 
         val newState = this.copy(
@@ -108,24 +112,26 @@ data class BoardUiState(
         )
 
 
-        val columnCenterX = column.getNewCenterX(newOffset)
+        val columnCenter = column.getNewHeaderCenter(newOffset)
 
 
         val targetColumn = findColumnWithIndex(
-            offsetX = columnCenterX,
+            isOnVerticalLayout = isOnVerticalLayout,
+            offset = columnCenter,
             columns = columns,
-            lazyRowState = board.listState
+            lazyListState = board.listState
         ) ?: return newState
 
         if (targetColumn.index == columnIndex) return newState
 
 
-        val targetColumnCenterX = targetColumn.item.getCenterX()
+        val targetColumnCenter = targetColumn.item.getCenter()
 
 
         if (shouldSwapColumns(
-                currentColumnCenterX = columnCenterX,
-                targetColumnCenterX = targetColumnCenterX,
+                isOnVerticalLayout = isOnVerticalLayout,
+                currentColumnCenter = columnCenter,
+                targetColumnCenter = targetColumnCenter,
                 currentColumnIndex = columnIndex,
                 targetColumnIndex = targetColumn.index
             )
@@ -146,7 +152,7 @@ data class BoardUiState(
 
     }
 
-    private fun dragCard(offset: Offset?): BoardUiState {
+    private fun dragCard(offset: Offset?, isOnVerticalLayout: Boolean): BoardUiState {
         if (board == null) return this
 
         val currentCard = dragState.cardBeingDragged ?: return this
@@ -156,7 +162,7 @@ data class BoardUiState(
 
 
         val newOffset =
-            if (offset != null) currentCard.getNewCenteredOffset(offset)
+            if (offset != null) currentCard.adjustOffsetToCenter(offset)
             else dragState.itemBeingDraggedOffset
 
         val newState = this.copy(
@@ -164,21 +170,21 @@ data class BoardUiState(
         )
 
 
-        val cardCenterX = currentCard.getNewCenterX(newOffset)
-        val cardCenterY = currentCard.getNewCenterY(newOffset)
+        val cardCenter = currentCard.getNewCenter(newOffset)
 
 
         val targetColumn = findColumnWithIndex(
-            offsetX = cardCenterX,
+            isOnVerticalLayout = isOnVerticalLayout,
+            offset = cardCenter,
             columns = board.columns,
-            lazyRowState = board.listState
+            lazyListState = board.listState
         ) ?: return newState
 
 
         val shouldTransferCardToAnotherColumn = currentColumnIndex != targetColumn.index
         if (shouldTransferCardToAnotherColumn) {
             val newCardIndex = determineDropIndexInColumn(
-                cardOffsetY = cardCenterY,
+                cardOffsetY = cardCenter.y,
                 targetColumn = targetColumn.item
             )
 
@@ -209,7 +215,7 @@ data class BoardUiState(
 
         val targetCard = findCardWithIndex(
             column = targetColumn.item,
-            offsetY = cardCenterY
+            offsetY = cardCenter.y
         ) ?: return newState
 
 
@@ -217,7 +223,7 @@ data class BoardUiState(
 
 
         if (shouldSwapCards(
-                currentCardCenterY = cardCenterY,
+                currentCardCenterY = cardCenter.y,
                 targetCardCenterY = targetCardCenterY,
                 currentCardIndex = currentCardIndex,
                 targetCardIndex = targetCard.index
@@ -252,21 +258,35 @@ data class BoardUiState(
     }
 
     private fun shouldSwapColumns(
-        currentColumnCenterX: Float,
-        targetColumnCenterX: Float,
+        isOnVerticalLayout: Boolean,
+        currentColumnCenter: Offset,
+        targetColumnCenter: Offset,
         currentColumnIndex: Int,
         targetColumnIndex: Int
     ): Boolean {
-        val isCurrentColumnAfterTarget = currentColumnCenterX > targetColumnCenterX
-        val isCurrentColumnBeforeTarget = currentColumnCenterX < targetColumnCenterX
 
         val isCurrentIndexGreaterThanTargetIndex = currentColumnIndex > targetColumnIndex
         val isCurrentIndexLessThanTargetIndex = currentColumnIndex < targetColumnIndex
 
-        val shouldMoveRight = isCurrentColumnAfterTarget && isCurrentIndexLessThanTargetIndex
-        val shouldMoveLeft = isCurrentColumnBeforeTarget && isCurrentIndexGreaterThanTargetIndex
+        if (isOnVerticalLayout) {
+            val isCurrentColumnAboveTarget = currentColumnCenter.y < targetColumnCenter.y
+            val isCurrentColumnBellowTarget = currentColumnCenter.y > targetColumnCenter.y
 
-        return shouldMoveRight || shouldMoveLeft
+            val shouldMoveUp = isCurrentColumnAboveTarget && isCurrentIndexGreaterThanTargetIndex
+            val shouldMoveDown = isCurrentColumnBellowTarget && isCurrentIndexLessThanTargetIndex
+
+            return shouldMoveUp || shouldMoveDown
+        } else {
+            val isCurrentColumnAfterTarget = currentColumnCenter.x > targetColumnCenter.x
+            val isCurrentColumnBeforeTarget = currentColumnCenter.x < targetColumnCenter.x
+
+            val shouldMoveRight = isCurrentColumnAfterTarget && isCurrentIndexLessThanTargetIndex
+            val shouldMoveLeft = isCurrentColumnBeforeTarget && isCurrentIndexGreaterThanTargetIndex
+
+            return shouldMoveRight || shouldMoveLeft
+        }
+
+
     }
 
     private fun shouldSwapCards(
@@ -288,26 +308,47 @@ data class BoardUiState(
     }
 
     private fun findColumnWithIndex(
-        offsetX: Float,
+        isOnVerticalLayout: Boolean,
+        offset: Offset,
         columns: List<ColumnUi>,
-        lazyRowState: LazyListState
+        lazyListState: LazyListState
     ): ItemWithIndex<ColumnUi>? {
-        val columnsOnScreen = lazyRowState.layoutInfo.visibleItemsInfo.map { it.index }
+        val columnsOnScreen = lazyListState.layoutInfo.visibleItemsInfo.map { it.index }
 
-        val targetColumn = columns.filterIndexed { index, column ->
-            val columnStart = column.coordinates.position.x
-            val columnEnd = column.coordinates.position.x + column.coordinates.width
-            val columnRange = columnStart..columnEnd
+        if (isOnVerticalLayout) {
 
-            offsetX in columnRange && index in columnsOnScreen
-        }.firstOrNull() ?: return null
+            val targetColumn = columns.filterIndexed { index, column ->
+                val columnTop = column.coordinates.position.y
+                val columnBottom = column.coordinates.position.y + column.coordinates.height
+                val columnRange = columnTop..columnBottom
 
-        val targetColumnIndex = columns
-            .indexOfFirst { it.id == targetColumn.id }
-            .takeIf { it != -1 }
-            ?: return null
+                offset.y in columnRange && index in columnsOnScreen
+            }.firstOrNull() ?: return null
 
-        return ItemWithIndex(targetColumn, targetColumnIndex)
+            val targetColumnIndex = columns
+                .indexOfFirst { it.id == targetColumn.id }
+                .takeIf { it != -1 }
+                ?: return null
+
+            return ItemWithIndex(targetColumn, targetColumnIndex)
+
+        } else {
+
+            val targetColumn = columns.filterIndexed { index, column ->
+                val columnStart = column.coordinates.position.x
+                val columnEnd = column.coordinates.position.x + column.coordinates.width
+                val columnRange = columnStart..columnEnd
+
+                offset.x in columnRange && index in columnsOnScreen
+            }.firstOrNull() ?: return null
+
+            val targetColumnIndex = columns
+                .indexOfFirst { it.id == targetColumn.id }
+                .takeIf { it != -1 }
+                ?: return null
+
+            return ItemWithIndex(targetColumn, targetColumnIndex)
+        }
     }
 
     private fun findCardWithIndex(column: ColumnUi, offsetY: Float): ItemWithIndex<CardUi>? {

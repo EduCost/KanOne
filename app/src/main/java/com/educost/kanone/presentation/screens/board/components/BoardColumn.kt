@@ -45,7 +45,8 @@ fun BoardColumn(
     state: BoardUiState,
     onIntent: (BoardIntent) -> Unit,
     sizes: BoardSizes = BoardSizes(),
-    cardColumnHeight: Int? = null
+    isOnVerticalLayout: Boolean = false,
+    showCardImages: Boolean
 ) {
 
     var isAddingCardOnTop by remember(state.cardCreationState) {
@@ -81,8 +82,8 @@ fun BoardColumn(
         LazyColumn(
             modifier = Modifier
                 .then(
-                    other = if (cardColumnHeight != null)
-                        Modifier.heightIn(max = cardColumnHeight.dp)
+                    other = if (isOnVerticalLayout)
+                        Modifier.heightIn(max = 87000.dp)
                     else
                         Modifier
                 )
@@ -153,7 +154,7 @@ fun BoardColumn(
                         )
                         .fillMaxWidth(),
                     card = card,
-                    showImage = state.board?.showImages ?: true,
+                    showImage = showCardImages,
                     sizes = sizes,
                     onClick = { onIntent(BoardIntent.OnCardClick(card.id)) }
                 )
@@ -201,7 +202,8 @@ private fun BoardColumnPreview() {
                     )
                 ),
                 state = BoardUiState(),
-                onIntent = {}
+                onIntent = {},
+                showCardImages = true
             )
         }
     }

@@ -81,7 +81,8 @@ fun HorizontalBoardLayout(
                 column = column,
                 state = state,
                 onIntent = onIntent,
-                sizes = board.sizes
+                sizes = board.sizes,
+                showCardImages = board.showImages
             )
         }
 
