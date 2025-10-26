@@ -12,7 +12,8 @@ data class ColumnUi(
     val coordinates: Coordinates = Coordinates(),
     val listCoordinates: Coordinates = Coordinates(),
     val headerCoordinates: Coordinates = Coordinates(),
-    val listState: LazyListState = LazyListState()
+    val listState: LazyListState = LazyListState(),
+    val isExpanded: Boolean = true
 ) {
 
     fun adjustOffsetToCenter(newOffset: Offset): Offset {

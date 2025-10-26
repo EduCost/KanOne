@@ -38,6 +38,10 @@
     <string name="board_column_header_more_options_content_description">More Column Options</string>
     <string name="board_column_button_add_card">Add Card</string>
     <string name="board_button_add_column">Add Column</string>
+    <plurals name="board_column_card_amount">
+        <item quantity="one">%d card</item>
+        <item quantity="other">%d cards</item>
+    </plurals>
 
     <!-- Column - Dropdown Menu -->
     <string name="board_dropdown_menu_add_card">Add Card</string>

@@ -55,6 +55,8 @@ sealed interface BoardIntent {
 
 
     /*  Edit Column  */
+    data class ToggleExpandColumn(val columnId: Long) : BoardIntent
+
     // Rename Column
     data class OnRenameColumnClicked(val columnId: Long) : BoardIntent
     data class OnEditColumnNameChange(val name: String) : BoardIntent

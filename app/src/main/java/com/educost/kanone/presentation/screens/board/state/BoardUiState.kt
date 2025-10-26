@@ -5,6 +5,7 @@ import androidx.compose.ui.geometry.Offset
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
+import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.utils.ItemWithIndex
 
@@ -102,13 +103,30 @@ data class BoardUiState(
         val column = dragState.columnBeingDragged ?: return this
         val columnIndex = dragState.columnBeingDraggedIndex ?: return this
 
+        val newCoordinates = getUpdatedCoordinates(column)
 
         val newOffset =
             if (offset != null) column.adjustOffsetToCenter(offset)
             else dragState.itemBeingDraggedOffset
 
         val newState = this.copy(
-            dragState = dragState.copy(itemBeingDraggedOffset = newOffset)
+            dragState = dragState.copy(
+                itemBeingDraggedOffset = newOffset,
+                columnBeingDragged = if (newCoordinates == null) column else column.copy(coordinates = newCoordinates)
+            ),
+            board = if (newCoordinates == null) {
+                this.board
+            } else {
+                this.board.copy(
+                    columns = this.board.columns.map {
+                        if (it.id == column.id) {
+                            it.copy(coordinates = newCoordinates)
+                        } else {
+                            it
+                        }
+                    }
+                )
+            }
         )
 
 
@@ -140,7 +158,7 @@ data class BoardUiState(
                 add(targetColumn.index, removeAt(columnIndex))
             }
 
-            return this.copy(
+            return newState.copy(
                 board = board.copy(columns = newColumns),
                 dragState = dragState.copy(
                     columnBeingDraggedIndex = targetColumn.index,
@@ -406,6 +424,18 @@ data class BoardUiState(
         } else {
             return potentialTargetIndex
         }
+    }
+
+    private fun getUpdatedCoordinates(currentColumn: ColumnUi): Coordinates? {
+        if (board == null) return null
+
+        val updatedColumn = board.columns.find { it.id == currentColumn.id } ?: return null
+
+        if (updatedColumn.coordinates != currentColumn.coordinates) {
+            return updatedColumn.coordinates
+        }
+
+        return null
     }
 
 }

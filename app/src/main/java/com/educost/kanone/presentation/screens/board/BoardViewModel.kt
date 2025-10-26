@@ -125,6 +125,8 @@ class BoardViewModel @Inject constructor(
 
 
             /*  Edit Column  */
+            is BoardIntent.ToggleExpandColumn -> toggleExpandColumn(intent.columnId)
+
             // Column rename
             is BoardIntent.OnRenameColumnClicked -> onRenameColumnClicked(intent.columnId)
             is BoardIntent.OnEditColumnNameChange -> onEditColumnNameChange(intent.name)
@@ -341,7 +343,7 @@ class BoardViewModel @Inject constructor(
     /*  Board Settings  */
 
 
-// Create column
+    // Create column
 
     private fun startCreatingColumn() {
         clearEditAndCreationStates()
@@ -379,7 +381,7 @@ class BoardViewModel @Inject constructor(
     }
 
 
-// Column dropdown menu
+    // Column dropdown menu
 
     private fun openColumnDropdownMenu(columnId: Long) {
         clearEditAndCreationStates()
@@ -455,6 +457,72 @@ class BoardViewModel @Inject constructor(
 
 
     /*  Edit Column  */
+    private fun toggleExpandColumn(columnId: Long) {
+        val board = uiState.value.board ?: return
+
+        val currentColumn = board.columns.find { it.id == columnId } ?: return
+        val currentExpandedState = currentColumn.isExpanded
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                board = board.copy(
+                    columns = board.columns.map { column ->
+                        if (column.id == columnId) {
+                            column.copy(isExpanded = !currentExpandedState)
+                        } else {
+                            column
+                        }
+                    }
+                )
+            )
+        }
+
+        /*
+        TODO: persist column expanded state
+        viewModelScope.launch(dispatcherProvider.main) {
+            updateColumnUseCase(
+                column = currentColumn.copy(isExpanded = !currentExpandedState).toKanbanColumn(),
+                boardId = board.id
+            )
+        }*/
+    }
+
+    private var columnsIdsCollapsed = mutableListOf<Long>()
+    private fun collapseAllColumns() {
+        _uiState.update { currentState ->
+            val board = currentState.board ?: return
+            currentState.copy(
+                board = board.copy(
+                    columns = board.columns.map { column ->
+                        if (column.isExpanded) {
+                            columnsIdsCollapsed.add(column.id)
+                            column.copy(isExpanded = false)
+                        } else {
+                            column
+                        }
+                    }
+                )
+            )
+        }
+    }
+
+    private fun restoreCollapsedColumns() {
+        _uiState.update { currentState ->
+            val board = currentState.board ?: return
+            currentState.copy(
+                board = board.copy(
+                    columns = board.columns.map { column ->
+                        if (column.id in columnsIdsCollapsed) {
+                            column.copy(isExpanded = true)
+                        } else {
+                            column
+                        }
+                    }
+                )
+            )
+        }
+        columnsIdsCollapsed.clear()
+    }
 
     // Column rename
     private fun onRenameColumnClicked(columnId: Long) {
@@ -569,7 +637,7 @@ class BoardViewModel @Inject constructor(
     /*  Edit Column  */
 
 
-// Create card
+    // Create card
 
     private fun startCreatingCard(columnId: Long, isAppendingToEnd: Boolean) {
         clearEditAndCreationStates()
@@ -632,7 +700,7 @@ class BoardViewModel @Inject constructor(
     }
 
 
-// Helper functions
+    // Helper functions
 
     private fun restoreDeletedColumn(column: ColumnUi) {
         val boardId = uiState.value.board?.id ?: return
@@ -803,11 +871,24 @@ class BoardViewModel @Inject constructor(
     /*  Others  */
 
 
-// Drag and drop
+    // Drag and drop
 
     private fun onDragStart(offset: Offset, isOnVerticalLayout: Boolean) {
         clearEditAndCreationStates()
-        _uiState.update { it.onDragStart(offset, isOnVerticalLayout) }
+
+        _uiState.update { currentState ->
+
+            val dragStartResult = currentState.onDragStart(offset, isOnVerticalLayout)
+            val isDraggingColumn = dragStartResult.dragState.isDraggingColumn()
+
+
+            if (isDraggingColumn && isOnVerticalLayout) {
+                collapseAllColumns()
+            }
+
+
+            return@update dragStartResult
+        }
     }
 
     private fun onDrag(offset: Offset?, isOnVerticalLayout: Boolean) {
@@ -843,6 +924,7 @@ class BoardViewModel @Inject constructor(
 
     private fun onDragStop() {
         _uiState.update { it.copy(dragState = DragState()) }
+        restoreCollapsedColumns()
         cancelAutoScroll()
         updatePositions()
     }

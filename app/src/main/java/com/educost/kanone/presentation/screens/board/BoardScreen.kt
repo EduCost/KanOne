@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -257,8 +258,14 @@ fun BoardScreen(
                         translationX = state.dragState.itemBeingDraggedOffset.x
                         rotationZ = 2f
                     }
-                    .width(with(localDensity) { column.coordinates.width.toDp() })
-                    .height(with(localDensity) { column.coordinates.height.toDp() }),
+                    .then(
+                        other = when {
+                            isOnVerticalLayout -> Modifier.fillMaxWidth()
+                            else -> Modifier
+                                .width(with(localDensity) { column.coordinates.width.toDp() })
+                                .height(with(localDensity) { column.coordinates.height.toDp() })
+                        }
+                    ),
                 column = column,
                 state = BoardUiState(),
                 onIntent = { },
