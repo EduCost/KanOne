@@ -30,7 +30,7 @@ class LogViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(dispatchers.io) {
-            val logs = logHandler.getLogs()
+            val logs = logHandler.getLogs().reversed()
             _uiState.value = _uiState.value.copy(logs = logs)
         }
     }
