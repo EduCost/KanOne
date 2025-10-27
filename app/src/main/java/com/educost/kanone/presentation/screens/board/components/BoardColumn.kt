@@ -3,6 +3,7 @@ package com.educost.kanone.presentation.screens.board.components
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -56,7 +57,7 @@ fun BoardColumn(
     isOnVerticalLayout: Boolean = false,
     showCardImages: Boolean
 ) {
-    
+
     var isAddingCardOnTop by remember(state.cardCreationState) {
         mutableStateOf(
             state.cardCreationState.columnId == column.id &&
@@ -77,18 +78,22 @@ fun BoardColumn(
             .clip(sizes.columnShape)
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))
     ) {
+
         ColumnHeader(
             modifier = Modifier
                 .padding(sizes.columnHeaderPadding)
+                .clickable(
+                    enabled = isOnVerticalLayout,
+                    onClick = { onIntent(BoardIntent.ToggleExpandColumn(column.id)) }
+                )
                 .fillMaxWidth(),
             column = column,
             state = state,
             onIntent = onIntent,
             sizes = sizes,
-            isOnVerticalLayout = isOnVerticalLayout
         )
 
-        AnimatedContent(isOnVerticalLayout && !column.isExpanded) {isCollapsed ->
+        AnimatedContent(isOnVerticalLayout && !column.isExpanded) { isCollapsed ->
             if (isCollapsed) {
                 CollapsedCards(cardAmount = column.cards.size)
             } else {

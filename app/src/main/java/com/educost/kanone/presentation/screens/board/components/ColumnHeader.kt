@@ -53,7 +53,6 @@ fun ColumnHeader(
     state: BoardUiState,
     onIntent: (BoardIntent) -> Unit,
     sizes: BoardSizes = BoardSizes(),
-    isOnVerticalLayout: Boolean = false
 ) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -100,8 +99,6 @@ fun ColumnHeader(
                     )
                 )
             },
-        onClick = { onIntent(BoardIntent.ToggleExpandColumn(column.id)) },
-        enabled = isOnVerticalLayout
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

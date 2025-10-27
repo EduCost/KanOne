@@ -81,5 +81,13 @@ fun VerticalBoardLayout(
                 showCardImages = board.showImages
             )
         }
+
+        item {
+            AddColumn(
+                modifier = Modifier.fillMaxWidth(),
+                state = state,
+                onIntent = onIntent,
+            )
+        }
     }
 }
