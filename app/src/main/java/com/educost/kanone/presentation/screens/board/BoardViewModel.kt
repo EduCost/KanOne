@@ -38,6 +38,11 @@ import com.educost.kanone.presentation.screens.board.state.ScrollState
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.utils.CardOrder
 import com.educost.kanone.presentation.screens.board.utils.OrderType
+import com.educost.kanone.presentation.screens.board.utils.setBoardCoordinates
+import com.educost.kanone.presentation.screens.board.utils.setCardsCoordinates
+import com.educost.kanone.presentation.screens.board.utils.setColumnCoordinates
+import com.educost.kanone.presentation.screens.board.utils.setColumnHeadersCoordinates
+import com.educost.kanone.presentation.screens.board.utils.setColumnListsCoordinates
 import com.educost.kanone.presentation.util.SnackbarAction
 import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText
@@ -1111,79 +1116,48 @@ class BoardViewModel @Inject constructor(
 
     private fun setBoardCoordinates(coordinates: Coordinates) {
         if (uiState.value.board?.coordinates != coordinates) {
-            _uiState.update { currentState ->
-                currentState.copy(board = currentState.board?.copy(coordinates = coordinates))
-            }
+            _uiState.setBoardCoordinates(coordinates)
         }
     }
 
 
-    private val pendingColHeaderCoordsUpdates = mutableMapOf<Long, Coordinates>()
+    private val queuedColumnHeaderCoordinatesUpdates = mutableMapOf<Long, Coordinates>()
     private var columnHeaderCoordinatesUpdateJob: Job? = null
     private var lastTimeColHeaderCoordUpdateCalled = 0L
     private fun setColumnHeaderCoordinates(columnId: Long, coordinates: Coordinates) {
+        val isActivelyDragging = uiState.value.dragState != DragState()
 
-        pendingColHeaderCoordsUpdates[columnId] = coordinates
+        
+        queuedColumnHeaderCoordinatesUpdates[columnId] = coordinates
 
-        if (uiState.value.dragState != DragState()) {
 
+        if (isActivelyDragging) {
             if (System.currentTimeMillis() - throttleTime < lastTimeColHeaderCoordUpdateCalled) return
 
             lastTimeColHeaderCoordUpdateCalled = System.currentTimeMillis()
-            if (pendingColHeaderCoordsUpdates.isEmpty()) return
+            if (queuedColumnHeaderCoordinatesUpdates.isEmpty()) return
 
-            val updatesToProcess = HashMap(pendingColHeaderCoordsUpdates)
-            pendingColHeaderCoordsUpdates.clear()
+            val updatesToProcess = HashMap(queuedColumnHeaderCoordinatesUpdates)
+            queuedColumnHeaderCoordinatesUpdates.clear()
 
-            _uiState.update { currentState ->
 
-                var updatedBoard = currentState.board ?: return@update currentState
-
-                updatesToProcess.forEach { (columnId, coordinates) ->
-                    updatedBoard = updatedBoard.copy(
-                        columns = updatedBoard.columns.map { column ->
-                            if (column.id == columnId) {
-                                column.copy(headerCoordinates = coordinates)
-                            } else {
-                                column
-                            }
-                        }
-                    )
-                }
-                currentState.copy(board = updatedBoard)
-            }
-
-        } else {
-
-            columnHeaderCoordinatesUpdateJob?.cancel()
-            columnHeaderCoordinatesUpdateJob = viewModelScope.launch(dispatcherProvider.main) {
-                delay(debounceTime)
-
-                if (pendingColHeaderCoordsUpdates.isEmpty()) return@launch
-
-                val updatesToProcess = HashMap(pendingColHeaderCoordsUpdates)
-                pendingColHeaderCoordsUpdates.clear()
-
-                _uiState.update { currentState ->
-
-                    var updatedBoard = currentState.board ?: return@update currentState
-
-                    updatesToProcess.forEach { (columnId, coordinates) ->
-                        updatedBoard = updatedBoard.copy(
-                            columns = updatedBoard.columns.map { column ->
-                                if (column.id == columnId) {
-                                    column.copy(headerCoordinates = coordinates)
-                                } else {
-                                    column
-                                }
-                            }
-                        )
-                    }
-                    currentState.copy(board = updatedBoard)
-                }
-            }
+            _uiState.setColumnHeadersCoordinates(updatesToProcess)
+            return
         }
 
+
+        columnHeaderCoordinatesUpdateJob?.cancel()
+        columnHeaderCoordinatesUpdateJob = viewModelScope.launch(dispatcherProvider.main) {
+            delay(debounceTime)
+
+            if (queuedColumnHeaderCoordinatesUpdates.isEmpty()) return@launch
+
+            val updatesToProcess = HashMap(queuedColumnHeaderCoordinatesUpdates)
+            queuedColumnHeaderCoordinatesUpdates.clear()
+
+            
+            _uiState.setColumnHeadersCoordinates(updatesToProcess)
+        }
 
     }
 
@@ -1192,10 +1166,13 @@ class BoardViewModel @Inject constructor(
     private var columnListCoordinatesUpdateJob: Job? = null
     private var lastTimeColListCoordUpdateCalled = 0L
     private fun setColumnListCoordinates(columnId: Long, coordinates: Coordinates) {
+        val isActivelyDragging = uiState.value.dragState != DragState()
+
 
         pendingColListCoordsUpdates[columnId] = coordinates
 
-        if (uiState.value.dragState != DragState()) {
+
+        if (isActivelyDragging) {
 
             if (System.currentTimeMillis() - throttleTime < lastTimeColListCoordUpdateCalled) return
 
@@ -1205,55 +1182,23 @@ class BoardViewModel @Inject constructor(
             val updatesToProcess = HashMap(pendingColListCoordsUpdates)
             pendingColListCoordsUpdates.clear()
 
-            _uiState.update { currentState ->
 
-                var updatedBoard = currentState.board ?: return@update currentState
-
-                updatesToProcess.forEach { (columnId, coordinates) ->
-                    updatedBoard = updatedBoard.copy(
-                        columns = updatedBoard.columns.map { column ->
-                            if (column.id == columnId) {
-                                column.copy(listCoordinates = coordinates)
-                            } else {
-                                column
-                            }
-                        }
-                    )
-                }
-                currentState.copy(board = updatedBoard)
-            }
-
-        } else {
-
-            columnListCoordinatesUpdateJob?.cancel()
-            columnListCoordinatesUpdateJob = viewModelScope.launch(dispatcherProvider.main) {
-                delay(debounceTime)
-
-                if (pendingColListCoordsUpdates.isEmpty()) return@launch
-
-                val updatesToProcess = HashMap(pendingColListCoordsUpdates)
-                pendingColListCoordsUpdates.clear()
-
-                _uiState.update { currentState ->
-
-                    var updatedBoard = currentState.board ?: return@update currentState
-
-                    updatesToProcess.forEach { (columnId, coordinates) ->
-                        updatedBoard = updatedBoard.copy(
-                            columns = updatedBoard.columns.map { column ->
-                                if (column.id == columnId) {
-                                    column.copy(listCoordinates = coordinates)
-                                } else {
-                                    column
-                                }
-                            }
-                        )
-                    }
-                    currentState.copy(board = updatedBoard)
-                }
-            }
+            _uiState.setColumnListsCoordinates(updatesToProcess)
+            return
         }
 
+
+        columnListCoordinatesUpdateJob?.cancel()
+        columnListCoordinatesUpdateJob = viewModelScope.launch(dispatcherProvider.main) {
+            delay(debounceTime)
+
+            if (pendingColListCoordsUpdates.isEmpty()) return@launch
+
+            val updatesToProcess = HashMap(pendingColListCoordsUpdates)
+            pendingColListCoordsUpdates.clear()
+
+            _uiState.setColumnListsCoordinates(updatesToProcess)
+        }
 
     }
 
@@ -1262,10 +1207,12 @@ class BoardViewModel @Inject constructor(
     private var columnCoordinatesUpdateJob: Job? = null
     private var lastTimeColCoordUpdateCalled = 0L
     private fun setColumnCoordinates(columnId: Long, coordinates: Coordinates) {
+        val isActivelyDragging = uiState.value.dragState != DragState()
 
         pendingColCoordsUpdates[columnId] = coordinates
 
-        if (uiState.value.dragState != DragState()) {
+
+        if (isActivelyDragging) {
 
             if (System.currentTimeMillis() - throttleTime < lastTimeColCoordUpdateCalled) return
 
@@ -1275,55 +1222,22 @@ class BoardViewModel @Inject constructor(
             val updatesToProcess = HashMap(pendingColCoordsUpdates)
             pendingColCoordsUpdates.clear()
 
-            _uiState.update { currentState ->
-
-                var updatedBoard = currentState.board ?: return@update currentState
-
-                updatesToProcess.forEach { (columnId, coordinates) ->
-                    updatedBoard = updatedBoard.copy(
-                        columns = updatedBoard.columns.map { column ->
-                            if (column.id == columnId) {
-                                column.copy(coordinates = coordinates)
-                            } else {
-                                column
-                            }
-                        }
-                    )
-                }
-                currentState.copy(board = updatedBoard)
-            }
-
-        } else {
-
-            columnCoordinatesUpdateJob?.cancel()
-            columnCoordinatesUpdateJob = viewModelScope.launch(dispatcherProvider.main) {
-                delay(debounceTime)
-
-                if (pendingColCoordsUpdates.isEmpty()) return@launch
-
-                val updatesToProcess = HashMap(pendingColCoordsUpdates)
-                pendingColCoordsUpdates.clear()
-
-                _uiState.update { currentState ->
-
-                    var updatedBoard = currentState.board ?: return@update currentState
-
-                    updatesToProcess.forEach { (columnId, coordinates) ->
-                        updatedBoard = updatedBoard.copy(
-                            columns = updatedBoard.columns.map { column ->
-                                if (column.id == columnId) {
-                                    column.copy(coordinates = coordinates)
-                                } else {
-                                    column
-                                }
-                            }
-                        )
-                    }
-                    currentState.copy(board = updatedBoard)
-                }
-            }
+            _uiState.setColumnCoordinates(updatesToProcess)
+            return
         }
 
+
+        columnCoordinatesUpdateJob?.cancel()
+        columnCoordinatesUpdateJob = viewModelScope.launch(dispatcherProvider.main) {
+            delay(debounceTime)
+
+            if (pendingColCoordsUpdates.isEmpty()) return@launch
+
+            val updatesToProcess = HashMap(pendingColCoordsUpdates)
+            pendingColCoordsUpdates.clear()
+
+            _uiState.setColumnCoordinates(updatesToProcess)
+        }
 
     }
 
@@ -1332,10 +1246,12 @@ class BoardViewModel @Inject constructor(
     private var cardCoordinatesUpdateJob: Job? = null
     private var lastTimeCardCoordUpdateCalled = 0L
     private fun setCardCoordinates(cardId: Long, columnId: Long, coordinates: Coordinates) {
+        val isActivelyDragging = uiState.value.dragState != DragState()
+
 
         pendingCardCoordsUpdates[cardId] = Pair(columnId, coordinates)
 
-        if (uiState.value.dragState != DragState()) {
+        if (isActivelyDragging) {
 
             if (System.currentTimeMillis() - throttleTime < lastTimeCardCoordUpdateCalled) return
 
@@ -1345,70 +1261,22 @@ class BoardViewModel @Inject constructor(
             val updatesToProcess = HashMap(pendingCardCoordsUpdates)
             pendingCardCoordsUpdates.clear()
 
-            _uiState.update { currentState ->
-                var updatedBoard = currentState.board ?: return@update currentState
-
-                updatesToProcess.forEach { (currentCardId, idAndCoords) ->
-                    val currentColumnId = idAndCoords.first
-                    val newCoordinates = idAndCoords.second
-
-                    updatedBoard = updatedBoard.copy(
-                        columns = updatedBoard.columns.map { column ->
-                            if (column.id == currentColumnId) {
-                                column.copy(cards = column.cards.map { card ->
-                                    if (card.id == currentCardId) {
-                                        card.copy(coordinates = newCoordinates)
-                                    } else {
-                                        card
-                                    }
-                                })
-                            } else {
-                                column
-                            }
-                        }
-                    )
-                }
-                currentState.copy(board = updatedBoard)
-            }
-
-        } else {
-
-            cardCoordinatesUpdateJob?.cancel()
-            cardCoordinatesUpdateJob = viewModelScope.launch(dispatcherProvider.main) {
-                delay(debounceTime)
-
-                if (pendingCardCoordsUpdates.isEmpty()) return@launch
-
-                val updatesToProcess = HashMap(pendingCardCoordsUpdates)
-                pendingCardCoordsUpdates.clear()
-
-                _uiState.update { currentState ->
-                    var updatedBoard = currentState.board ?: return@update currentState
-
-                    updatesToProcess.forEach { (currentCardId, idAndCoords) ->
-                        val currentColumnId = idAndCoords.first
-                        val newCoordinates = idAndCoords.second
-
-                        updatedBoard = updatedBoard.copy(
-                            columns = updatedBoard.columns.map { column ->
-                                if (column.id == currentColumnId) {
-                                    column.copy(cards = column.cards.map { card ->
-                                        if (card.id == currentCardId) {
-                                            card.copy(coordinates = newCoordinates)
-                                        } else {
-                                            card
-                                        }
-                                    })
-                                } else {
-                                    column
-                                }
-                            }
-                        )
-                    }
-                    currentState.copy(board = updatedBoard)
-                }
-            }
+            _uiState.setCardsCoordinates(updatesToProcess)
+            return
         }
+
+        cardCoordinatesUpdateJob?.cancel()
+        cardCoordinatesUpdateJob = viewModelScope.launch(dispatcherProvider.main) {
+            delay(debounceTime)
+
+            if (pendingCardCoordsUpdates.isEmpty()) return@launch
+
+            val updatesToProcess = HashMap(pendingCardCoordsUpdates)
+            pendingCardCoordsUpdates.clear()
+
+            _uiState.setCardsCoordinates(updatesToProcess)
+        }
+
     }
 
 
