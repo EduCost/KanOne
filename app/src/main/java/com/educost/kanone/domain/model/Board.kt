@@ -8,4 +8,5 @@ data class Board(
     // Settings
     val zoomPercentage: Float = 100f,
     val showImages: Boolean = true,
+    val isOnVerticalLayout: Boolean = false
 )

@@ -130,9 +130,9 @@ fun BoardScreen(
     }
     val isWindowWidthCompact = isWindowWidthCompact()
 
-    val isOnVerticalLayout by remember(board.isOnListView) {
+    val isOnVerticalLayout by remember(board.isOnVerticalLayout) {
         derivedStateOf {
-            board.isOnListView && isWindowWidthCompact
+            board.isOnVerticalLayout && isWindowWidthCompact
         }
     }
 
@@ -302,7 +302,7 @@ private fun HorizontalBoardScreenPreview() {
 private fun VerticalBoardScreenPreview() {
     KanOneTheme {
         BoardScreen(
-            board = previewBoard.copy(isOnListView = true),
+            board = previewBoard.copy(isOnVerticalLayout = true),
             state = BoardUiState(
                 board = previewBoard,
                 topBarType = BoardAppBarType.DEFAULT

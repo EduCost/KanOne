@@ -291,12 +291,12 @@ class BoardViewModel @Inject constructor(
     }
 
     private fun toggleLayoutOrientation() {
-        _uiState.update {
-            val board = it.board ?: return
-            it.copy(board = board.copy(isOnListView = !board.isOnListView))
-        }
+        val board = uiState.value.board ?: return
 
-        //TODO: persist layout orientation
+        viewModelScope.launch(dispatcherProvider.main) {
+            val updatedBoard = board.copy(isOnVerticalLayout = !board.isOnVerticalLayout).toBoard()
+            updateBoardUseCase(updatedBoard)
+        }
     }
 
 
@@ -473,28 +473,13 @@ class BoardViewModel @Inject constructor(
         val currentColumn = board.columns.find { it.id == columnId } ?: return
         val currentExpandedState = currentColumn.isExpanded
 
-        _uiState.update { currentState ->
-            currentState.copy(
-                board = board.copy(
-                    columns = board.columns.map { column ->
-                        if (column.id == columnId) {
-                            column.copy(isExpanded = !currentExpandedState)
-                        } else {
-                            column
-                        }
-                    }
-                )
-            )
-        }
 
-        /*
-        TODO: persist column expanded state
         viewModelScope.launch(dispatcherProvider.main) {
             updateColumnUseCase(
                 column = currentColumn.copy(isExpanded = !currentExpandedState).toKanbanColumn(),
                 boardId = board.id
             )
-        }*/
+        }
     }
 
     private var columnsIdsCollapsed = mutableListOf<Long>()
@@ -767,6 +752,7 @@ class BoardViewModel @Inject constructor(
                         name = column.name,
                         position = column.position,
                         color = column.color,
+                        isExpanded = column.isExpanded,
                         cards = column.cards.map { cards ->
 
                             val isNewCard = isNewColumn.cards.find {
@@ -792,7 +778,8 @@ class BoardViewModel @Inject constructor(
                         ?: column.toColumnUi()
                 }.sortedBy { it.position },
                 sizes = BoardSizes(zoomPercentage = newBoard.zoomPercentage),
-                showImages = newBoard.showImages
+                showImages = newBoard.showImages,
+                isOnVerticalLayout = newBoard.isOnVerticalLayout
             )
 
             return mappedBoard

@@ -89,13 +89,18 @@ object AppModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): KanbanDatabase {
+        val migrations = arrayOf(
+            KanbanDatabase.MIGRATION_1_2,
+            KanbanDatabase.MIGRATION_2_3,
+        )
+
         return Room
             .databaseBuilder(
                 context = context,
                 klass = KanbanDatabase::class.java,
                 name = KanbanDatabase.DATABASE_NAME
             )
-            .addMigrations(KanbanDatabase.MIGRATION_1_2)
+            .addMigrations(*migrations)
             .build()
     }
 

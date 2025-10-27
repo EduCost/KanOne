@@ -82,7 +82,7 @@ fun BoardModalBottomSheet(
                 SettingSwitchItem(
                     title = "Vertical Layout",
                     icon = Icons.Filled.FilterList,
-                    checked = board.isOnListView,
+                    checked = board.isOnVerticalLayout,
                     onToggle = { onIntent(BoardIntent.ToggleLayoutOrientation) }
                 )
             }

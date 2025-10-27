@@ -10,6 +10,7 @@ fun BoardEntity.toBoard(): Board = Board(
     columns = emptyList(),
     zoomPercentage = this.zoomPercentage,
     showImages = this.showImages,
+    isOnVerticalLayout = this.isOnVerticalLayout
 )
 
 fun Board.toBoardEntity(): BoardEntity = BoardEntity(
@@ -17,6 +18,7 @@ fun Board.toBoardEntity(): BoardEntity = BoardEntity(
     name = this.name,
     zoomPercentage = this.zoomPercentage,
     showImages = this.showImages,
+    isOnVerticalLayout = this.isOnVerticalLayout
 )
 
 fun BoardWithColumns.toBoard(): Board = Board(
@@ -25,4 +27,5 @@ fun BoardWithColumns.toBoard(): Board = Board(
     columns = this.columns.map { it.toKanbanColumn() },
     zoomPercentage = this.board.zoomPercentage,
     showImages = this.board.showImages,
+    isOnVerticalLayout = this.board.isOnVerticalLayout
 )

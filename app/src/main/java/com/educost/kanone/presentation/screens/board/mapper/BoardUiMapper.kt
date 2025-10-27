@@ -9,7 +9,8 @@ fun BoardUi.toBoard() = Board(
     name = this.name,
     columns = this.columns.map { it.toKanbanColumn() },
     zoomPercentage = this.sizes.zoomPercentage,
-    showImages = this.showImages
+    showImages = this.showImages,
+    isOnVerticalLayout = this.isOnVerticalLayout
 )
 
 fun Board.toBoardUi() = BoardUi(
@@ -17,5 +18,6 @@ fun Board.toBoardUi() = BoardUi(
     name = this.name,
     columns = this.columns.map { it.toColumnUi() },
     sizes = BoardSizes(zoomPercentage = this.zoomPercentage),
-    showImages = this.showImages
+    showImages = this.showImages,
+    isOnVerticalLayout = this.isOnVerticalLayout
 )

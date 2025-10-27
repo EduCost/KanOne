@@ -8,7 +8,8 @@ fun ColumnUi.toKanbanColumn() = KanbanColumn(
     name = this.name,
     position = this.position,
     color = this.color,
-    cards = this.cards.map { it.toCardItem() }
+    cards = this.cards.map { it.toCardItem() },
+    isExpanded = this.isExpanded
 )
 
 fun KanbanColumn.toColumnUi() = ColumnUi(
@@ -16,5 +17,6 @@ fun KanbanColumn.toColumnUi() = ColumnUi(
     name = this.name,
     position = this.position,
     color = this.color,
-    cards = this.cards.map { it.toCardUi() }
+    cards = this.cards.map { it.toCardUi() },
+    isExpanded = this.isExpanded
 )

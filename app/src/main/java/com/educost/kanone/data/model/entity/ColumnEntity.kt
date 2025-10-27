@@ -22,5 +22,6 @@ data class ColumnEntity(
     val name: String,
     val position: Int,
     val color: Int? = null,
-    @ColumnInfo(name = "board_id") val boardId: Long
+    @ColumnInfo(name = "board_id")    val boardId: Long,
+    @ColumnInfo(name = "is_expanded") val isExpanded: Boolean = true
 )

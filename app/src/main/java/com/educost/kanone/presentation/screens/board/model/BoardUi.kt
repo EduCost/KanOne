@@ -10,5 +10,5 @@ data class BoardUi(
     val listState: LazyListState = LazyListState(),
     val sizes: BoardSizes = BoardSizes(),
     val showImages: Boolean = true,
-    val isOnListView: Boolean = false,
+    val isOnVerticalLayout: Boolean = false,
 )

@@ -9,7 +9,8 @@ fun ColumnEntity.toKanbanColumn(): KanbanColumn = KanbanColumn(
     name = this.name,
     position = this.position,
     color = this.color,
-    cards = emptyList()
+    cards = emptyList(),
+    isExpanded = this.isExpanded
 )
 
 fun KanbanColumn.toColumnEntity(boardId: Long): ColumnEntity = ColumnEntity(
@@ -17,7 +18,8 @@ fun KanbanColumn.toColumnEntity(boardId: Long): ColumnEntity = ColumnEntity(
     name = this.name,
     position = this.position,
     color = this.color,
-    boardId = boardId
+    boardId = boardId,
+    isExpanded = this.isExpanded
 )
 
 fun ColumnsWithCards.toKanbanColumn(): KanbanColumn = KanbanColumn(
@@ -25,5 +27,6 @@ fun ColumnsWithCards.toKanbanColumn(): KanbanColumn = KanbanColumn(
     name = this.column.name,
     position = this.column.position,
     color = this.column.color,
-    cards = this.cards.map { it.toCardItem() }
+    cards = this.cards.map { it.toCardItem() },
+    isExpanded = this.column.isExpanded
 )

@@ -5,5 +5,6 @@ data class KanbanColumn(
     val name: String,
     val position: Int,
     val color: Int? = null,
-    val cards: List<CardItem> = emptyList()
+    val cards: List<CardItem> = emptyList(),
+    val isExpanded: Boolean = true,
 )

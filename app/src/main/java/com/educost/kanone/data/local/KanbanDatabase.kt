@@ -24,7 +24,7 @@ import com.educost.kanone.data.model.entity.TaskEntity
         LabelCardCrossRef::class,
         LabelEntity::class
     ],
-    version = 2
+    version = 3
 )
 @TypeConverters(Converters::class)
 abstract class KanbanDatabase : RoomDatabase() {
@@ -43,6 +43,13 @@ abstract class KanbanDatabase : RoomDatabase() {
             override fun migrate(connection: SQLiteConnection) {
                 connection.execSQL("ALTER TABLE boards ADD COLUMN zoom_percentage REAL NOT NULL DEFAULT 100.0")
                 connection.execSQL("ALTER TABLE boards ADD COLUMN show_images INTEGER NOT NULL DEFAULT 1")
+            }
+        }
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(connection: SQLiteConnection) {
+                connection.execSQL("ALTER TABLE boards ADD COLUMN vertical_layout INTEGER NOT NULL DEFAULT 0")
+                connection.execSQL("ALTER TABLE columns ADD COLUMN is_expanded INTEGER NOT NULL DEFAULT 1")
             }
         }
     }
