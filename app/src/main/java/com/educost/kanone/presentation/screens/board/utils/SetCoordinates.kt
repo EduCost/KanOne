@@ -52,7 +52,7 @@ fun MutableStateFlow<BoardUiState>.setColumnListsCoordinates(columnsBatch: HashM
     }
 }
 
-fun MutableStateFlow<BoardUiState>.setColumnCoordinates(columnBatch: HashMap<Long, Coordinates>) {
+fun MutableStateFlow<BoardUiState>.setColumnsCoordinates(columnBatch: HashMap<Long, Coordinates>) {
     this.update { currentState ->
         val board = currentState.board ?: return@update currentState
         val columns = board.columns

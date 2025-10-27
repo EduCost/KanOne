@@ -38,9 +38,10 @@ import com.educost.kanone.presentation.screens.board.state.ScrollState
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.utils.CardOrder
 import com.educost.kanone.presentation.screens.board.utils.OrderType
+import com.educost.kanone.presentation.screens.board.utils.ThrottledDebouncedProcessor
 import com.educost.kanone.presentation.screens.board.utils.setBoardCoordinates
 import com.educost.kanone.presentation.screens.board.utils.setCardsCoordinates
-import com.educost.kanone.presentation.screens.board.utils.setColumnCoordinates
+import com.educost.kanone.presentation.screens.board.utils.setColumnsCoordinates
 import com.educost.kanone.presentation.screens.board.utils.setColumnHeadersCoordinates
 import com.educost.kanone.presentation.screens.board.utils.setColumnListsCoordinates
 import com.educost.kanone.presentation.util.SnackbarAction
@@ -1111,8 +1112,6 @@ class BoardViewModel @Inject constructor(
 
 
     // Set coordinates
-    private val debounceTime = 200L
-    private val throttleTime = 16L
 
     private fun setBoardCoordinates(coordinates: Coordinates) {
         if (uiState.value.board?.coordinates != coordinates) {
@@ -1121,171 +1120,84 @@ class BoardViewModel @Inject constructor(
     }
 
 
-    private val queuedColumnHeaderCoordinatesUpdates = mutableMapOf<Long, Coordinates>()
-    private var columnHeaderCoordinatesUpdateJob: Job? = null
-    private var lastTimeColHeaderCoordUpdateCalled = 0L
+    private val headerCoordinatesProcessor = ThrottledDebouncedProcessor(
+        scope = viewModelScope,
+        dispatcher = dispatcherProvider.main,
+        onProcess = {
+            _uiState.setColumnHeadersCoordinates(it)
+        }
+    )
     private fun setColumnHeaderCoordinates(columnId: Long, coordinates: Coordinates) {
-        val isActivelyDragging = uiState.value.dragState != DragState()
+        val isActivelyDragging = uiState.value.dragState.isActivelyDragging()
 
-        
-        queuedColumnHeaderCoordinatesUpdates[columnId] = coordinates
-
-
-        if (isActivelyDragging) {
-            if (System.currentTimeMillis() - throttleTime < lastTimeColHeaderCoordUpdateCalled) return
-
-            lastTimeColHeaderCoordUpdateCalled = System.currentTimeMillis()
-            if (queuedColumnHeaderCoordinatesUpdates.isEmpty()) return
-
-            val updatesToProcess = HashMap(queuedColumnHeaderCoordinatesUpdates)
-            queuedColumnHeaderCoordinatesUpdates.clear()
-
-
-            _uiState.setColumnHeadersCoordinates(updatesToProcess)
-            return
-        }
-
-
-        columnHeaderCoordinatesUpdateJob?.cancel()
-        columnHeaderCoordinatesUpdateJob = viewModelScope.launch(dispatcherProvider.main) {
-            delay(debounceTime)
-
-            if (queuedColumnHeaderCoordinatesUpdates.isEmpty()) return@launch
-
-            val updatesToProcess = HashMap(queuedColumnHeaderCoordinatesUpdates)
-            queuedColumnHeaderCoordinatesUpdates.clear()
-
-            
-            _uiState.setColumnHeadersCoordinates(updatesToProcess)
-        }
-
+        headerCoordinatesProcessor.submit(
+            key = columnId,
+            value = coordinates,
+            isThrottling = isActivelyDragging
+        )
     }
 
 
-    private val pendingColListCoordsUpdates = mutableMapOf<Long, Coordinates>()
-    private var columnListCoordinatesUpdateJob: Job? = null
-    private var lastTimeColListCoordUpdateCalled = 0L
+    private val listCoordinatesProcessor = ThrottledDebouncedProcessor(
+        scope = viewModelScope,
+        dispatcher = dispatcherProvider.main,
+        onProcess = {
+            _uiState.setColumnListsCoordinates(it)
+        }
+    )
     private fun setColumnListCoordinates(columnId: Long, coordinates: Coordinates) {
-        val isActivelyDragging = uiState.value.dragState != DragState()
+        val isActivelyDragging = uiState.value.dragState.isActivelyDragging()
 
-
-        pendingColListCoordsUpdates[columnId] = coordinates
-
-
-        if (isActivelyDragging) {
-
-            if (System.currentTimeMillis() - throttleTime < lastTimeColListCoordUpdateCalled) return
-
-            lastTimeColListCoordUpdateCalled = System.currentTimeMillis()
-            if (pendingColListCoordsUpdates.isEmpty()) return
-
-            val updatesToProcess = HashMap(pendingColListCoordsUpdates)
-            pendingColListCoordsUpdates.clear()
-
-
-            _uiState.setColumnListsCoordinates(updatesToProcess)
-            return
-        }
-
-
-        columnListCoordinatesUpdateJob?.cancel()
-        columnListCoordinatesUpdateJob = viewModelScope.launch(dispatcherProvider.main) {
-            delay(debounceTime)
-
-            if (pendingColListCoordsUpdates.isEmpty()) return@launch
-
-            val updatesToProcess = HashMap(pendingColListCoordsUpdates)
-            pendingColListCoordsUpdates.clear()
-
-            _uiState.setColumnListsCoordinates(updatesToProcess)
-        }
-
+        listCoordinatesProcessor.submit(
+            key = columnId,
+            value = coordinates,
+            isThrottling = isActivelyDragging
+        )
     }
 
 
-    private val pendingColCoordsUpdates = mutableMapOf<Long, Coordinates>()
-    private var columnCoordinatesUpdateJob: Job? = null
-    private var lastTimeColCoordUpdateCalled = 0L
+    private val columnCoordinatesProcessor = ThrottledDebouncedProcessor(
+        scope = viewModelScope,
+        dispatcher = dispatcherProvider.main,
+        onProcess = {
+            _uiState.setColumnsCoordinates(it)
+        }
+    )
     private fun setColumnCoordinates(columnId: Long, coordinates: Coordinates) {
-        val isActivelyDragging = uiState.value.dragState != DragState()
+        val isActivelyDragging = uiState.value.dragState.isActivelyDragging()
 
-        pendingColCoordsUpdates[columnId] = coordinates
-
-
-        if (isActivelyDragging) {
-
-            if (System.currentTimeMillis() - throttleTime < lastTimeColCoordUpdateCalled) return
-
-            lastTimeColCoordUpdateCalled = System.currentTimeMillis()
-            if (pendingColCoordsUpdates.isEmpty()) return
-
-            val updatesToProcess = HashMap(pendingColCoordsUpdates)
-            pendingColCoordsUpdates.clear()
-
-            _uiState.setColumnCoordinates(updatesToProcess)
-            return
-        }
-
-
-        columnCoordinatesUpdateJob?.cancel()
-        columnCoordinatesUpdateJob = viewModelScope.launch(dispatcherProvider.main) {
-            delay(debounceTime)
-
-            if (pendingColCoordsUpdates.isEmpty()) return@launch
-
-            val updatesToProcess = HashMap(pendingColCoordsUpdates)
-            pendingColCoordsUpdates.clear()
-
-            _uiState.setColumnCoordinates(updatesToProcess)
-        }
-
+        columnCoordinatesProcessor.submit(
+            key = columnId,
+            value = coordinates,
+            isThrottling = isActivelyDragging
+        )
     }
 
 
-    private val pendingCardCoordsUpdates = mutableMapOf<Long, Pair<Long, Coordinates>>()
-    private var cardCoordinatesUpdateJob: Job? = null
-    private var lastTimeCardCoordUpdateCalled = 0L
+    private val cardCoordinatesProcessor = ThrottledDebouncedProcessor(
+        scope = viewModelScope,
+        dispatcher = dispatcherProvider.main,
+        onProcess = {
+            _uiState.setCardsCoordinates(it)
+        }
+    )
     private fun setCardCoordinates(cardId: Long, columnId: Long, coordinates: Coordinates) {
         val isActivelyDragging = uiState.value.dragState != DragState()
 
-
-        pendingCardCoordsUpdates[cardId] = Pair(columnId, coordinates)
-
-        if (isActivelyDragging) {
-
-            if (System.currentTimeMillis() - throttleTime < lastTimeCardCoordUpdateCalled) return
-
-            lastTimeCardCoordUpdateCalled = System.currentTimeMillis()
-            if (pendingCardCoordsUpdates.isEmpty()) return
-
-            val updatesToProcess = HashMap(pendingCardCoordsUpdates)
-            pendingCardCoordsUpdates.clear()
-
-            _uiState.setCardsCoordinates(updatesToProcess)
-            return
-        }
-
-        cardCoordinatesUpdateJob?.cancel()
-        cardCoordinatesUpdateJob = viewModelScope.launch(dispatcherProvider.main) {
-            delay(debounceTime)
-
-            if (pendingCardCoordsUpdates.isEmpty()) return@launch
-
-            val updatesToProcess = HashMap(pendingCardCoordsUpdates)
-            pendingCardCoordsUpdates.clear()
-
-            _uiState.setCardsCoordinates(updatesToProcess)
-        }
-
+        cardCoordinatesProcessor.submit(
+            key = cardId,
+            value = Pair(columnId, coordinates),
+            isThrottling = isActivelyDragging
+        )
     }
 
 
     override fun onCleared() {
         super.onCleared()
         cancelAutoScroll()
-        columnHeaderCoordinatesUpdateJob?.cancel()
-        columnCoordinatesUpdateJob?.cancel()
-        columnListCoordinatesUpdateJob?.cancel()
-        cardCoordinatesUpdateJob?.cancel()
+        headerCoordinatesProcessor.cancel()
+        listCoordinatesProcessor.cancel()
+        columnCoordinatesProcessor.cancel()
+        cardCoordinatesProcessor.cancel()
     }
 }

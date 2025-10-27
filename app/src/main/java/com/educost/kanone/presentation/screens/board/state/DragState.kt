@@ -31,4 +31,7 @@ data class DragState(
 
     fun isCardBeingDragged(cardId: Long) = cardBeingDragged?.id == cardId
 
+
+    fun isActivelyDragging(): Boolean = this != DragState()
+
 }
