@@ -1,9 +1,7 @@
 package com.educost.kanone.presentation.screens.board.components
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,7 +44,6 @@ import com.educost.kanone.presentation.screens.board.state.BoardUiState
 import com.educost.kanone.presentation.theme.KanOneTheme
 import java.time.LocalDateTime
 
-@SuppressLint("UnusedContentLambdaTargetStateParameter")
 @Composable
 fun BoardColumn(
     modifier: Modifier = Modifier,
@@ -82,15 +79,12 @@ fun BoardColumn(
         ColumnHeader(
             modifier = Modifier
                 .padding(sizes.columnHeaderPadding)
-                .clickable(
-                    enabled = isOnVerticalLayout,
-                    onClick = { onIntent(BoardIntent.ToggleExpandColumn(column.id)) }
-                )
                 .fillMaxWidth(),
             column = column,
             state = state,
             onIntent = onIntent,
             sizes = sizes,
+            isOnVerticalLayout = isOnVerticalLayout
         )
 
         AnimatedContent(isOnVerticalLayout && !column.isExpanded) { isCollapsed ->

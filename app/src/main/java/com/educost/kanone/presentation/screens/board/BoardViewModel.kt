@@ -96,6 +96,7 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.OpenBoardSettings -> openBoardSettings()
             is BoardIntent.CloseBoardSettings -> clearEditAndCreationStates()
             is BoardIntent.ToggleShowImages -> toggleShowImages()
+            is BoardIntent.ToggleLayoutOrientation -> toggleLayoutOrientation()
 
             // Zoom
             is BoardIntent.OnZoomChange -> onZoomChange(intent.zoomChange, intent.scrollChange)
@@ -287,6 +288,15 @@ class BoardViewModel @Inject constructor(
             val updatedBoard = board.copy(showImages = !board.showImages).toBoard()
             updateBoardUseCase(updatedBoard)
         }
+    }
+
+    private fun toggleLayoutOrientation() {
+        _uiState.update {
+            val board = it.board ?: return
+            it.copy(board = board.copy(isOnListView = !board.isOnListView))
+        }
+
+        //TODO: persist layout orientation
     }
 
 

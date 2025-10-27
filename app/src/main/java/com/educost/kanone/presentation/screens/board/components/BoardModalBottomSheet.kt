@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Search
@@ -40,6 +41,7 @@ import com.educost.kanone.presentation.components.SettingItem
 import com.educost.kanone.presentation.components.SettingSwitchItem
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.BoardUi
+import com.educost.kanone.presentation.util.isWindowWidthCompact
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,6 +77,15 @@ fun BoardModalBottomSheet(
             )
 
             Spacer(Modifier.height(8.dp))
+
+            if (isWindowWidthCompact()) {
+                SettingSwitchItem(
+                    title = "Vertical Layout",
+                    icon = Icons.Filled.FilterList,
+                    checked = board.isOnListView,
+                    onToggle = { onIntent(BoardIntent.ToggleLayoutOrientation) }
+                )
+            }
 
             SettingSwitchItem(
                 title = stringResource(R.string.board_settings_show_card_images),

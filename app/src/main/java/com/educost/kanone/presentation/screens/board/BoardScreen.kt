@@ -15,7 +15,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -31,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowWidthSizeClass
 import com.educost.kanone.R
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.model.Task
@@ -53,6 +51,7 @@ import com.educost.kanone.presentation.screens.board.state.BoardUiState
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
+import com.educost.kanone.presentation.util.isWindowWidthCompact
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
@@ -129,11 +128,11 @@ fun BoardScreen(
         val scrollChange = -panChange.x
         onIntent(BoardIntent.OnZoomChange(zoomChange, scrollChange))
     }
-    val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
+    val isWindowWidthCompact = isWindowWidthCompact()
 
-    val isOnVerticalLayout by remember {
+    val isOnVerticalLayout by remember(board.isOnListView) {
         derivedStateOf {
-            board.isOnListView && windowWidthSizeClass == WindowWidthSizeClass.COMPACT
+            board.isOnListView && isWindowWidthCompact
         }
     }
 
@@ -146,7 +145,7 @@ fun BoardScreen(
         modifier = modifier
             .fillMaxSize()
             .transformable(transformableState)
-            .pointerInput(Unit) {
+            .pointerInput(isOnVerticalLayout) {
                 detectDragGesturesAfterLongPress(
                     onDrag = { change, _ ->
                         onIntent(BoardIntent.OnDrag(change.position, isOnVerticalLayout))

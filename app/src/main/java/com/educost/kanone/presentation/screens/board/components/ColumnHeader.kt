@@ -53,6 +53,7 @@ fun ColumnHeader(
     state: BoardUiState,
     onIntent: (BoardIntent) -> Unit,
     sizes: BoardSizes = BoardSizes(),
+    isOnVerticalLayout: Boolean = false
 ) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -101,7 +102,12 @@ fun ColumnHeader(
             },
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    enabled = isOnVerticalLayout,
+                    onClick = { onIntent(BoardIntent.ToggleExpandColumn(column.id)) }
+                ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box( // Circle

@@ -25,6 +25,7 @@ sealed interface BoardIntent {
     data object OpenBoardSettings : BoardIntent
     data object CloseBoardSettings : BoardIntent
     data object ToggleShowImages : BoardIntent
+    data object ToggleLayoutOrientation: BoardIntent
 
     // Zoom
     data class OnZoomChange(val zoomChange: Float, val scrollChange: Float) : BoardIntent
