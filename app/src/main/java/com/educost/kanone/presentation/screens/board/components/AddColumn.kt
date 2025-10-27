@@ -120,7 +120,7 @@ fun AddColumn(
     } else {
 
         AddColumnButton(
-            modifier = modifier.padding(sizes.addColumnButtonExternalPadding),
+            modifier = modifier.padding(sizes.addColumnButtonExternalPaddingValues),
             onClick = { onIntent(BoardIntent.StartCreatingColumn) },
             sizes = sizes
         )

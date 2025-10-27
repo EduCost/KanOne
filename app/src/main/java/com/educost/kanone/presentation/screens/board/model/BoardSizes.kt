@@ -2,6 +2,8 @@ package com.educost.kanone.presentation.screens.board.model
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -10,134 +12,171 @@ data class BoardSizes(
 ) {
     private val zoom = zoomPercentage / 100f
 
-    val columnWidth = (300f * zoom).dp
-    val columnsSpaceBy = (8f * zoom).dp
-    val columnShape = RoundedCornerShape((12f * zoom).dp)
+
+    /*  ========= Column =========  */
+
+    val columnWidth    = 300f.toDp(zoom)
+    val columnsSpaceBy = 8f.toDp(zoom)
+    val columnShape    = RoundedCornerShape(12f.toDp(zoom))
 
     val columnPaddingValues = PaddingValues(
-        start = (16f * zoom).coerceIn(
-            minimumValue = 8f,
-            maximumValue = 20f
-        ).dp,
-        top = (16f * zoom).coerceIn(
-            minimumValue = 8f,
-            maximumValue = 20f
-        ).dp,
-        end = (16f * zoom).coerceIn(
-            minimumValue = 8f,
-            maximumValue = 20f
-        ).dp,
-        bottom = (16f * zoom).coerceIn(
-            minimumValue = 8f,
-            maximumValue = 20f
-        ).dp
+        all = 16f.toClampedDp(zoom = zoom, min = 8f, max = 20f)
     )
 
     val columnFullScreenPaddingValues = PaddingValues(
-        start = (16f * zoom).coerceIn(
-            minimumValue = 12f,
-            maximumValue = 20f
-        ).dp,
+        start = 16f.toClampedDp(zoom = zoom, min = 12f, max = 20f),
         top = 4f.dp,
-        end = (16f * zoom).coerceIn(
-            minimumValue = 12f,
-            maximumValue = 20f
-        ).dp,
+        end = 16f.toClampedDp(zoom = zoom, min = 12f, max = 20f),
         bottom = 8f.dp,
     )
 
-    val columnHeaderPadding = (16f * zoom).dp
-    val columnHeaderShape = RoundedCornerShape((12f * zoom).dp)
-    val columnHeaderCircleSize = (24f * zoom).dp
-    val columnHeaderCirclePadding = (16f * zoom).dp
-    val columnHeaderFontSize = (18f * zoom).sp
-    val columnHeaderLineHeight = (24f * zoom).sp
+    /*  ========= Column =========  */
+
+
+    /*  ========= Column Header =========  */
+
+    val columnHeaderPadding       = 16f.toDp(zoom)
+    val columnHeaderShape         = RoundedCornerShape(12f.toDp(zoom))
+    val columnHeaderCircleSize    = 24f.toDp(zoom)
+    val columnHeaderCirclePadding = 16f.toDp(zoom)
+    val columnHeaderFontSize      = 18f.toSp(zoom)
+    val columnHeaderLineHeight    = 24f.toSp(zoom)
+
+    /*  ========= Column Header =========  */
+
+
+    /*  ========= Column Card List =========  */
 
     val columnListPaddingValues = PaddingValues(
-        start = (8f * zoom).dp,
-        end = (8f * zoom).dp,
-        bottom = (8f * zoom).dp
+        start  = 8f.toDp(zoom),
+        end    = 8f.toDp(zoom),
+        bottom = 8f.toDp(zoom)
     )
     val columnListSpaceBy = (8f * zoom).dp
 
-    val addColumnButtonExternalPadding = (16f * zoom).dp
-    val addColumnButtonShape = RoundedCornerShape((8f * zoom).dp)
-    val addColumnButtonIconSize = (24f * zoom).dp
-    val addColumnButtonSpacer = (4f * zoom).dp
+    /*  ========= Column Card List =========  */
+
+
+    /*  ========= Add Column Button =========  */
+
+    val addColumnButtonExternalPaddingValues = PaddingValues(16f.toDp(zoom))
     val addColumnButtonInternalPaddingValues = PaddingValues(
         vertical = (8f * zoom).dp,
         horizontal = (24f * zoom).dp
     )
-    val addColumnButtonTextSize = (14f * zoom).sp
-    val addColumnButtonLineHeight = (20f * zoom).sp
+
+    val addColumnButtonShape    = RoundedCornerShape(8f.toDp(zoom))
+    val addColumnButtonIconSize = 24f.toDp(zoom)
+    val addColumnButtonSpacer   = 4f.toDp(zoom)
+
+    val addColumnButtonTextSize   = 14f.toSp(zoom)
+    val addColumnButtonLineHeight = 20f.toSp(zoom)
+
+    /*  ========= Add Column Button =========  */
 
 
-    // Card
-    val addCardButtonSpacingTop = (8f * zoom).dp
+    /*  ========= Add Card Button =========  */
+
     val addCardButtonPaddingValues = PaddingValues(
-        vertical = (8f * zoom).dp,
-        horizontal = (16f * zoom).dp
+        vertical = 8f.toDp(zoom),
+        horizontal = 16f.toDp(zoom)
     )
-    val addCardButtonIconSize = (24f * zoom).dp
-    val addCardButtonSpacer = (4f * zoom).dp
-    val addCardButtonFontSize = (16f * zoom).sp
-    val addCardButtonLineHeight = (24f * zoom).sp
+    val addCardButtonSpacingTop = 8f.toDp(zoom)
+    val addCardButtonSpacer     = 4f.toDp(zoom)
+    val addCardButtonIconSize   = 24f.toDp(zoom)
 
-    val addCardTextFieldPaddingValues = PaddingValues((12f * zoom).dp)
+    val addCardButtonFontSize   = 16f.toSp(zoom)
+    val addCardButtonLineHeight = 24f.toSp(zoom)
+
+    val addCardTextFieldPaddingValues = PaddingValues(12f.toDp(zoom))
+
+    /*  ========= Add Card Button =========  */
 
 
-    val cardTitleFontSize = (16f * zoom).sp
-    val cardTitleLineHeight = (24f * zoom).sp
+    /*  ========= Card =========  */
 
     val cardShape = RoundedCornerShape((8f * zoom).dp)
     val cardPaddingValues = PaddingValues((12f * zoom).dp)
 
+    // Title
+    val cardTitleFontSize   = 16f.toSp(zoom)
+    val cardTitleLineHeight = 24f.toSp(zoom)
+
+    // Image
     val cardImageMaxHeight = (150f * zoom).dp
     val cardImageShape = RoundedCornerShape((8f * zoom).dp)
 
-    val cardTasksProgressIndicatorSize = (4f * zoom).dp
-    val cardTasksProgressIndicatorSpacer = (8f * zoom).dp
-    val cardTasksIconSize = (12f * zoom).dp
-    val cardTasksIconSpacer = (4f * zoom).dp
-    val cardTasksFontSize = (11f * zoom).sp
-    val cardTasksLineHeight = (16f * zoom).sp
+    // Tasks
+    val cardTasksProgressIndicatorSize = 4f.toDp(zoom)
+    val cardTasksProgressIndicatorSpacer = 8f.toDp(zoom)
 
+    val cardTasksIconSize   = 12f.toDp(zoom)
+    val cardTasksIconSpacer = 4f.toDp(zoom)
+
+    val cardTasksFontSize   = 11f.toSp(zoom)
+    val cardTasksLineHeight = 16f.toSp(zoom)
+
+    // Due date
     val cardDueDatePaddingValues = PaddingValues(
-        horizontal = (8f * zoom).dp,
-        vertical = (4f * zoom).dp
+        horizontal = 8f.toDp(zoom),
+        vertical   = 4f.toDp(zoom)
     )
-    val cardDueDateShape = RoundedCornerShape((8f * zoom).dp)
-    val cardDueDateFontSize = (14f * zoom).sp
-    val cardDueDateLineHeight = (20f * zoom).sp
+    val cardDueDateShape = RoundedCornerShape(8f.toDp(zoom))
 
-    val cardDescriptionIconSize = (20f * zoom).dp
-    val cardAttachmentIconSize = (18f * zoom).dp
-    val cardAttachmentFontSize = (14f * zoom).sp
-    val cardAttachmentLineHeight = (20f * zoom).sp
+    val cardDueDateFontSize   = 14f.toSp(zoom)
+    val cardDueDateLineHeight = 20f.toSp(zoom)
 
-    val cardLabelsSpaceBy = (8f * zoom).dp
-    val cardLabelsPaddingTop = (12f * zoom).dp
+    // Description
+    val cardDescriptionIconSize = 20f.toDp(zoom)
+
+    // Attachment
+    val cardAttachmentIconSize = 18f.toDp(zoom)
+
+    val cardAttachmentFontSize   = 14f.toSp(zoom)
+    val cardAttachmentLineHeight = 20f.toSp(zoom)
+
+    // Label
     val cardLabelsPaddingValues = PaddingValues(
-        horizontal = (12 * zoom).dp,
-        vertical = (6 * zoom).dp
+        horizontal = 12f.toDp(zoom),
+        vertical   = 6f.toDp(zoom)
     )
-    val cardLabelsShape = RoundedCornerShape((8f * zoom).dp)
-    val cardLabelsFontSize = (12f * zoom).sp
-    val cardLabelsLineHeight = (16f * zoom).sp
+    val cardLabelsSpaceBy    = 8f.toDp(zoom)
+    val cardLabelsPaddingTop = 12f.toDp(zoom)
+    val cardLabelsShape      = RoundedCornerShape(8f.toDp(zoom))
 
+    val cardLabelsFontSize   = 12f.toSp(zoom)
+    val cardLabelsLineHeight = 16f.toSp(zoom)
+
+    // Bottom row
     val cardHorizontalDividerPaddingValues = PaddingValues(
-        top = (8f * zoom).dp,
-        bottom = (12f * zoom).dp
+        top    = 8f.toDp(zoom),
+        bottom = 12f.toDp(zoom)
     )
 
-    val cardBottomRowPaddingTop = (8f * zoom).dp
-    val cardBottomRowPaddingTopWithLabels = (12f * zoom).dp
-    val cardBottomRowIconsSpacer = (8f * zoom).dp
+    val cardBottomRowPaddingTop = 8f.toDp(zoom)
+    val cardBottomRowPaddingTopWithLabels = 12f.toDp(zoom)
+    val cardBottomRowIconsSpacer = 8f.toDp(zoom)
+
+    /*  ========= Card =========  */
 
 
-    // Resizable icon buttons
-    val resizableIconButtonPaddingValues = PaddingValues((12f * zoom).dp)
-    val resizableIconButtonSize = (24f * zoom).dp
+    /*  ========= Resizable icon buttons =========  */
 
+    val resizableIconButtonPaddingValues = PaddingValues(12f.toDp(zoom))
+    val resizableIconButtonSize = 24f.toDp(zoom)
 
+    /*  ========= Resizable icon buttons =========  */
+
+}
+
+private fun Float.toDp(zoom: Float): Dp = (this * zoom).dp
+
+private fun Float.toSp(zoom: Float): TextUnit = (this * zoom).sp
+
+private fun Float.toClampedDp(
+    zoom: Float,
+    min: Float = 8f,
+    max: Float = 20f
+): Dp {
+    return (this * zoom).coerceIn(min, max).dp
 }
