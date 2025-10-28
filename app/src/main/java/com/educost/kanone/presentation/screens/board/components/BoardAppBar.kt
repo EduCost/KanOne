@@ -32,15 +32,14 @@ import com.educost.kanone.R
 import com.educost.kanone.presentation.components.ActionTopBar
 import com.educost.kanone.presentation.components.NavigateBackIcon
 import com.educost.kanone.presentation.screens.board.BoardIntent
+import com.educost.kanone.presentation.screens.board.state.BoardUiState
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 
 @Composable
 fun BoardAppBar(
     modifier: Modifier = Modifier,
     boardName: String,
-    type: BoardAppBarType = BoardAppBarType.DEFAULT,
-    isDropdownMenuExpanded: Boolean,
-    isFullScreen: Boolean,
+    state: BoardUiState,
     onIntent: (BoardIntent) -> Unit
 ) {
 
@@ -51,9 +50,9 @@ fun BoardAppBar(
                 windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
     }
 
-    when (type) {
+    when (state.topBarType) {
         BoardAppBarType.DEFAULT -> {
-            if (!isFullScreen) {
+            if (!state.isOnFullScreen) {
                 TopAppBar(
                     modifier = modifier,
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -88,7 +87,7 @@ fun BoardAppBar(
                                 contentDescription = stringResource(R.string.board_appbar_more_options_content_description)
                             )
                             BoardDropdownMenu(
-                                isExpanded = isDropdownMenuExpanded,
+                                isExpanded = state.isBoardDropdownMenuExpanded,
                                 onIntent = onIntent
                             )
                         }

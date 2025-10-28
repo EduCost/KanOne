@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Subject
@@ -47,18 +49,57 @@ import com.educost.kanone.domain.model.Attachment
 import com.educost.kanone.domain.model.Label
 import com.educost.kanone.domain.model.Task
 import com.educost.kanone.presentation.components.ResizableLabelChip
+import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.CardUi
+import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
+import com.educost.kanone.presentation.screens.board.state.BoardUiState
+import com.educost.kanone.presentation.screens.board.utils.dragPlaceholder
+import com.educost.kanone.presentation.screens.board.utils.setCardCoordinates
 import com.educost.kanone.presentation.theme.KanOneTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+
+fun LazyListScope.columnCardList(
+    column: ColumnUi,
+    state: BoardUiState,
+    onIntent: (BoardIntent) -> Unit,
+    showCardImages: Boolean,
+    sizes: BoardSizes
+) {
+    itemsIndexed(
+        items = column.cards,
+        key = { index, card -> card.id }
+    ) { index, card ->
+
+        val isDraggingCard = state.dragState.isCardBeingDragged(card.id)
+
+        ColumnCard(
+            modifier = Modifier
+                .then(
+                    if (!state.isChangingZoom) Modifier.animateItem()
+                    else Modifier
+                )
+                .setCardCoordinates(
+                    cardId = card.id,
+                    onSetCoordinates = { onIntent(BoardIntent.OnSetCoordinates(it)) }
+                )
+                .dragPlaceholder(isDraggingCard)
+                .fillMaxWidth(),
+            card = card,
+            shouldShowImage = showCardImages,
+            sizes = sizes,
+            onClick = { onIntent(BoardIntent.OnCardClick(card.id)) }
+        )
+    }
+}
 
 @Composable
 fun ColumnCard(
     modifier: Modifier = Modifier,
     card: CardUi,
-    showImage: Boolean,
+    shouldShowImage: Boolean,
     sizes: BoardSizes = BoardSizes(),
     onClick: () -> Unit = {}
 ) {
@@ -71,96 +112,106 @@ fun ColumnCard(
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(7.dp))
             .clickable(onClick = onClick)
     ) {
-        card.coverFileName?.let { cover ->
-            if (showImage) {
-                CardImage(
-                    cover = cover,
-                    shape = sizes.cardImageShape,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = sizes.cardImageMaxHeight)
-                )
-            }
-        }
+
+        CardImage(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = sizes.cardImageMaxHeight),
+            cover = card.coverFileName,
+            shouldShowImage = shouldShowImage,
+            shape = sizes.cardImageShape
+        )
 
 
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(sizes.cardPaddingValues),
-            contentAlignment = Alignment.CenterStart
         ) {
-            Column {
 
-                Text(
-                    text = card.title,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontSize = sizes.cardTitleFontSize,
-                        lineHeight = sizes.cardTitleLineHeight
-                    )
-                )
+            CardTitle(title = card.title, sizes = sizes)
 
-                if (cardProperties.hasLabels) {
-                    CardLabels(
-                        modifier = Modifier.padding(top = sizes.cardLabelsPaddingTop),
-                        labels = card.labels,
-                        sizes = sizes
-                    )
-                }
-
-
-                if (cardProperties.hasTasks) {
-                    val taskAmount = remember { card.tasks.size }
-                    val completedTasksAmount = remember { card.tasks.count { it.isCompleted } }
-
-                    CardTasks(
-                        modifier = Modifier.padding(top = 8.dp),
-                        taskAmount = taskAmount,
-                        completedTasksAmount = completedTasksAmount,
-                        sizes = sizes
-                    )
-                }
-
-                if (cardProperties.hasHorizontalDivider) {
-                    HorizontalDivider(Modifier.padding(sizes.cardHorizontalDividerPaddingValues))
-                }
-
-                CardBottomRow(
-                    cardProperties = cardProperties,
-                    card = card,
+            if (cardProperties.hasLabels) {
+                CardLabels(
+                    modifier = Modifier.padding(top = sizes.cardLabelsPaddingTop),
+                    labels = card.labels,
                     sizes = sizes
                 )
             }
+
+
+            if (cardProperties.hasTasks) {
+                val taskAmount = remember { card.tasks.size }
+                val completedTasksAmount = remember { card.tasks.count { it.isCompleted } }
+
+                CardTasks(
+                    modifier = Modifier.padding(top = 8.dp),
+                    taskAmount = taskAmount,
+                    completedTasksAmount = completedTasksAmount,
+                    sizes = sizes
+                )
+            }
+
+            if (cardProperties.hasHorizontalDivider) {
+                HorizontalDivider(Modifier.padding(sizes.cardHorizontalDividerPaddingValues))
+            }
+
+            CardBottomRow(
+                cardProperties = cardProperties,
+                card = card,
+                sizes = sizes
+            )
         }
     }
 }
 
 @Composable
-private fun CardImage(modifier: Modifier = Modifier, cover: String, shape: RoundedCornerShape) {
-    val context = LocalContext.current
-    val imageRequest = remember {
-        ImageRequest.Builder(context)
-            .diskCachePolicy(CachePolicy.DISABLED)
-            .data(cover)
-            .build()
-    }
+private fun CardImage(
+    modifier: Modifier = Modifier,
+    cover: String?,
+    shouldShowImage: Boolean,
+    shape: RoundedCornerShape
+) {
+    cover?.let { cover ->
+        if (!shouldShowImage) return@let
 
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        AsyncImage(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(shape),
-            model = imageRequest,
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth,
-            error = rememberVectorPainter(Icons.Filled.Error),
-            placeholder = rememberVectorPainter(Icons.Filled.Image)
-        )
+        val context = LocalContext.current
+        val imageRequest = remember {
+            ImageRequest.Builder(context)
+                .diskCachePolicy(CachePolicy.DISABLED)
+                .data(cover)
+                .build()
+        }
+
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.Center
+        ) {
+            AsyncImage(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(shape),
+                model = imageRequest,
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth,
+                error = rememberVectorPainter(Icons.Filled.Error),
+                placeholder = rememberVectorPainter(Icons.Filled.Image)
+            )
+        }
     }
+}
+
+@Composable
+fun CardTitle(modifier: Modifier = Modifier, title: String, sizes: BoardSizes) {
+    Text(
+        modifier = modifier,
+        text = title,
+        color = MaterialTheme.colorScheme.onSurface,
+        style = MaterialTheme.typography.bodyLarge.copy(
+            fontSize = sizes.cardTitleFontSize,
+            lineHeight = sizes.cardTitleLineHeight
+        )
+    )
 }
 
 @Composable
@@ -289,12 +340,12 @@ private fun CardBottomRow(
 ) {
 
     val paddingTop = remember(sizes) {
-        if (cardProperties.hasHorizontalDivider || cardProperties.cardIsEmpty) {
-            0.dp
-        } else if (cardProperties.hasLabels) {
-            sizes.cardBottomRowPaddingTopWithLabels
-        } else {
-            sizes.cardBottomRowPaddingTop
+        when {
+            cardProperties.hasHorizontalDivider || cardProperties.cardIsEmpty -> 0.dp
+
+            cardProperties.hasLabels -> sizes.cardBottomRowPaddingTopWithLabels
+
+            else -> sizes.cardBottomRowPaddingTop
         }
     }
 
@@ -375,7 +426,7 @@ private fun ColumnCardPreview() {
                     ),
                     coordinates = Coordinates()
                 ),
-                showImage = true,
+                shouldShowImage = true,
                 sizes = BoardSizes()
             )
         }

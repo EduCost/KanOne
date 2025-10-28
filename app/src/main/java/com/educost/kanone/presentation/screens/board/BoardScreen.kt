@@ -1,7 +1,6 @@
 package com.educost.kanone.presentation.screens.board
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -33,8 +31,8 @@ import com.educost.kanone.presentation.components.DeleteBoardDialog
 import com.educost.kanone.presentation.components.DialogRename
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
 import com.educost.kanone.presentation.screens.board.components.BoardModalBottomSheet
-import com.educost.kanone.presentation.screens.board.components.HorizontalBoardLayout
-import com.educost.kanone.presentation.screens.board.components.VerticalBoardLayout
+import com.educost.kanone.presentation.screens.board.layouts.HorizontalBoardLayout
+import com.educost.kanone.presentation.screens.board.layouts.VerticalBoardLayout
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
@@ -43,6 +41,7 @@ import com.educost.kanone.presentation.screens.board.state.BoardUiState
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.utils.DraggingCard
 import com.educost.kanone.presentation.screens.board.utils.DraggingColumn
+import com.educost.kanone.presentation.screens.board.utils.enableBoardDragAndDrop
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
 import com.educost.kanone.presentation.util.isWindowWidthCompact
@@ -122,13 +121,12 @@ fun BoardScreen(
         val scrollChange = -panChange.x
         onIntent(BoardIntent.OnZoomChange(zoomChange, scrollChange))
     }
-    val isWindowWidthCompact = isWindowWidthCompact()
 
-    val isOnVerticalLayout by remember(board.isOnVerticalLayout) {
-        derivedStateOf {
-            board.isOnVerticalLayout && isWindowWidthCompact
-        }
-    }
+
+    val isWindowWidthCompact = isWindowWidthCompact()
+    val isOnVerticalLayout by remember(board.isOnVerticalLayout) { derivedStateOf {
+        board.isOnVerticalLayout && isWindowWidthCompact
+    }}
 
     BackHandler(enabled = state.hasEditStates || state.isOnFullScreen) {
         onIntent(BoardIntent.OnBackPressed)
@@ -139,29 +137,15 @@ fun BoardScreen(
         modifier = modifier
             .fillMaxSize()
             .transformable(transformableState)
-            .pointerInput(isOnVerticalLayout) {
-                detectDragGesturesAfterLongPress(
-                    onDrag = { change, _ ->
-                        onIntent(BoardIntent.OnDrag(change.position, isOnVerticalLayout))
-                    },
-                    onDragStart = { offset ->
-                        onIntent(BoardIntent.OnDragStart(offset, isOnVerticalLayout))
-                    },
-                    onDragEnd = {
-                        onIntent(BoardIntent.OnDragStop)
-                    },
-                    onDragCancel = {
-                        onIntent(BoardIntent.OnDragStop)
-                    }
-                )
-            },
+            .enableBoardDragAndDrop(
+                isOnVerticalLayout = isOnVerticalLayout,
+                onIntent = onIntent
+            ),
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             BoardAppBar(
                 boardName = board.name,
-                type = state.topBarType,
-                isDropdownMenuExpanded = state.isBoardDropdownMenuExpanded,
-                isFullScreen = state.isOnFullScreen,
+                state = state,
                 onIntent = onIntent
             )
         },

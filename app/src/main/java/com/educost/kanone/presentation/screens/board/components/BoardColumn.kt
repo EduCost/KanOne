@@ -9,38 +9,66 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.BoardSizes
+import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.state.BoardUiState
 import com.educost.kanone.presentation.screens.board.utils.dragPlaceholder
-import com.educost.kanone.presentation.screens.board.utils.setCardCoordinates
+import com.educost.kanone.presentation.screens.board.utils.setColumnCoordinates
 import com.educost.kanone.presentation.screens.board.utils.setColumnListCoordinates
 import com.educost.kanone.presentation.theme.KanOneTheme
 import java.time.LocalDateTime
+
+fun LazyListScope.boardColumnList(
+    board: BoardUi,
+    state: BoardUiState,
+    onIntent: (BoardIntent) -> Unit,
+    isOnVerticalLayout: Boolean
+) {
+    items(items = board.columns) { column ->
+
+        val isDraggingColumn = state.dragState.isColumnBeingDragged(column.id)
+
+        BoardColumn(
+            modifier = Modifier
+                .then(other =
+                    if (isOnVerticalLayout) Modifier.fillMaxWidth()
+                    else Modifier
+                )
+                .setColumnCoordinates(
+                    columnId = column.id,
+                    onSetCoordinates = { onIntent(BoardIntent.OnSetCoordinates(it)) }
+                )
+                .dragPlaceholder(isDraggingColumn),
+            column = column,
+            state = state,
+            onIntent = onIntent,
+            sizes =
+                if (isOnVerticalLayout) BoardSizes()
+                else board.sizes,
+            showCardImages = board.showImages,
+            isOnVerticalLayout = isOnVerticalLayout
+        )
+    }
+}
 
 @Composable
 fun BoardColumn(
@@ -52,21 +80,6 @@ fun BoardColumn(
     isOnVerticalLayout: Boolean = false,
     showCardImages: Boolean
 ) {
-
-    var isAddingCardOnTop by remember(state.cardCreationState) {
-        mutableStateOf(
-            state.cardCreationState.columnId == column.id &&
-                    !state.cardCreationState.isAppendingToEnd
-        )
-    }
-    val focusManager = LocalFocusManager.current
-    LaunchedEffect(isAddingCardOnTop) {
-        if (isAddingCardOnTop) {
-            focusManager.clearFocus()
-            focusManager.moveFocus(FocusDirection.Down)
-        }
-    }
-
     Column(
         modifier = modifier
             .width(sizes.columnWidth)
@@ -86,76 +99,50 @@ fun BoardColumn(
         )
 
         AnimatedContent(isOnVerticalLayout && !column.isExpanded) { isCollapsed ->
-            if (isCollapsed) {
-                CollapsedCards(cardAmount = column.cards.size)
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .then(
-                            other = if (isOnVerticalLayout)
-                                Modifier.heightIn(max = 87000.dp)
-                            else
-                                Modifier
-                        )
-                        .setColumnListCoordinates(
-                            columnId = column.id,
-                            onSetCoordinates = { onIntent(BoardIntent.OnSetCoordinates(it)) }
-                        ),
-                    contentPadding = sizes.columnListPaddingValues,
-                    verticalArrangement = Arrangement.spacedBy(sizes.columnListSpaceBy),
-                    state = column.listState
-                ) {
 
-                    item {
-                        if (isAddingCardOnTop) {
-                            AddCardTextField(
-                                newCardTitle = state.cardCreationState.title ?: "",
-                                onTitleChange = { onIntent(BoardIntent.OnCardTitleChange(it)) },
-                                onConfirmCreateCard = { onIntent(BoardIntent.ConfirmCardCreation) },
-                                sizes = sizes
-                            )
-                        }
-                    }
+            if (isCollapsed) CollapsedCards(cardAmount = column.cards.size)
 
-                    itemsIndexed(
-                        items = column.cards,
-                        key = { index, card -> card.id }
-                    ) { index, card ->
+            else LazyColumn(
+                modifier = Modifier
+                    .then(other =
+                        if (isOnVerticalLayout) Modifier.heightIn(max = 87000.dp)
+                        else Modifier
+                    )
+                    .setColumnListCoordinates(
+                        columnId = column.id,
+                        onSetCoordinates = { onIntent(BoardIntent.OnSetCoordinates(it)) }
+                    ),
+                contentPadding = sizes.columnListPaddingValues,
+                verticalArrangement = Arrangement.spacedBy(sizes.columnListSpaceBy),
+                state = column.listState
+            ) {
 
-                        val isDraggingCard = state.dragState.isCardBeingDragged(card.id)
+                addingCardOnTheTop(
+                    column = column,
+                    state = state,
+                    onIntent = onIntent,
+                    sizes = sizes
+                )
 
-                        ColumnCard(
-                            modifier = Modifier
-                                .then(
-                                    if (!state.isChangingZoom) Modifier.animateItem()
-                                    else Modifier
-                                )
-                                .setCardCoordinates(
-                                    cardId = card.id,
-                                    onSetCoordinates = { onIntent(BoardIntent.OnSetCoordinates(it)) }
-                                )
-                                .dragPlaceholder(isDraggingCard)
-                                .fillMaxWidth(),
-                            card = card,
-                            showImage = showCardImages,
-                            sizes = sizes,
-                            onClick = { onIntent(BoardIntent.OnCardClick(card.id)) }
-                        )
-                    }
+                columnCardList(
+                    column = column,
+                    state = state,
+                    onIntent = onIntent,
+                    showCardImages = showCardImages,
+                    sizes = sizes
+                )
 
-                    item {
-                        AddCard(
-                            state = state,
-                            onIntent = onIntent,
-                            column = column,
-                            sizes = sizes
-                        )
-                    }
-                }
+                addCard(
+                    state = state,
+                    onIntent = onIntent,
+                    column = column,
+                    sizes = sizes
+                )
             }
         }
     }
 }
+
 
 @Composable
 fun CollapsedCards(
@@ -164,12 +151,10 @@ fun CollapsedCards(
 ) {
     Column(
         modifier = modifier
-            .clip(
-                RoundedCornerShape(
-                    bottomStart = 12.dp,
-                    bottomEnd = 12.dp
-                )
-            )
+            .clip(shape = RoundedCornerShape(
+                bottomStart = 12.dp,
+                bottomEnd = 12.dp
+            ))
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))
             .padding(horizontal = 8.dp)
             .padding(bottom = 8.dp)

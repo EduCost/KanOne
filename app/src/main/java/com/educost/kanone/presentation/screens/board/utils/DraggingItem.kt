@@ -111,7 +111,7 @@ fun DraggingCard(
             .width(with(localDensity) { card.coordinates.width.toDp() })
             .height(with(localDensity) { card.coordinates.height.toDp() }),
         card = card,
-        showImage = board.showImages,
+        shouldShowImage = board.showImages,
         sizes =
             if (isOnVerticalLayout) BoardSizes()
             else board.sizes,

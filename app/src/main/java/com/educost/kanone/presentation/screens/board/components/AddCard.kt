@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -41,58 +42,88 @@ import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.state.BoardUiState
 
-@Composable
-fun AddCard(
+
+fun LazyListScope.addCard(
     modifier: Modifier = Modifier,
     state: BoardUiState,
     onIntent: (BoardIntent) -> Unit,
     column: ColumnUi,
     sizes: BoardSizes
 ) {
+    item {
+        val isAddingCard by remember(state.cardCreationState) {
+            mutableStateOf(
+                state.cardCreationState.columnId == column.id && state.cardCreationState.isAppendingToEnd
+            )
+        }
 
-    val isAddingCard by remember(state.cardCreationState) {
-        mutableStateOf(
-            state.cardCreationState.columnId == column.id && state.cardCreationState.isAppendingToEnd
-        )
-    }
+        val focusManager = LocalFocusManager.current
+        LaunchedEffect(isAddingCard) {
+            if (isAddingCard) {
+                focusManager.clearFocus()
+                focusManager.moveFocus(FocusDirection.Down)
+            }
+        }
 
-    val focusManager = LocalFocusManager.current
-    LaunchedEffect(isAddingCard) {
         if (isAddingCard) {
-            focusManager.clearFocus()
-            focusManager.moveFocus(FocusDirection.Down)
+            AddCardTextField(
+                modifier = modifier.fillMaxWidth(),
+                state = state,
+                onIntent = onIntent,
+                sizes = sizes
+            )
+        } else {
+            Box(
+                modifier = modifier
+                    .padding(sizes.addCardButtonSpacingTop)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                AddCardButton(
+                    sizes = sizes,
+                    onClick = { onIntent(
+                        BoardIntent.StartCreatingCard(columnId = column.id, isAppendingToEnd = true)
+                    ) }
+                )
+            }
         }
     }
+}
 
-    if (isAddingCard) {
-        AddCardTextField(
-            modifier = modifier.fillMaxWidth(),
-            newCardTitle = state.cardCreationState.title ?: "",
-            onTitleChange = { onIntent(BoardIntent.OnCardTitleChange(it)) },
-            onConfirmCreateCard = { onIntent(BoardIntent.ConfirmCardCreation) },
-            sizes = sizes
-        )
-    } else {
-        Box(
-            modifier = modifier
-                .padding(sizes.addCardButtonSpacingTop)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
+
+fun LazyListScope.addingCardOnTheTop(
+    column: ColumnUi,
+    state: BoardUiState,
+    onIntent: (BoardIntent) -> Unit,
+    sizes: BoardSizes
+) {
+    item {
+
+        val isAddingCardOnTop = remember(
+            state.cardCreationState.columnId,
+            state.cardCreationState.isAppendingToEnd
         ) {
-            AddCardButton(
-                sizes = sizes,
-                onClick = {
-                    onIntent(
-                        BoardIntent.StartCreatingCard(
-                            columnId = column.id,
-                            isAppendingToEnd = true
-                        )
-                    )
-                }
+            state.cardCreationState.columnId == column.id && !state.cardCreationState.isAppendingToEnd
+        }
+
+        val focusManager = LocalFocusManager.current
+        LaunchedEffect(isAddingCardOnTop) {
+            if (isAddingCardOnTop) {
+                focusManager.clearFocus()
+                focusManager.moveFocus(FocusDirection.Down)
+            }
+        }
+
+        if (isAddingCardOnTop) {
+            AddCardTextField(
+                state = state,
+                onIntent = onIntent,
+                sizes = sizes
             )
         }
     }
 }
+
 
 @Composable
 fun AddCardButton(modifier: Modifier = Modifier, onClick: () -> Unit, sizes: BoardSizes) {
@@ -128,12 +159,12 @@ fun AddCardButton(modifier: Modifier = Modifier, onClick: () -> Unit, sizes: Boa
     }
 }
 
+
 @Composable
 fun AddCardTextField(
     modifier: Modifier = Modifier,
-    newCardTitle: String,
-    onTitleChange: (String) -> Unit,
-    onConfirmCreateCard: () -> Unit,
+    state: BoardUiState,
+    onIntent: (BoardIntent) -> Unit,
     sizes: BoardSizes
 ) {
 
@@ -145,9 +176,10 @@ fun AddCardTextField(
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(7.dp))
             .padding(sizes.addCardTextFieldPaddingValues)
     ) {
+
         BasicTextField(
-            value = newCardTitle,
-            onValueChange = { onTitleChange(it) },
+            value = state.cardCreationState.title ?: "",
+            onValueChange = { onIntent(BoardIntent.OnCardTitleChange(it)) },
             textStyle = MaterialTheme.typography.bodyLarge.copy(
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = sizes.cardTitleFontSize,
@@ -160,10 +192,11 @@ fun AddCardTextField(
             keyboardActions = KeyboardActions(
                 onDone = {
                     keyboardController?.hide()
-                    onConfirmCreateCard()
+                    onIntent(BoardIntent.ConfirmCardCreation)
                 }
             ),
             modifier = Modifier.fillMaxWidth()
         )
+
     }
 }
