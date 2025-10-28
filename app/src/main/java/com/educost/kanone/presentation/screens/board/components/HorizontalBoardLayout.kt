@@ -7,12 +7,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.graphicsLayer
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.state.BoardUiState
+import com.educost.kanone.presentation.screens.board.utils.dragPlaceholder
 import com.educost.kanone.presentation.screens.board.utils.setBoardCoordinates
 import com.educost.kanone.presentation.screens.board.utils.setColumnCoordinates
 
@@ -48,17 +46,7 @@ fun HorizontalBoardLayout(
                         columnId = column.id,
                         onSetCoordinates = { onIntent(BoardIntent.OnSetCoordinates(it)) }
                     )
-                    .then(
-                        if (isDraggingColumn) {
-                            Modifier
-                                .graphicsLayer {
-                                    colorFilter = ColorFilter.tint(Color.Gray)
-                                    alpha = 0.05f
-                                }
-                        } else {
-                            Modifier
-                        }
-                    ),
+                    .dragPlaceholder(isDraggingColumn),
                 column = column,
                 state = state,
                 onIntent = onIntent,

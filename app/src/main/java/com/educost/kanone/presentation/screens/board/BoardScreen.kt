@@ -5,10 +5,7 @@ import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -22,10 +19,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -37,18 +32,17 @@ import com.educost.kanone.presentation.components.ColorPickerDialog
 import com.educost.kanone.presentation.components.DeleteBoardDialog
 import com.educost.kanone.presentation.components.DialogRename
 import com.educost.kanone.presentation.screens.board.components.BoardAppBar
-import com.educost.kanone.presentation.screens.board.components.BoardColumn
 import com.educost.kanone.presentation.screens.board.components.BoardModalBottomSheet
-import com.educost.kanone.presentation.screens.board.components.ColumnCard
 import com.educost.kanone.presentation.screens.board.components.HorizontalBoardLayout
 import com.educost.kanone.presentation.screens.board.components.VerticalBoardLayout
-import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.BoardUi
 import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.state.BoardUiState
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
+import com.educost.kanone.presentation.screens.board.utils.DraggingCard
+import com.educost.kanone.presentation.screens.board.utils.DraggingColumn
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
 import com.educost.kanone.presentation.util.isWindowWidthCompact
@@ -229,48 +223,21 @@ fun BoardScreen(
             )
         }
 
-        val localDensity = LocalDensity.current
         state.dragState.cardBeingDragged?.let { card ->
-            ColumnCard(
-                modifier = Modifier
-                    .graphicsLayer {
-                        translationY = state.dragState.itemBeingDraggedOffset.y
-                        translationX = state.dragState.itemBeingDraggedOffset.x
-                        rotationZ = 2f
-                    }
-                    .width(with(localDensity) { card.coordinates.width.toDp() })
-                    .height(with(localDensity) { card.coordinates.height.toDp() }),
+            DraggingCard(
                 card = card,
-                showImage = board.showImages,
-                sizes =
-                    if (isOnVerticalLayout) BoardSizes()
-                    else board.sizes,
+                itemOffset = state.dragState.itemBeingDraggedOffset,
+                board = board,
+                isOnVerticalLayout = isOnVerticalLayout
             )
         }
+
         state.dragState.columnBeingDragged?.let { column ->
-            BoardColumn(
-                modifier = Modifier
-                    .graphicsLayer {
-                        translationY = state.dragState.itemBeingDraggedOffset.y
-                        translationX = state.dragState.itemBeingDraggedOffset.x
-                        rotationZ = 2f
-                    }
-                    .then(
-                        other = when {
-                            isOnVerticalLayout -> Modifier.fillMaxWidth()
-                            else -> Modifier
-                                .width(with(localDensity) { column.coordinates.width.toDp() })
-                                .height(with(localDensity) { column.coordinates.height.toDp() })
-                        }
-                    ),
+            DraggingColumn(
                 column = column,
-                state = BoardUiState(),
-                onIntent = { },
-                sizes =
-                    if (isOnVerticalLayout) BoardSizes()
-                    else board.sizes,
-                isOnVerticalLayout = isOnVerticalLayout,
-                showCardImages = board.showImages
+                itemOffset = state.dragState.itemBeingDraggedOffset,
+                board = board,
+                isOnVerticalLayout = isOnVerticalLayout
             )
         }
     }

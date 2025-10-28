@@ -25,9 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -39,6 +36,7 @@ import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.state.BoardUiState
+import com.educost.kanone.presentation.screens.board.utils.dragPlaceholder
 import com.educost.kanone.presentation.screens.board.utils.setCardCoordinates
 import com.educost.kanone.presentation.screens.board.utils.setColumnListCoordinates
 import com.educost.kanone.presentation.theme.KanOneTheme
@@ -136,17 +134,7 @@ fun BoardColumn(
                                     cardId = card.id,
                                     onSetCoordinates = { onIntent(BoardIntent.OnSetCoordinates(it)) }
                                 )
-                                .then(
-                                    if (isDraggingCard) {
-                                        Modifier
-                                            .graphicsLayer {
-                                                colorFilter = ColorFilter.tint(Color.Gray)
-                                                alpha = 0.05f
-                                            }
-                                    } else {
-                                        Modifier
-                                    }
-                                )
+                                .dragPlaceholder(isDraggingCard)
                                 .fillMaxWidth(),
                             card = card,
                             showImage = showCardImages,
