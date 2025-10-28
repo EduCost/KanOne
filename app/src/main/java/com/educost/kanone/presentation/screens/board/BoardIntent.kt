@@ -1,8 +1,8 @@
 package com.educost.kanone.presentation.screens.board
 
 import androidx.compose.ui.geometry.Offset
-import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.utils.CardOrder
+import com.educost.kanone.presentation.screens.board.utils.CoordinatesIntent
 import com.educost.kanone.presentation.screens.board.utils.OrderType
 
 sealed interface BoardIntent {
@@ -99,18 +99,5 @@ sealed interface BoardIntent {
 
 
     // Set coordinates
-    data class SetBoardCoordinates(val coordinates: Coordinates) : BoardIntent
-    data class SetColumnHeaderCoordinates(val columnId: Long, val coordinates: Coordinates) :
-        BoardIntent
-
-    data class SetColumnListCoordinates(val columnId: Long, val coordinates: Coordinates) :
-        BoardIntent
-
-    data class SetColumnCoordinates(val columnId: Long, val coordinates: Coordinates) : BoardIntent
-    data class SetCardCoordinates(
-        val cardId: Long,
-        val columnId: Long,
-        val coordinates: Coordinates
-    ) : BoardIntent
-
+    data class OnSetCoordinates(val coordinatesIntent: CoordinatesIntent) : BoardIntent
 }

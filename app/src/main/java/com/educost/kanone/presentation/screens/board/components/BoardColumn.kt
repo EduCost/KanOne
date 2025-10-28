@@ -28,8 +28,6 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -41,6 +39,8 @@ import com.educost.kanone.presentation.screens.board.model.CardUi
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
 import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.state.BoardUiState
+import com.educost.kanone.presentation.screens.board.utils.setCardCoordinates
+import com.educost.kanone.presentation.screens.board.utils.setColumnListCoordinates
 import com.educost.kanone.presentation.theme.KanOneTheme
 import java.time.LocalDateTime
 
@@ -99,18 +99,10 @@ fun BoardColumn(
                             else
                                 Modifier
                         )
-                        .onGloballyPositioned { layoutCoordinates ->
-                            onIntent(
-                                BoardIntent.SetColumnListCoordinates(
-                                    columnId = column.id,
-                                    coordinates = Coordinates(
-                                        position = layoutCoordinates.positionInRoot(),
-                                        width = layoutCoordinates.size.width,
-                                        height = layoutCoordinates.size.height
-                                    )
-                                )
-                            )
-                        },
+                        .setColumnListCoordinates(
+                            columnId = column.id,
+                            onSetCoordinates = { onIntent(BoardIntent.OnSetCoordinates(it)) }
+                        ),
                     contentPadding = sizes.columnListPaddingValues,
                     verticalArrangement = Arrangement.spacedBy(sizes.columnListSpaceBy),
                     state = column.listState
@@ -140,19 +132,10 @@ fun BoardColumn(
                                     if (!state.isChangingZoom) Modifier.animateItem()
                                     else Modifier
                                 )
-                                .onGloballyPositioned { layoutCoordinates ->
-                                    onIntent(
-                                        BoardIntent.SetCardCoordinates(
-                                            cardId = card.id,
-                                            columnId = column.id,
-                                            coordinates = Coordinates(
-                                                position = layoutCoordinates.positionInRoot(),
-                                                width = layoutCoordinates.size.width,
-                                                height = layoutCoordinates.size.height
-                                            )
-                                        )
-                                    )
-                                }
+                                .setCardCoordinates(
+                                    cardId = card.id,
+                                    onSetCoordinates = { onIntent(BoardIntent.OnSetCoordinates(it)) }
+                                )
                                 .then(
                                     if (isDraggingCard) {
                                         Modifier

@@ -28,8 +28,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -42,8 +40,8 @@ import com.educost.kanone.R
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.ColumnUi
-import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.state.BoardUiState
+import com.educost.kanone.presentation.screens.board.utils.setColumnHeaderCoordinates
 import com.educost.kanone.presentation.theme.KanOneTheme
 
 @Composable
@@ -88,18 +86,10 @@ fun ColumnHeader(
     Card(
         shape = sizes.columnHeaderShape,
         modifier = modifier
-            .onGloballyPositioned { layoutCoordinates ->
-                onIntent(
-                    BoardIntent.SetColumnHeaderCoordinates(
-                        columnId = column.id,
-                        coordinates = Coordinates(
-                            position = layoutCoordinates.positionInRoot(),
-                            width = layoutCoordinates.size.width,
-                            height = layoutCoordinates.size.height
-                        )
-                    )
-                )
-            },
+            .setColumnHeaderCoordinates(
+                columnId = column.id,
+                onSetCoordinates = { onIntent(BoardIntent.OnSetCoordinates(it)) }
+            ),
     ) {
         Row(
             modifier = Modifier

@@ -71,7 +71,7 @@ fun MutableStateFlow<BoardUiState>.setColumnsCoordinates(columnBatch: HashMap<Lo
     }
 }
 
-fun MutableStateFlow<BoardUiState>.setCardsCoordinates(cardBatch: HashMap<Long, Pair<Long, Coordinates>>) {
+fun MutableStateFlow<BoardUiState>.setCardsCoordinates(cardBatch: HashMap<Long, Coordinates>) {
     this.update { currentState ->
         val board = currentState.board ?: return@update currentState
         val columns = board.columns
@@ -80,7 +80,7 @@ fun MutableStateFlow<BoardUiState>.setCardsCoordinates(cardBatch: HashMap<Long, 
         val updatedColumns = columns.map { column ->
             val updatedCards = column.cards.map { card ->
                 if (card.id in cardBatch.keys) {
-                    card.copy(coordinates = cardBatch[card.id]!!.second)
+                    card.copy(coordinates = cardBatch[card.id]!!)
                 } else {
                     card
                 }

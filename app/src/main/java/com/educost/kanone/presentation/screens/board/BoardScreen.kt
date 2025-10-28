@@ -175,14 +175,12 @@ fun BoardScreen(
     ) { innerPadding ->
 
         when {
-            isOnVerticalLayout -> {
-                VerticalBoardLayout(
+            isOnVerticalLayout -> VerticalBoardLayout(
                     modifier = Modifier.padding(innerPadding),
                     board = board,
                     state = state,
                     onIntent = onIntent
                 )
-            }
 
             else -> HorizontalBoardLayout(
                 modifier = Modifier.padding(innerPadding),

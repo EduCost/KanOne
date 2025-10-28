@@ -10,12 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
 import com.educost.kanone.presentation.screens.board.BoardIntent
 import com.educost.kanone.presentation.screens.board.model.BoardUi
-import com.educost.kanone.presentation.screens.board.model.Coordinates
 import com.educost.kanone.presentation.screens.board.state.BoardUiState
+import com.educost.kanone.presentation.screens.board.utils.setBoardCoordinates
+import com.educost.kanone.presentation.screens.board.utils.setColumnCoordinates
 
 @Composable
 fun HorizontalBoardLayout(
@@ -32,17 +31,7 @@ fun HorizontalBoardLayout(
 
     LazyRow(
         modifier = modifier
-            .onGloballyPositioned { layoutCoordinates ->
-                onIntent(
-                    BoardIntent.SetBoardCoordinates(
-                        coordinates = Coordinates(
-                            position = layoutCoordinates.positionInRoot(),
-                            width = layoutCoordinates.size.width,
-                            height = layoutCoordinates.size.height
-                        )
-                    )
-                )
-            }
+            .setBoardCoordinates { onIntent(BoardIntent.OnSetCoordinates(it)) }
             .fillMaxSize(),
         contentPadding = contentPadding,
         horizontalArrangement = Arrangement.spacedBy(board.sizes.columnsSpaceBy),
@@ -55,18 +44,10 @@ fun HorizontalBoardLayout(
 
             BoardColumn(
                 modifier = Modifier
-                    .onGloballyPositioned { layoutCoordinates ->
-                        onIntent(
-                            BoardIntent.SetColumnCoordinates(
-                                columnId = column.id,
-                                coordinates = Coordinates(
-                                    position = layoutCoordinates.positionInRoot(),
-                                    width = layoutCoordinates.size.width,
-                                    height = layoutCoordinates.size.height
-                                )
-                            )
-                        )
-                    }
+                    .setColumnCoordinates(
+                        columnId = column.id,
+                        onSetCoordinates = { onIntent(BoardIntent.OnSetCoordinates(it)) }
+                    )
                     .then(
                         if (isDraggingColumn) {
                             Modifier

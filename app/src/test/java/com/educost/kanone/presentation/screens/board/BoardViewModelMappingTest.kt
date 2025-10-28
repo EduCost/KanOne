@@ -7,6 +7,7 @@ import com.educost.kanone.domain.model.Board
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.domain.model.KanbanColumn
 import com.educost.kanone.presentation.screens.board.model.Coordinates
+import com.educost.kanone.presentation.screens.board.utils.CoordinatesIntent
 import com.educost.kanone.utils.Result
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
@@ -64,7 +65,9 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
                 assertThat(firstBoard?.coordinates).isEqualTo(Coordinates())
 
                 val newCoordinates = Coordinates(10, 20, Offset(x = 100f, y = 200f))
-                viewModel.onIntent(BoardIntent.SetBoardCoordinates(newCoordinates))
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetBoardCoordinates(newCoordinates)
+                ))
                 assertThat(awaitItem().board?.coordinates).isEqualTo(newCoordinates)
 
                 boardFlow.emit(Result.Success(Board(id = 1, name = "new name", emptyList())))
@@ -194,28 +197,24 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
                 val firstColumnCoordinates = Coordinates(50, 60, Offset(x = 100f, y = 300f))
                 val secondColumnCoordinates = Coordinates(30, 70, Offset(x = 200f, y = 300f))
 
-                viewModel.onIntent(
-                    BoardIntent.SetColumnListCoordinates(
-                        1,
-                        firstColumnCoordinates
-                    )
-                )
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetColumnListCoordinates(1, firstColumnCoordinates)
+                ))
                 assertThat(awaitItem().board?.columns[0]?.listCoordinates).isEqualTo(
                     firstColumnCoordinates
                 )
 
-                viewModel.onIntent(
-                    BoardIntent.SetColumnListCoordinates(
-                        2,
-                        secondColumnCoordinates
-                    )
-                )
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetColumnListCoordinates(2, secondColumnCoordinates)
+                ))
                 assertThat(awaitItem().board?.columns[1]?.listCoordinates).isEqualTo(
                     secondColumnCoordinates
                 )
 
                 val newBoardCoordinates = Coordinates(10, 20, Offset(x = 100f, y = 200f))
-                viewModel.onIntent(BoardIntent.SetBoardCoordinates(newBoardCoordinates))
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetBoardCoordinates(newBoardCoordinates)
+                ))
                 val updatedBoardCoordinates = awaitItem().board
                 assertThat(updatedBoardCoordinates?.coordinates).isEqualTo(newBoardCoordinates)
                 assertThat(updatedBoardCoordinates?.columns[0]?.listCoordinates).isEqualTo(
@@ -460,14 +459,15 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
                 val thirdCardCoordinates = Coordinates(44, 22, Offset(x = 300f, y = 600f))
 
                 // Update first column coordinates
-                viewModel.onIntent(
-                    BoardIntent.SetColumnListCoordinates(
-                        1,
-                        firstColumnCoordinates
-                    )
-                )
-                viewModel.onIntent(BoardIntent.SetCardCoordinates(1, 1, firstCardCoordinates))
-                viewModel.onIntent(BoardIntent.SetCardCoordinates(2, 1, secondCardCoordinates))
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetColumnListCoordinates(1, firstColumnCoordinates)
+                ))
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetCardCoordinates(1, firstCardCoordinates)
+                ))
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetCardCoordinates(2, secondCardCoordinates)
+                ))
                 val updatedFirstColumn = awaitItem().board?.columns[0]?.listCoordinates
                 val updatedCards = awaitItem().board?.columns[0]?.cards!!
                 val updatedFirstCard = updatedCards[0].coordinates
@@ -484,13 +484,12 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
 
 
                 // Update second column coordinates
-                viewModel.onIntent(
-                    BoardIntent.SetColumnListCoordinates(
-                        2,
-                        secondColumnCoordinates
-                    )
-                )
-                viewModel.onIntent(BoardIntent.SetCardCoordinates(3, 2, thirdCardCoordinates))
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetColumnListCoordinates(2, secondColumnCoordinates)
+                ))
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetCardCoordinates(3, thirdCardCoordinates)
+                ))
                 assertThat(awaitItem().board?.columns[1]?.listCoordinates).isEqualTo(
                     secondColumnCoordinates
                 )

@@ -37,13 +37,14 @@ import com.educost.kanone.presentation.screens.board.state.DragState
 import com.educost.kanone.presentation.screens.board.state.ScrollState
 import com.educost.kanone.presentation.screens.board.utils.BoardAppBarType
 import com.educost.kanone.presentation.screens.board.utils.CardOrder
+import com.educost.kanone.presentation.screens.board.utils.CoordinatesIntent
 import com.educost.kanone.presentation.screens.board.utils.OrderType
 import com.educost.kanone.presentation.screens.board.utils.ThrottledDebouncedProcessor
 import com.educost.kanone.presentation.screens.board.utils.setBoardCoordinates
 import com.educost.kanone.presentation.screens.board.utils.setCardsCoordinates
-import com.educost.kanone.presentation.screens.board.utils.setColumnsCoordinates
 import com.educost.kanone.presentation.screens.board.utils.setColumnHeadersCoordinates
 import com.educost.kanone.presentation.screens.board.utils.setColumnListsCoordinates
+import com.educost.kanone.presentation.screens.board.utils.setColumnsCoordinates
 import com.educost.kanone.presentation.util.SnackbarAction
 import com.educost.kanone.presentation.util.SnackbarEvent
 import com.educost.kanone.presentation.util.UiText
@@ -178,27 +179,7 @@ class BoardViewModel @Inject constructor(
             is BoardIntent.OnDragStop -> onDragStop()
 
             // Set coordinates
-            is BoardIntent.SetBoardCoordinates -> setBoardCoordinates(intent.coordinates)
-            is BoardIntent.SetColumnHeaderCoordinates -> setColumnHeaderCoordinates(
-                columnId = intent.columnId,
-                coordinates = intent.coordinates
-            )
-
-            is BoardIntent.SetColumnListCoordinates -> setColumnListCoordinates(
-                columnId = intent.columnId,
-                coordinates = intent.coordinates
-            )
-
-            is BoardIntent.SetColumnCoordinates -> setColumnCoordinates(
-                columnId = intent.columnId,
-                coordinates = intent.coordinates
-            )
-
-            is BoardIntent.SetCardCoordinates -> setCardCoordinates(
-                cardId = intent.cardId,
-                columnId = intent.columnId,
-                coordinates = intent.coordinates
-            )
+            is BoardIntent.OnSetCoordinates -> onSetCoordinates(intent.coordinatesIntent)
         }
     }
 
@@ -1113,6 +1094,33 @@ class BoardViewModel @Inject constructor(
 
     // Set coordinates
 
+    private fun onSetCoordinates(coordinatesIntent: CoordinatesIntent) {
+        when (coordinatesIntent) {
+            is CoordinatesIntent.SetBoardCoordinates -> setBoardCoordinates(coordinatesIntent.coordinates)
+
+            is CoordinatesIntent.SetCardCoordinates -> setCardCoordinates(
+                cardId = coordinatesIntent.cardId,
+                coordinates = coordinatesIntent.coordinates
+            )
+
+            is CoordinatesIntent.SetColumnCoordinates -> setColumnCoordinates(
+                columnId = coordinatesIntent.columnId,
+                coordinates = coordinatesIntent.coordinates
+            )
+
+            is CoordinatesIntent.SetColumnHeaderCoordinates -> setColumnHeaderCoordinates(
+                columnId = coordinatesIntent.columnId,
+                coordinates = coordinatesIntent.coordinates
+            )
+
+            is CoordinatesIntent.SetColumnListCoordinates -> setColumnListCoordinates(
+                columnId = coordinatesIntent.columnId,
+                coordinates = coordinatesIntent.coordinates
+            )
+        }
+    }
+
+
     private fun setBoardCoordinates(coordinates: Coordinates) {
         if (uiState.value.board?.coordinates != coordinates) {
             _uiState.setBoardCoordinates(coordinates)
@@ -1181,12 +1189,12 @@ class BoardViewModel @Inject constructor(
             _uiState.setCardsCoordinates(it)
         }
     )
-    private fun setCardCoordinates(cardId: Long, columnId: Long, coordinates: Coordinates) {
+    private fun setCardCoordinates(cardId: Long, coordinates: Coordinates) {
         val isActivelyDragging = uiState.value.dragState != DragState()
 
         cardCoordinatesProcessor.submit(
             key = cardId,
-            value = Pair(columnId, coordinates),
+            value = coordinates,
             isThrottling = isActivelyDragging
         )
     }

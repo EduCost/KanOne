@@ -2,6 +2,7 @@ package com.educost.kanone.presentation.screens.board
 
 import androidx.compose.ui.geometry.Offset
 import com.educost.kanone.presentation.screens.board.model.Coordinates
+import com.educost.kanone.presentation.screens.board.utils.CoordinatesIntent
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
@@ -15,7 +16,9 @@ class BoardViewModelSetCoordinatesTest : BoardViewModelTest() {
 
         testBoardViewModelUiState(
             whenAction = {
-                viewModel.onIntent(BoardIntent.SetBoardCoordinates(newCoordinates))
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetBoardCoordinates(newCoordinates)
+                ))
             },
             then = {
                 assertThat(awaitItem().board?.coordinates).isEqualTo(newCoordinates)
@@ -30,7 +33,9 @@ class BoardViewModelSetCoordinatesTest : BoardViewModelTest() {
         testBoardViewModelUiState(
             whenAction = {
                 val columnId = firstColumn.id
-                viewModel.onIntent(BoardIntent.SetColumnHeaderCoordinates(columnId, newCoordinates))
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetColumnHeaderCoordinates(columnId, newCoordinates)
+                ))
             },
             then = {
                 val updatedColumns = awaitItem().board?.columns
@@ -47,8 +52,9 @@ class BoardViewModelSetCoordinatesTest : BoardViewModelTest() {
         testBoardViewModelUiState(
             whenAction = {
                 val columnId = firstColumn.id
-                viewModel.onIntent(BoardIntent.SetColumnListCoordinates(columnId, newCoordinates))
-
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetColumnListCoordinates(columnId, newCoordinates)
+                ))
             },
             then = {
                 val updatedColumns = awaitItem().board?.columns
@@ -65,7 +71,9 @@ class BoardViewModelSetCoordinatesTest : BoardViewModelTest() {
         testBoardViewModelUiState(
             whenAction = {
                 val columnId = firstColumn.id
-                viewModel.onIntent(BoardIntent.SetColumnCoordinates(columnId, newCoordinates))
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetColumnCoordinates(columnId, newCoordinates)
+                ))
             },
             then = {
                 val updatedColumns = awaitItem().board?.columns
@@ -81,9 +89,10 @@ class BoardViewModelSetCoordinatesTest : BoardViewModelTest() {
 
         testBoardViewModelUiState(
             whenAction = {
-                val columnId = firstColumn.id
                 val cardId = firstCardOfFirstColumn.id
-                viewModel.onIntent(BoardIntent.SetCardCoordinates(cardId, columnId, newCoordinates))
+                viewModel.onIntent(BoardIntent.OnSetCoordinates(
+                    CoordinatesIntent.SetCardCoordinates(cardId, newCoordinates)
+                ))
             },
             then = {
                 val updatedCards = awaitItem().board!!.columns[0].cards
