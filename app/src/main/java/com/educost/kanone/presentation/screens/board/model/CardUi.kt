@@ -18,7 +18,7 @@ data class CardUi(
     val tasks: List<Task>,
     val attachments: List<Attachment>,
     val labels: List<Label>,
-    val coordinates: Coordinates
+    val coordinates: Coordinates = Coordinates()
 ) {
 
     fun adjustOffsetToCenter(newOffset: Offset): Offset {

@@ -21,3 +21,18 @@ fun Board.toBoardUi() = BoardUi(
     showImages = this.showImages,
     isOnVerticalLayout = this.isOnVerticalLayout
 )
+
+fun Board.toBoardUi(currentBoard: BoardUi): BoardUi {
+    return this.toBoardUi().copy(
+        columns = this.columns.map { column ->
+            val currentColumn = currentBoard.columns.find { it.id == column.id }
+
+            if (currentColumn != null)
+                column.toColumnUi(currentColumn)
+            else
+                column.toColumnUi()
+        }.sortedBy { it.position },
+        coordinates = currentBoard.coordinates,
+        listState = currentBoard.listState
+    )
+}

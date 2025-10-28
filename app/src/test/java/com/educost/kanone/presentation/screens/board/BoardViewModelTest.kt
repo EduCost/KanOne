@@ -138,7 +138,7 @@ open class BoardViewModelTest {
 
         // View model
         viewModel = BoardViewModel(
-            dispatcherProvider = dispatcherProvider,
+            dispatchers = dispatcherProvider,
             observeCompleteBoardUseCase = observeCompleteBoardUseCase,
             createColumnUseCase = createColumnUseCase,
             createCardUseCase = createCardUseCase,

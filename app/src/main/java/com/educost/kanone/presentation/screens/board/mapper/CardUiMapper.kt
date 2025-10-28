@@ -2,7 +2,6 @@ package com.educost.kanone.presentation.screens.board.mapper
 
 import com.educost.kanone.domain.model.CardItem
 import com.educost.kanone.presentation.screens.board.model.CardUi
-import com.educost.kanone.presentation.screens.board.model.Coordinates
 
 fun CardUi.toCardItem() = CardItem(
     id = this.id,
@@ -30,5 +29,10 @@ fun CardItem.toCardUi() = CardUi(
     tasks = this.tasks,
     attachments = this.attachments,
     labels = this.labels,
-    coordinates = Coordinates()
 )
+
+fun CardItem.toCardUi(currentCard: CardUi): CardUi {
+    return this.toCardUi().copy(
+        coordinates = currentCard.coordinates
+    )
+}

@@ -22,8 +22,6 @@ import com.educost.kanone.domain.usecase.UpdateBoardUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import com.educost.kanone.presentation.screens.board.mapper.toBoard
 import com.educost.kanone.presentation.screens.board.mapper.toBoardUi
-import com.educost.kanone.presentation.screens.board.mapper.toCardUi
-import com.educost.kanone.presentation.screens.board.mapper.toColumnUi
 import com.educost.kanone.presentation.screens.board.mapper.toKanbanColumn
 import com.educost.kanone.presentation.screens.board.model.BoardSizes
 import com.educost.kanone.presentation.screens.board.model.BoardUi
@@ -62,7 +60,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BoardViewModel @Inject constructor(
-    private val dispatcherProvider: DispatcherProvider,
+    private val dispatchers: DispatcherProvider,
     private val observeCompleteBoardUseCase: ObserveCompleteBoardUseCase,
     private val createColumnUseCase: CreateColumnUseCase,
     private val createCardUseCase: CreateCardUseCase,
@@ -185,7 +183,7 @@ class BoardViewModel @Inject constructor(
 
 
     private fun observeBoard(boardId: Long) {
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             observeCompleteBoardUseCase(boardId).collect { result ->
                 when (result) {
                     is Result.Success -> {
@@ -193,7 +191,7 @@ class BoardViewModel @Inject constructor(
 
                             val newBoard = mapToUiState(
                                 newBoard = result.data,
-                                oldBoard = currentState.board
+                                currentBoardUi = currentState.board
                             )
 
                             currentState.copy(board = newBoard)
@@ -215,7 +213,7 @@ class BoardViewModel @Inject constructor(
     private fun deleteBoard() {
         val board = uiState.value.board ?: return
 
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             val wasBoardDeleted = deleteBoardUseCase(board.toBoard())
 
             if (wasBoardDeleted) {
@@ -242,7 +240,7 @@ class BoardViewModel @Inject constructor(
     private fun confirmBoardRename(newName: String) {
         val board = uiState.value.board ?: return
 
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             val newBoard = board.copy(name = newName).toBoard()
             val wasBoardUpdated = updateBoardUseCase(newBoard)
 
@@ -271,7 +269,7 @@ class BoardViewModel @Inject constructor(
 
     private fun toggleShowImages() {
         val board = uiState.value.board ?: return
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             val updatedBoard = board.copy(showImages = !board.showImages).toBoard()
             updateBoardUseCase(updatedBoard)
         }
@@ -280,7 +278,7 @@ class BoardViewModel @Inject constructor(
     private fun toggleLayoutOrientation() {
         val board = uiState.value.board ?: return
 
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             val updatedBoard = board.copy(isOnVerticalLayout = !board.isOnVerticalLayout).toBoard()
             updateBoardUseCase(updatedBoard)
         }
@@ -303,7 +301,7 @@ class BoardViewModel @Inject constructor(
                 )
             )
         }
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             try {
                 board.listState.scrollBy(scrollChange)
             } catch (e: Exception) {
@@ -355,7 +353,7 @@ class BoardViewModel @Inject constructor(
         val board = uiState.value.board ?: return
         val newName = uiState.value.creatingColumnName
 
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             val result = createColumnUseCase(
                 columnName = newName,
                 position = board.columns.size,
@@ -394,7 +392,7 @@ class BoardViewModel @Inject constructor(
         val board = uiState.value.board ?: return
         val column = board.columns.find { it.id == columnId }
 
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             val wasCardsReordered = reorderCardsUseCase(
                 column = column?.toKanbanColumn(),
                 orderType = orderType,
@@ -424,7 +422,7 @@ class BoardViewModel @Inject constructor(
             return
         }
 
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             val wasColumnDeleted = deleteColumnUseCase(
                 column = column.toKanbanColumn(),
                 boardId = boardId
@@ -461,7 +459,7 @@ class BoardViewModel @Inject constructor(
         val currentExpandedState = currentColumn.isExpanded
 
 
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             updateColumnUseCase(
                 column = currentColumn.copy(isExpanded = !currentExpandedState).toKanbanColumn(),
                 boardId = board.id
@@ -558,7 +556,7 @@ class BoardViewModel @Inject constructor(
 
         val newColumn = column.copy(name = newName).toKanbanColumn()
 
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             val wasColumnUpdated = updateColumnUseCase(newColumn, boardId)
 
             if (!wasColumnUpdated) sendSnackbar(
@@ -602,7 +600,7 @@ class BoardViewModel @Inject constructor(
 
         val updatedColumn = column.copy(color = newColor).toKanbanColumn()
 
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             val wasColumnUpdated = updateColumnUseCase(updatedColumn, boardId)
 
             if (!wasColumnUpdated) sendSnackbar(
@@ -654,7 +652,7 @@ class BoardViewModel @Inject constructor(
             } else -1 // ensure card will be appended at first position
 
 
-            viewModelScope.launch(dispatcherProvider.main) {
+            viewModelScope.launch(dispatchers.main) {
                 val cardCreationResult = createCardUseCase(
                     title = cardTitle,
                     position = position,
@@ -686,7 +684,7 @@ class BoardViewModel @Inject constructor(
 
     private fun restoreDeletedColumn(column: ColumnUi) {
         val boardId = uiState.value.board?.id ?: return
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             val wasColumnRestored = restoreColumnUseCase(column.toKanbanColumn(), boardId)
             if (!wasColumnRestored) {
                 sendSnackbar(
@@ -716,66 +714,24 @@ class BoardViewModel @Inject constructor(
         }
     }
 
-    private fun mapToUiState(newBoard: Board, oldBoard: BoardUi?): BoardUi {
+    private fun mapToUiState(newBoard: Board, currentBoardUi: BoardUi?): BoardUi {
 
-        if (oldBoard == null) {
+        val isFirstBoard = currentBoardUi == null
+
+        if (isFirstBoard) {
             val sortedColumns = newBoard.columns
                 .map { column -> column.copy(cards = column.cards.sortedBy { it.position }) }
                 .sortedBy { it.position }
             return newBoard.copy(columns = sortedColumns).toBoardUi()
-        } else {
-
-            val mappedBoard = oldBoard.copy(
-                id = newBoard.id,
-                name = newBoard.name,
-                columns = newBoard.columns.map { column ->
-
-                    val isNewColumn = oldBoard.columns.find {
-                        it.id == column.id
-                    }
-
-                    isNewColumn?.copy(
-                        id = column.id,
-                        name = column.name,
-                        position = column.position,
-                        color = column.color,
-                        isExpanded = column.isExpanded,
-                        cards = column.cards.map { cards ->
-
-                            val isNewCard = isNewColumn.cards.find {
-                                it.id == cards.id
-                            }
-
-                            isNewCard?.copy(
-                                id = cards.id,
-                                title = cards.title,
-                                description = cards.description,
-                                position = cards.position,
-                                color = cards.color,
-                                createdAt = cards.createdAt,
-                                dueDate = cards.dueDate,
-                                coverFileName = cards.coverFileName,
-                                tasks = cards.tasks,
-                                attachments = cards.attachments,
-                                labels = cards.labels
-                            )
-                                ?: cards.toCardUi()
-                        }.sortedBy { it.position }
-                    )
-                        ?: column.toColumnUi()
-                }.sortedBy { it.position },
-                sizes = BoardSizes(zoomPercentage = newBoard.zoomPercentage),
-                showImages = newBoard.showImages,
-                isOnVerticalLayout = newBoard.isOnVerticalLayout
-            )
-
-            return mappedBoard
-
         }
+
+        val mappedBoard = newBoard.toBoardUi(currentBoardUi)
+
+        return mappedBoard
     }
 
     private fun sendSnackbar(snackbarEvent: SnackbarEvent) {
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             _sideEffectChannel.send(
                 BoardSideEffect.ShowSnackBar(
                     snackbarEvent
@@ -789,7 +745,7 @@ class BoardViewModel @Inject constructor(
         val board = uiState.value.board ?: return
         val columns = board.columns.map { it.toKanbanColumn() }
 
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             persistBoardPositionsUseCase(board.id, columns)
         }
     }
@@ -799,7 +755,7 @@ class BoardViewModel @Inject constructor(
     private val persistZoomDebounceTime = 500L
     private fun persistZoom() {
         persistZoomJob?.cancel()
-        persistZoomJob = viewModelScope.launch(dispatcherProvider.main) {
+        persistZoomJob = viewModelScope.launch(dispatchers.main) {
             delay(persistZoomDebounceTime)
 
             _uiState.update { it.copy(isChangingZoom = false) }
@@ -834,21 +790,21 @@ class BoardViewModel @Inject constructor(
     // navigation
     private fun navigateToCardScreen(cardId: Long) {
         clearEditAndCreationStates()
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             _sideEffectChannel.send(BoardSideEffect.NavigateToCardScreen(cardId))
         }
     }
 
     private fun navigateToSettings() {
         clearEditAndCreationStates()
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             _sideEffectChannel.send(BoardSideEffect.NavigateToSettings)
         }
     }
 
     private fun navigateBack() {
         clearEditAndCreationStates()
-        viewModelScope.launch(dispatcherProvider.main) {
+        viewModelScope.launch(dispatchers.main) {
             _sideEffectChannel.send(BoardSideEffect.OnNavigateBack)
         }
     }
@@ -923,7 +879,7 @@ class BoardViewModel @Inject constructor(
         isOnVerticalLayout: Boolean
     ) {
         if (scrollState.scrollingColumnIndex != selectedColumnIndex) {
-            cancelVerticalScroll()
+            cancelColumnAutoScroll()
             scrollState.scrollingColumnIndex = selectedColumnIndex
         }
 
@@ -971,7 +927,7 @@ class BoardViewModel @Inject constructor(
                 }
             }
         } else {
-            cancelVerticalScroll()
+            cancelColumnAutoScroll()
         }
     }
 
@@ -1023,7 +979,7 @@ class BoardViewModel @Inject constructor(
                         }
                     }
                 } else {
-                    cancelHorizontalScroll()
+                    cancelBoardAutoScroll()
                 }
             }
 
@@ -1065,13 +1021,13 @@ class BoardViewModel @Inject constructor(
                         }
                     }
                 } else {
-                    cancelHorizontalScroll()
+                    cancelBoardAutoScroll()
                 }
             }
         }
     }
 
-    private fun cancelVerticalScroll() {
+    private fun cancelColumnAutoScroll() {
         scrollState.isVerticalScrolling = false
         scrollState.verticalSpeed = 0f
         scrollState.scrollingColumnIndex = null
@@ -1079,7 +1035,7 @@ class BoardViewModel @Inject constructor(
         scrollState.verticalOverScrollJob = null
     }
 
-    private fun cancelHorizontalScroll() {
+    private fun cancelBoardAutoScroll() {
         scrollState.isHorizontalScrolling = false
         scrollState.horizontalSpeed = 0f
         scrollState.horizontalOverScrollJob?.cancel()
@@ -1087,8 +1043,8 @@ class BoardViewModel @Inject constructor(
     }
 
     private fun cancelAutoScroll() {
-        cancelVerticalScroll()
-        cancelHorizontalScroll()
+        cancelColumnAutoScroll()
+        cancelBoardAutoScroll()
     }
 
 
@@ -1130,7 +1086,7 @@ class BoardViewModel @Inject constructor(
 
     private val headerCoordinatesProcessor = ThrottledDebouncedProcessor(
         scope = viewModelScope,
-        dispatcher = dispatcherProvider.main,
+        dispatcher = dispatchers.main,
         onProcess = {
             _uiState.setColumnHeadersCoordinates(it)
         }
@@ -1148,7 +1104,7 @@ class BoardViewModel @Inject constructor(
 
     private val listCoordinatesProcessor = ThrottledDebouncedProcessor(
         scope = viewModelScope,
-        dispatcher = dispatcherProvider.main,
+        dispatcher = dispatchers.main,
         onProcess = {
             _uiState.setColumnListsCoordinates(it)
         }
@@ -1166,7 +1122,7 @@ class BoardViewModel @Inject constructor(
 
     private val columnCoordinatesProcessor = ThrottledDebouncedProcessor(
         scope = viewModelScope,
-        dispatcher = dispatcherProvider.main,
+        dispatcher = dispatchers.main,
         onProcess = {
             _uiState.setColumnsCoordinates(it)
         }
@@ -1184,7 +1140,7 @@ class BoardViewModel @Inject constructor(
 
     private val cardCoordinatesProcessor = ThrottledDebouncedProcessor(
         scope = viewModelScope,
-        dispatcher = dispatcherProvider.main,
+        dispatcher = dispatchers.main,
         onProcess = {
             _uiState.setCardsCoordinates(it)
         }

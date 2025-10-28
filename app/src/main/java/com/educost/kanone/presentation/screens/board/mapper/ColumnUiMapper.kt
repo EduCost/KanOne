@@ -20,3 +20,20 @@ fun KanbanColumn.toColumnUi() = ColumnUi(
     cards = this.cards.map { it.toCardUi() },
     isExpanded = this.isExpanded
 )
+
+fun KanbanColumn.toColumnUi(currentColumn: ColumnUi): ColumnUi {
+    return this.toColumnUi().copy(
+        cards = this.cards.map { card ->
+            val currentCard = currentColumn.cards.find { it.id == card.id }
+
+            if (currentCard != null)
+                card.toCardUi(currentCard)
+            else
+                card.toCardUi()
+        }.sortedBy { it.position },
+        coordinates = currentColumn.coordinates,
+        listCoordinates = currentColumn.listCoordinates,
+        headerCoordinates = currentColumn.headerCoordinates,
+        listState = currentColumn.listState
+    )
+}
