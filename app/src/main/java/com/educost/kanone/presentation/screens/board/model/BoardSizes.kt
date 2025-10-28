@@ -48,11 +48,12 @@ data class BoardSizes(
     /*  ========= Column Card List =========  */
 
     val columnListPaddingValues = PaddingValues(
-        start  = 8f.toDp(zoom),
-        end    = 8f.toDp(zoom),
-        bottom = 8f.toDp(zoom)
+        horizontal = 8f.toDp(zoom),
     )
     val columnListSpaceBy = (8f * zoom).dp
+    val columnListPadding = PaddingValues(
+        bottom = 8f.toDp(zoom)
+    )
 
     /*  ========= Column Card List =========  */
 

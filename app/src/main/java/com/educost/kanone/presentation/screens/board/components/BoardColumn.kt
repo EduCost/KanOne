@@ -111,7 +111,8 @@ fun BoardColumn(
                     .setColumnListCoordinates(
                         columnId = column.id,
                         onSetCoordinates = { onIntent(BoardIntent.OnSetCoordinates(it)) }
-                    ),
+                    )
+                    .padding(sizes.columnListPadding),
                 contentPadding = sizes.columnListPaddingValues,
                 verticalArrangement = Arrangement.spacedBy(sizes.columnListSpaceBy),
                 state = column.listState
