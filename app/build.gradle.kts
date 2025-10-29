@@ -18,8 +18,8 @@ android {
         applicationId = "com.educost.kanone"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "0.2.0-alpha"
+        versionCode = 4
+        versionName = "0.3.0-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
