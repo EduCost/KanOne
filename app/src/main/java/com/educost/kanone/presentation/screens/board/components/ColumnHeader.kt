@@ -67,13 +67,6 @@ fun ColumnHeader(
         state.columnEditState.editingColumnId == column.id && state.columnEditState.isRenaming
     }
 
-    val headerColor = remember(column.color) {
-        if (column.color != null) {
-            Color(column.color)
-        } else {
-            Color.Gray
-        }
-    }
 
     val focusManager = LocalFocusManager.current
     LaunchedEffect(isOnEditMode) {
@@ -100,13 +93,10 @@ fun ColumnHeader(
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box( // Circle
-                modifier = Modifier
-                    .padding(sizes.columnHeaderCirclePadding)
-                    .size(sizes.columnHeaderCircleSize)
-                    .clip(CircleShape)
-                    .background(headerColor)
-                    .clickable { onIntent(BoardIntent.StartEditingColumnColor(column.id)) }
+            ColumnHeaderCircle(
+                sizes = sizes,
+                onClick = { onIntent(BoardIntent.StartEditingColumnColor(column.id)) },
+                color = column.color
             )
 
             if (isOnEditMode) {
@@ -166,6 +156,27 @@ fun ColumnHeader(
     }
 }
 
+@Composable
+fun ColumnHeaderCircle(
+    modifier: Modifier = Modifier,
+    sizes: BoardSizes= BoardSizes(),
+    onClick: () -> Unit = {},
+    color: Int? = null
+) {
+    val headerColor = remember(color) {
+        if (color != null) Color(color)
+        else Color.Gray
+    }
+
+    Box(
+        modifier = modifier
+            .padding(sizes.columnHeaderCirclePadding)
+            .size(sizes.columnHeaderCircleSize)
+            .clip(CircleShape)
+            .background(headerColor)
+            .clickable { onClick() }
+    )
+}
 
 @PreviewLightDark
 @Composable
