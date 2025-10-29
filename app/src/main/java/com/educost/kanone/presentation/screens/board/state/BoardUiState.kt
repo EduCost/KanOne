@@ -26,7 +26,6 @@ data class BoardUiState(
     val isChangingZoom: Boolean = false,
     val isModalSheetExpanded: Boolean = false,
 
-    val center: Offset = Offset.Zero
 ) {
 
     // Variable used for disabling back button
@@ -114,19 +113,7 @@ data class BoardUiState(
                 itemBeingDraggedOffset = newOffset,
                 columnBeingDragged = if (newCoordinates == null) column else column.copy(coordinates = newCoordinates)
             ),
-            board = if (newCoordinates == null) {
-                this.board
-            } else {
-                this.board.copy(
-                    columns = this.board.columns.map {
-                        if (it.id == column.id) {
-                            it.copy(coordinates = newCoordinates)
-                        } else {
-                            it
-                        }
-                    }
-                )
-            }
+            board = this.board.withUpdatedColumnCoordinates(column, newCoordinates)
         )
 
 
@@ -438,17 +425,20 @@ data class BoardUiState(
         return null
     }
 
+    private fun BoardUi.withUpdatedColumnCoordinates(
+        column: ColumnUi,
+        newCoordinates: Coordinates?
+    ): BoardUi {
+        if (newCoordinates == null) return this
+
+        return this.copy(
+            columns = this.columns.map {
+                if (it.id == column.id) {
+                    it.copy(coordinates = newCoordinates)
+                } else {
+                    it
+                }
+            }
+        )
+    }
 }
-
-data class CardCreationState(
-    val isAppendingToEnd: Boolean = false,
-    val title: String? = null,
-    val columnId: Long? = null,
-)
-
-data class ColumnEditState(
-    val editingColumnId: Long? = null,
-    val isRenaming: Boolean = false,
-    val newColumnName: String? = null,
-    val isShowingColorPicker: Boolean = false,
-)
