@@ -1,3 +1,5 @@
+import com.mikepenz.aboutlibraries.plugin.DuplicateMode
+import com.mikepenz.aboutlibraries.plugin.DuplicateRule
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -55,6 +57,14 @@ android {
             jvmTarget = JvmTarget.JVM_11
         }
     }
+
+    aboutLibraries {
+        library {
+            duplicationMode = DuplicateMode.MERGE
+            duplicationRule = DuplicateRule.SIMPLE
+        }
+    }
+
 }
 
 dependencies {
