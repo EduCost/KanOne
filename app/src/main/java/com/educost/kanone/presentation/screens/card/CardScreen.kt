@@ -70,7 +70,8 @@ fun CardScreen(
     modifier: Modifier = Modifier,
     viewModel: CardViewModel = hiltViewModel(),
     cardId: Long,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToMarkdown: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         viewModel.onIntent(CardIntent.ObserveCard(cardId))
@@ -102,6 +103,11 @@ fun CardScreen(
             is CardSideEffect.OnNavigateBack -> {
                 onNavigateBack()
             }
+
+            is CardSideEffect.OnNavigateToMarkdown -> {
+                onNavigateToMarkdown()
+            }
+
         }
     }
 

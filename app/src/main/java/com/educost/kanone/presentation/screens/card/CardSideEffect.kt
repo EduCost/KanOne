@@ -8,4 +8,6 @@ sealed interface CardSideEffect {
 
     data object OnNavigateBack : CardSideEffect
 
+    data object OnNavigateToMarkdown : CardSideEffect
+
 }

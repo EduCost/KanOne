@@ -154,11 +154,11 @@ fun BoardScreen(
 
         when {
             isOnVerticalLayout -> VerticalBoardLayout(
-                    modifier = Modifier.padding(innerPadding),
-                    board = board,
-                    state = state,
-                    onIntent = onIntent
-                )
+                modifier = Modifier.padding(innerPadding),
+                board = board,
+                state = state,
+                onIntent = onIntent
+            )
 
             else -> HorizontalBoardLayout(
                 modifier = Modifier.padding(innerPadding),

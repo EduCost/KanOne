@@ -107,6 +107,10 @@ dependencies {
     implementation(libs.aboutlibraries.core)
     implementation(libs.aboutlibraries.compose.m3)
     implementation(libs.androidx.compose.material3.adaptive)
+    implementation(libs.markdown)
+    implementation(libs.markdown.m3)
+    implementation(libs.markdown.code)
+    implementation(libs.markdown.coil3)
 
 
 

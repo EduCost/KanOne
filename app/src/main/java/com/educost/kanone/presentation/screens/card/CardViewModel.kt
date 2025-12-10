@@ -225,12 +225,17 @@ class CardViewModel @Inject constructor(
     // Description
     private fun startEditingDescription() {
         clearAllCreateAndEditStates()
-        _uiState.update {
-            it.copy(
-                appBarType = CardAppBarType.DESCRIPTION,
-                newDescription = it.card?.description
-            )
+
+        viewModelScope.launch(dispatcherProvider.main) {
+            _sideEffectChannel.send(CardSideEffect.OnNavigateToMarkdown)
         }
+
+//        _uiState.update {
+//            it.copy(
+//                appBarType = CardAppBarType.DESCRIPTION,
+//                newDescription = it.card?.description
+//            )
+//        }
     }
 
     private fun onDescriptionChanged(description: String) {

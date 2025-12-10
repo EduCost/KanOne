@@ -38,3 +38,6 @@ data object AboutDestination
 
 @Serializable
 data object CreditsDestination
+
+@Serializable
+data object MarkdownDestination

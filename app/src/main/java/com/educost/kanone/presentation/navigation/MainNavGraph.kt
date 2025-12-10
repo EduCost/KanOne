@@ -8,6 +8,7 @@ import androidx.navigation.toRoute
 import com.educost.kanone.presentation.screens.board.BoardScreen
 import com.educost.kanone.presentation.screens.card.CardScreen
 import com.educost.kanone.presentation.screens.home.HomeScreen
+import com.educost.kanone.presentation.screens.markdown.MarkdownScreen
 
 fun NavGraphBuilder.mainNavGraph(navController: NavHostController) {
     navigation<MainDestinations>(startDestination = HomeDestination) {
@@ -41,7 +42,15 @@ fun NavGraphBuilder.mainNavGraph(navController: NavHostController) {
 
         composable<CardDestination> { backStackEntry ->
             val cardId = backStackEntry.toRoute<CardDestination>().cardId
-            CardScreen(cardId = cardId, onNavigateBack = { navController.navigateUp() })
+            CardScreen(
+                cardId = cardId,
+                onNavigateBack = { navController.navigateUp() },
+                onNavigateToMarkdown = { navController.navigate(MarkdownDestination) }
+            )
+        }
+
+        composable<MarkdownDestination> {
+            MarkdownScreen()
         }
 
     }
