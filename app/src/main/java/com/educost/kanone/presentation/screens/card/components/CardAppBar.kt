@@ -122,15 +122,6 @@ fun CardAppBar(
             )
         }
 
-        CardAppBarType.DESCRIPTION -> ActionTopBar(
-            title = stringResource(R.string.card_appbar_save_description),
-            leftIconContentDescription = stringResource(R.string.card_appbar_cancel_description_content_description),
-            onLeftIconClick = { onIntent(CardIntent.CancelEditingDescription) },
-            rightIcon = Icons.Default.Save,
-            rightIconContentDescription = stringResource(R.string.card_appbar_save_description_content_description),
-            onRightIconClick = { onIntent(CardIntent.SaveDescription) }
-        )
-
         CardAppBarType.ADD_TASK -> ActionTopBar(
             title = stringResource(R.string.card_appbar_create_task),
             leftIconContentDescription = stringResource(R.string.card_appbar_cancel_task_creation_content_description),

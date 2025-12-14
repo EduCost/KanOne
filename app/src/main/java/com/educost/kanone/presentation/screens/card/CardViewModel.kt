@@ -77,10 +77,7 @@ class CardViewModel @Inject constructor(
             is CardIntent.CancelCardRename -> clearAllCreateAndEditStates()
 
             // Description
-            is CardIntent.StartEditingDescription -> startEditingDescription()
-            is CardIntent.OnDescriptionChanged -> onDescriptionChanged(intent.description)
-            is CardIntent.SaveDescription -> saveDescription()
-            is CardIntent.CancelEditingDescription -> clearAllCreateAndEditStates()
+            is CardIntent.OnDescriptionClicked -> openMarkdownEditor()
 
             // Create Task
             is CardIntent.StartCreatingTask -> startCreatingTask()
@@ -223,52 +220,11 @@ class CardViewModel @Inject constructor(
 
 
     // Description
-    private fun startEditingDescription() {
+    private fun openMarkdownEditor() {
         clearAllCreateAndEditStates()
 
         viewModelScope.launch(dispatcherProvider.main) {
             _sideEffectChannel.send(CardSideEffect.OnNavigateToMarkdown)
-        }
-
-//        _uiState.update {
-//            it.copy(
-//                appBarType = CardAppBarType.DESCRIPTION,
-//                newDescription = it.card?.description
-//            )
-//        }
-    }
-
-    private fun onDescriptionChanged(description: String) {
-        _uiState.update { it.copy(newDescription = description) }
-    }
-
-    private fun saveDescription() {
-        val card = _uiState.value.card ?: return
-        viewModelScope.launch(dispatcherProvider.main) {
-
-            val newDescription = _uiState.value.newDescription
-
-            if (newDescription != null) {
-                val newCard = card.copy(description = newDescription)
-
-                val wasCardUpdated = updateCardUseCase(newCard)
-
-                if (!wasCardUpdated) sendSnackbar(
-                    SnackbarEvent(
-                        message = UiText.StringResource(R.string.card_snackbar_save_description_error),
-                        withDismissAction = true,
-                        duration = SnackbarDuration.Long
-                    )
-                )
-
-            } else sendSnackbar(
-                SnackbarEvent(
-                    message = UiText.StringResource(R.string.card_snackbar_save_description_error),
-                    withDismissAction = true,
-                )
-            )
-
-            clearAllCreateAndEditStates()
         }
     }
 
@@ -756,7 +712,6 @@ class CardViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 appBarType = CardAppBarType.DEFAULT,
-                newDescription = null,
                 createTaskState = CreateTaskState(),
                 editTaskState = EditTaskState(),
                 isPickingDate = false,

@@ -23,10 +23,7 @@ sealed interface CardIntent {
 
 
     // Description
-    data object StartEditingDescription : CardIntent
-    data class OnDescriptionChanged(val description: String) : CardIntent
-    data object SaveDescription : CardIntent
-    data object CancelEditingDescription : CardIntent
+    data object OnDescriptionClicked : CardIntent
 
 
     // Create Task

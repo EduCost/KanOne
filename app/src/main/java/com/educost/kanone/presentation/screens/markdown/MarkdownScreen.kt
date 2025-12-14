@@ -44,7 +44,6 @@ fun MarkdownScreen(modifier: Modifier = Modifier) {
             } else {
                 MarkdownRenderer(
                     markdownState = markdownState,
-                    isDarkTheme = true
                 )
             }
 

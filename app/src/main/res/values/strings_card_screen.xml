@@ -34,7 +34,6 @@
 
     <!--  Description  -->
     <string name="card_description">Description</string>
-    <string name="card_description_text_field_placeholder">Add a description</string>
     <string name="card_edit_description_button_content_description">Edit Description</string>
     <!--  Description  -->
 

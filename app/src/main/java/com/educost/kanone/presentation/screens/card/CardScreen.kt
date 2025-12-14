@@ -56,7 +56,6 @@ import com.educost.kanone.presentation.screens.card.components.CardTasks
 import com.educost.kanone.presentation.screens.card.components.CreateAttachmentDialog
 import com.educost.kanone.presentation.screens.card.components.ImageDialog
 import com.educost.kanone.presentation.screens.card.components.LabelDialog
-import com.educost.kanone.presentation.screens.card.utils.CardAppBarType
 import com.educost.kanone.presentation.theme.KanOneTheme
 import com.educost.kanone.presentation.util.ObserveAsEvents
 import kotlinx.coroutines.launch
@@ -208,11 +207,7 @@ private fun CardScreen(
 
                 CardDescription(
                     cardDescription = card.description ?: "",
-                    newDescription = state.newDescription,
-                    onEditClick = { onIntent(CardIntent.StartEditingDescription) },
-                    onDescriptionChange = { onIntent(CardIntent.OnDescriptionChanged(it)) },
-                    onDescriptionSave = { onIntent(CardIntent.SaveDescription) },
-                    isEditing = state.appBarType == CardAppBarType.DESCRIPTION
+                    onClick = { onIntent(CardIntent.OnDescriptionClicked) }
                 )
 
                 Spacer(Modifier.height(24.dp))

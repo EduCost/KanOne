@@ -14,7 +14,6 @@ data class CardUiState(
     val createTaskState: CreateTaskState = CreateTaskState(),
     val editTaskState: EditTaskState = EditTaskState(),
     val displayingAttachment: Attachment? = null,
-    val newDescription: String? = null,
     val labelBeingEdited: Label? = null,
     val isCreatingAttachment: Boolean = false,
     val isLabelMenuExpanded: Boolean = false,
@@ -29,7 +28,6 @@ data class CardUiState(
             createTaskState != CreateTaskState() ||
             editTaskState != EditTaskState() ||
             displayingAttachment != null ||
-            newDescription != null ||
             labelBeingEdited != null ||
             isCreatingAttachment ||
             isLabelMenuExpanded ||
