@@ -45,12 +45,15 @@ fun NavGraphBuilder.mainNavGraph(navController: NavHostController) {
             CardScreen(
                 cardId = cardId,
                 onNavigateBack = { navController.navigateUp() },
-                onNavigateToMarkdown = { navController.navigate(MarkdownDestination) }
+                onNavigateToMarkdown = { navController.navigate(MarkdownDestination(cardId)) }
             )
         }
 
         composable<MarkdownDestination> {
-            MarkdownScreen()
+            val cardId = it.toRoute<MarkdownDestination>().cardId
+            MarkdownScreen(
+                cardId = cardId
+            )
         }
 
     }

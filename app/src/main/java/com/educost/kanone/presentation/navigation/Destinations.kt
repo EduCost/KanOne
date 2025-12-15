@@ -40,4 +40,4 @@ data object AboutDestination
 data object CreditsDestination
 
 @Serializable
-data object MarkdownDestination
+data class MarkdownDestination(val cardId: Long)
