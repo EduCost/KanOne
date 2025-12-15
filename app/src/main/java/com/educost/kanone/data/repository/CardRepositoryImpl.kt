@@ -128,4 +128,20 @@ class CardRepositoryImpl(
             false
         }
     }
+
+    override suspend fun getCard(cardId: Long): Result<CardItem, GenericError> {
+        return try {
+            val card = cardDao.getCard(cardId)
+            Result.Success(card.toCardItem())
+        } catch (e: Exception) {
+            logHandler.log(
+                throwable = e,
+                message = "Error getting card",
+                from = LogLocation.CARD_REPOSITORY,
+                level = LogLevel.ERROR
+            )
+
+            Result.Error(GenericError)
+        }
+    }
 }

@@ -18,4 +18,6 @@ interface CardRepository {
     suspend fun getCardColumnId(cardId: Long): Result<Long, GenericError>
 
     suspend fun deleteCard(card: CardItem, columnId: Long): Boolean
+
+    suspend fun getCard(cardId: Long): Result<CardItem, GenericError>
 }

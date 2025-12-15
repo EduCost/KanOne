@@ -31,6 +31,7 @@ import com.educost.kanone.domain.usecase.UpdateCardUseCase
 import com.educost.kanone.domain.usecase.UpdateColumnUseCase
 import com.educost.kanone.domain.usecase.UpdateLabelAssociationUseCase
 import com.educost.kanone.domain.usecase.UpdateLabelUseCase
+import com.educost.kanone.domain.usecase.UpdateMarkdownUseCase
 import com.educost.kanone.domain.usecase.UpdateTaskUseCase
 import com.educost.kanone.domain.util.ImageCompressor
 import com.educost.kanone.domain.util.InternalStorageManager
@@ -202,4 +203,14 @@ object UseCasesModule {
     fun provideDeleteBoardUseCase(boardRepository: BoardRepository): DeleteBoardUseCase {
         return DeleteBoardUseCase(boardRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideUpdateMarkdownUseCase(
+        cardRepository: CardRepository,
+        updateCardUseCase: UpdateCardUseCase
+    ): UpdateMarkdownUseCase {
+        return UpdateMarkdownUseCase(cardRepository, updateCardUseCase)
+    }
+
 }

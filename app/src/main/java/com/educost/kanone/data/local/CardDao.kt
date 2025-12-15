@@ -33,4 +33,7 @@ interface CardDao {
     @Query("SELECT column_id FROM cards WHERE id = :cardId")
     suspend fun getCardColumnId(cardId: Long): Long
 
+    @Query("SELECT * FROM cards WHERE id = :cardId")
+    suspend fun getCard(cardId: Long): CardEntity
+
 }
