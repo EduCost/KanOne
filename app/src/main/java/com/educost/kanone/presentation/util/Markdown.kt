@@ -7,9 +7,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.sp
 import com.educost.kanone.presentation.navigation.LocalThemeData
@@ -48,6 +50,7 @@ fun MarkdownRenderer(
         modifier = modifier,
         markdownState = markdownState,
         imageTransformer = Coil3ImageTransformerImpl,
+        typography = typography,
         components = markdownComponents(
             codeBlock = {
                 MarkdownHighlightedCodeBlock(
@@ -67,7 +70,6 @@ fun MarkdownRenderer(
             },
             checkbox = { MarkdownCheckBox(it.content, it.node, it.typography.text) }
         ),
-        typography = typography
     )
 }
 
@@ -94,5 +96,65 @@ fun markdownTypographySmall(): MarkdownTypography {
             ).toSpanStyle()
         ),
         table = MaterialTheme.typography.bodyLarge
+    )
+}
+
+fun TextFieldValue.wrapSelection(prefix: String, suffix: String = prefix): TextFieldValue {
+    val selection = this.selection
+    if (!selection.collapsed) {
+        try {
+            val textStart = selection.start
+            val textEnd = selection.end
+            val selectedText = this.text.substring(textStart, textEnd)
+
+
+            val newText = this.text.replaceRange(
+                textStart,
+                textEnd,
+                "$prefix$selectedText$suffix"
+            )
+
+            return this.copy(
+                text = newText,
+                selection = TextRange(textStart, textEnd + prefix.length + suffix.length)
+            )
+
+
+        } catch (e: Exception) {
+            println(e)
+        }
+    } else {
+        val newText = this.text.replaceRange(
+            startIndex = selection.start,
+            endIndex = selection.end,
+            replacement = "$prefix$suffix"
+        )
+
+        val newCursorPosition = selection.start + prefix.length
+
+        return this.copy(
+            text = newText,
+            selection = TextRange(newCursorPosition, newCursorPosition)
+        )
+    }
+
+    return this
+}
+
+fun TextFieldValue.addPrefixToCurrentLine(prefix: String): TextFieldValue {
+    val cursorPosition = this.selection.start
+    val text = this.text
+
+    val lineStart = text.lastIndexOf(
+        char = '\n',
+        startIndex = (cursorPosition - 1).coerceAtLeast(0)
+    ) + 1
+
+    val newText = text.substring(0, lineStart) + prefix + text.substring(lineStart)
+    val newCursorPosition = cursorPosition + prefix.length
+
+    return this.copy(
+        text = newText,
+        selection = TextRange(newCursorPosition)
     )
 }
