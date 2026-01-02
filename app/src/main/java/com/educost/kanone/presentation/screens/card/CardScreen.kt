@@ -206,7 +206,7 @@ private fun CardScreen(
 
 
                 CardDescription(
-                    cardDescription = card.description ?: "",
+                    cardDescription = card.description,
                     onClick = { onIntent(CardIntent.OnDescriptionClicked) }
                 )
 
@@ -341,7 +341,7 @@ private fun CardScreenPreview() {
                     title = "Card title",
                     position = 0,
                     createdAt = LocalDateTime.now(),
-                    description = /*"Card description"*/null,
+                    description = "",
                     color = null,
                     dueDate = /*LocalDateTime.now().plusDays(3)*/null,
                     coverFileName = null,

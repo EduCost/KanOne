@@ -82,6 +82,7 @@ fun MarkdownScreen(
         ) {
 
             if (isEditing) MarkdownTextField(
+                modifier = modifier.imePadding(),
                 textFieldValue = textFieldValue,
                 onValueChange = { textFieldValue = it }
             )

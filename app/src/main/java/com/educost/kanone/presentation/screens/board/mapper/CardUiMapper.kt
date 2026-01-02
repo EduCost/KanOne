@@ -6,7 +6,7 @@ import com.educost.kanone.presentation.screens.board.model.CardUi
 fun CardUi.toCardItem() = CardItem(
     id = this.id,
     title = this.title,
-    description = this.description,
+    description = this.description ?: "",
     position = this.position,
     color = this.color,
     createdAt = this.createdAt,

@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 data class CardItem(
     val id: Long,
     val title: String,
-    val description: String? = null,
+    val description: String = "",
     val position: Int,
     val color: Int? = null,
     val createdAt: LocalDateTime,

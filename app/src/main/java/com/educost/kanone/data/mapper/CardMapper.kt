@@ -7,7 +7,7 @@ import com.educost.kanone.domain.model.CardItem
 fun CardEntity.toCardItem() = CardItem(
     id = this.id,
     title = this.title,
-    description = this.description,
+    description = this.description ?: "",
     position = this.position,
     color = this.color,
     createdAt = this.createdAt,
@@ -33,7 +33,7 @@ fun CardItem.toCardEntity(columnId: Long) = CardEntity(
 fun CardWithRelations.toCardItem() = CardItem(
     id = this.card.id,
     title = this.card.title,
-    description = this.card.description,
+    description = this.card.description ?: "",
     position = this.card.position,
     color = this.card.color,
     createdAt = this.card.createdAt,
