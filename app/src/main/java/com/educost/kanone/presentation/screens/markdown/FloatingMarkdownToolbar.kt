@@ -9,17 +9,26 @@ import androidx.compose.material.icons.rounded.FormatBold
 import androidx.compose.material.icons.rounded.FormatItalic
 import androidx.compose.material.icons.rounded.ModeEdit
 import androidx.compose.material.icons.rounded.Title
+import androidx.compose.material3.AppBarRow
+import androidx.compose.material3.AppBarRowScope
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import com.educost.kanone.R
+import com.educost.kanone.presentation.util.UiText
 
+
+private data class MarkdownButton(
+    val imageVector: ImageVector,
+    val contentDescription: String,
+    val onClick: () -> Unit
+)
 
 @Composable
 fun FloatingMarkdownToolbar(
@@ -32,6 +41,30 @@ fun FloatingMarkdownToolbar(
     onEditClick: () -> Unit
 ) {
 
+    val context = LocalContext.current
+    val toolbarItems = remember { listOf(
+        MarkdownButton(
+            imageVector = Icons.Rounded.FormatBold,
+            contentDescription = UiText.StringResource(R.string.markdown_button_bold_content_description).asString(context),
+            onClick = onBoldClick
+        ),
+        MarkdownButton(
+            imageVector = Icons.Rounded.FormatItalic,
+            contentDescription = UiText.StringResource(R.string.markdown_button_italic_content_description).asString(context),
+            onClick = onItalicClick
+        ),
+        MarkdownButton(
+            imageVector = Icons.AutoMirrored.Rounded.FormatListBulleted,
+            contentDescription = UiText.StringResource(R.string.markdown_button_unordered_list_content_description).asString(context),
+            onClick = onUnorderedListClick
+        ),
+        MarkdownButton(
+            imageVector = Icons.Rounded.Title,
+            contentDescription = UiText.StringResource(R.string.markdown_button_title_content_description).asString(context),
+            onClick = onTitleClick
+        )
+    )}
+
     HorizontalFloatingToolbar(
         modifier = modifier,
         expanded = isExpanded,
@@ -39,28 +72,12 @@ fun FloatingMarkdownToolbar(
             ToolbarFAB(isExpanded = isExpanded, onClick = { onEditClick() })
         }
     ) {
-        ToolbarButton(
-            imageVector = Icons.Rounded.FormatBold,
-            contentDescription = stringResource(id = R.string.markdown_button_bold_content_description),
-            onClick = onBoldClick
-        )
-        ToolbarButton(
-            imageVector = Icons.Rounded.FormatItalic,
-            contentDescription = stringResource(id = R.string.markdown_button_italic_content_description),
-            onClick = onItalicClick
-        )
-        ToolbarButton(
-            imageVector = Icons.AutoMirrored.Rounded.FormatListBulleted,
-            contentDescription = stringResource(id = R.string.markdown_button_unordered_list_content_description),
-            onClick = onUnorderedListClick
-        )
-        ToolbarButton(
-            imageVector = Icons.Rounded.Title,
-            contentDescription = stringResource(id = R.string.markdown_button_title_content_description),
-            onClick = onTitleClick
-        )
+        AppBarRow() {
+            toolbarItems.forEach { toolbarItem ->
+                toolbarButton(toolbarItem)
+            }
+        }
     }
-
 }
 
 
@@ -81,17 +98,15 @@ private fun ToolbarFAB(
     }
 }
 
-@Composable
-private fun ToolbarButton(
-    modifier: Modifier = Modifier,
-    imageVector: ImageVector,
-    contentDescription: String? = null,
-    onClick: () -> Unit
-) {
-    IconButton(modifier = modifier, onClick = onClick) {
-        Icon(
-            imageVector = imageVector,
-            contentDescription = contentDescription
-        )
-    }
+private fun AppBarRowScope.toolbarButton(toolbarItem: MarkdownButton) {
+    clickableItem(
+        onClick = toolbarItem.onClick,
+        icon = {
+            Icon(
+                imageVector = toolbarItem.imageVector,
+                contentDescription = toolbarItem.contentDescription
+            )
+        },
+        label = toolbarItem.contentDescription
+    )
 }

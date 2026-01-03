@@ -21,6 +21,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -67,6 +69,7 @@ fun MarkdownScreen(
 
     var textFieldValue by remember { mutableStateOf(TextFieldValue(markdown)) }
     val markdownState = rememberMarkdownState(textFieldValue.text)
+    val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(textFieldValue.text) {
         onTextChange(textFieldValue.text)
@@ -82,7 +85,9 @@ fun MarkdownScreen(
         ) {
 
             if (isEditing) MarkdownTextField(
-                modifier = modifier.imePadding(),
+                modifier = modifier
+                    .focusRequester(focusRequester)
+                    .imePadding(),
                 textFieldValue = textFieldValue,
                 onValueChange = { textFieldValue = it }
             )
@@ -100,15 +105,19 @@ fun MarkdownScreen(
                     .imePadding(),
                 isExpanded = isEditing,
                 onBoldClick = {
+                    focusRequester.requestFocus()
                     textFieldValue = textFieldValue.wrapSelection("**", "**")
                 },
                 onItalicClick = {
+                    focusRequester.requestFocus()
                     textFieldValue = textFieldValue.wrapSelection("*", "*")
                 },
                 onUnorderedListClick = {
+                    focusRequester.requestFocus()
                     textFieldValue = textFieldValue.addPrefixToCurrentLine("- ")
                 },
                 onTitleClick = {
+                    focusRequester.requestFocus()
                     textFieldValue = textFieldValue.addPrefixToCurrentLine("# ")
                 },
                 onEditClick = { isEditing = !isEditing }
