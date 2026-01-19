@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Markdown Buttons -->
+    <string name="markdown_button_bold_content_description">Bold</string>
+    <string name="markdown_button_italic_content_description">Italic</string>
+    <string name="markdown_button_unordered_list_content_description">Unordered List</string>
+    <string name="markdown_button_title_content_description">Title</string>
+    <string name="markdown_button_markdown_syntax">Markdown Syntax</string>
+    <string name="markdown_button_more_options">More Options</string>
+    <!-- Markdown Buttons -->
+
+    <!-- Markdown Syntax Dialog -->
+    <string name="markdown_syntax_dialog_title">Markdown Syntax</string>
+    <string name="markdown_syntax_dialog_close">Close</string>
+
+    <string name="markdown_syntax_label_headings">Headings</string>
+    <string name="markdown_syntax_code_headings"># Heading 1\n## Heading 2\n### Heading 3\n#### Heading 4\n##### Heading 5\n###### Heading 6</string>
+
+    <string name="markdown_syntax_label_bold">Bold</string>
+    <string name="markdown_syntax_code_bold">**Bold Text**</string>
+
+    <string name="markdown_syntax_label_italic">Italic</string>
+    <string name="markdown_syntax_code_italic">*Italic Text*</string>
+
+    <string name="markdown_syntax_label_strike_through">Strikethrough</string>
+    <string name="markdown_syntax_code_strike_through">~~Strikethrough text~~</string>
+
+    <string name="markdown_syntax_label_lists">Lists</string>
+    <string name="markdown_syntax_code_lists">- Unordered item\n* Unordered item\n+ Unordered item\n\n1. First item\n2. Second item</string>
+
+    <string name="markdown_syntax_label_links">Links &amp; Images</string>
+    <string name="markdown_syntax_code_links">[GitHub KanOne](https://github.com/EduCost/KanOne)\n\n![Alt text](https://unsplash.com/photos/body-of-water-surrounded-by-trees-NRQV-hBF10M)</string>
+
+    <string name="markdown_syntax_label_code">Code</string>
+    <string name="markdown_syntax_code_code">`Inline Code`\n\n```python\nprint(\'Hello World!\')\n```</string>
+
+    <string name="markdown_syntax_label_quote">Quote</string>
+    <string name="markdown_syntax_code_quote">> This is a blockquote\n> Multiple lines</string>
+
+    <string name="markdown_syntax_label_divider">Divider</string>
+    <string name="markdown_syntax_code_divider">Text above\n\n---\n\nText below</string>
+
+    <string name="markdown_syntax_section_syntax">Syntax</string>
+    <string name="markdown_syntax_section_preview">Preview</string>
+    <!-- Markdown Syntax Dialog -->
+</resources>

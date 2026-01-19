@@ -66,6 +66,7 @@ fun MarkdownScreen(
 ) {
 
     var isEditing by rememberSaveable { mutableStateOf(true) }
+    var isShowingMarkdownSyntax by rememberSaveable { mutableStateOf(false) }
 
     var textFieldValue by remember { mutableStateOf(TextFieldValue(markdown)) }
     val markdownState = rememberMarkdownState(textFieldValue.text)
@@ -120,8 +121,16 @@ fun MarkdownScreen(
                     focusRequester.requestFocus()
                     textFieldValue = textFieldValue.addPrefixToCurrentLine("# ")
                 },
+                onInfoClick = { isShowingMarkdownSyntax = true },
                 onEditClick = { isEditing = !isEditing }
             )
+
+
+            if (isShowingMarkdownSyntax) {
+                MarkdownSyntaxDialog(
+                    onDismissRequest = { isShowingMarkdownSyntax = false }
+                )
+            }
         }
     }
 }
@@ -152,4 +161,3 @@ private fun MarkdownScreenPreview() {
         MarkdownScreen(markdown = "Markdown", onTextChange = {})
     }
 }
-

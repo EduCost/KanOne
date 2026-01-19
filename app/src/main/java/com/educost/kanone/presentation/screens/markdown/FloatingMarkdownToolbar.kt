@@ -2,11 +2,14 @@
 
 package com.educost.kanone.presentation.screens.markdown
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.FormatListBulleted
 import androidx.compose.material.icons.automirrored.rounded.MenuBook
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.FormatBold
 import androidx.compose.material.icons.rounded.FormatItalic
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.ModeEdit
 import androidx.compose.material.icons.rounded.Title
 import androidx.compose.material3.AppBarRow
@@ -15,11 +18,17 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
 import com.educost.kanone.presentation.util.UiText
 
@@ -38,9 +47,11 @@ fun FloatingMarkdownToolbar(
     onItalicClick: () -> Unit,
     onUnorderedListClick: () -> Unit,
     onTitleClick: () -> Unit,
+    onInfoClick: () -> Unit,
     onEditClick: () -> Unit
 ) {
 
+    val markdownIcon = ImageVector.vectorResource(R.drawable.markdown_logo)
     val context = LocalContext.current
     val toolbarItems = remember { listOf(
         MarkdownButton(
@@ -62,6 +73,11 @@ fun FloatingMarkdownToolbar(
             imageVector = Icons.Rounded.Title,
             contentDescription = UiText.StringResource(R.string.markdown_button_title_content_description).asString(context),
             onClick = onTitleClick
+        ),
+        MarkdownButton(
+            imageVector = markdownIcon,
+            contentDescription = UiText.StringResource(R.string.markdown_button_markdown_syntax).asString(context),
+            onClick = onInfoClick
         )
     )}
 
@@ -72,7 +88,24 @@ fun FloatingMarkdownToolbar(
             ToolbarFAB(isExpanded = isExpanded, onClick = { onEditClick() })
         }
     ) {
-        AppBarRow() {
+        AppBarRow(
+            overflowIndicator = { menuState ->
+                IconButton(
+                    onClick = {
+                        if (menuState.isShowing) {
+                            menuState.dismiss()
+                        } else {
+                            menuState.show()
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.MoreVert,
+                        contentDescription = stringResource(R.string.markdown_button_more_options),
+                    )
+                }
+            }
+        ) {
             toolbarItems.forEach { toolbarItem ->
                 toolbarButton(toolbarItem)
             }

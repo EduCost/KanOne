@@ -34,14 +34,4 @@
     <string name="snackbar_delete_board_error">Error deleting board</string>
     <!-- Dialog for delete board -->
 
-
-    <!-- Markdown Buttons -->
-    <string name="markdown_button_bold_content_description">Bold</string>
-    <string name="markdown_button_italic_content_description">Italic</string>
-    <string name="markdown_button_unordered_list_content_description">Unordered List</string>
-    <string name="markdown_button_title_content_description">Title</string>
-    <!-- Markdown Buttons -->
-
-
-
 </resources>
