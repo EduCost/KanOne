@@ -28,8 +28,8 @@
     <string name="markdown_syntax_label_lists">Lists</string>
     <string name="markdown_syntax_code_lists">- Unordered item\n* Unordered item\n+ Unordered item\n\n1. First item\n2. Second item</string>
 
-    <string name="markdown_syntax_label_links">Links &amp; Images</string>
-    <string name="markdown_syntax_code_links">[GitHub KanOne](https://github.com/EduCost/KanOne)\n\n![Alt text](https://unsplash.com/photos/body-of-water-surrounded-by-trees-NRQV-hBF10M)</string>
+    <string name="markdown_syntax_label_links">Links</string>
+    <string name="markdown_syntax_code_links">[GitHub KanOne](https://github.com/EduCost/KanOne)\n\n![Alt text](https://github.com/ServiceStack/images/blob/master/hero/photo-1421789665209-c9b2a435e3dc.jpg?raw=true)</string>
 
     <string name="markdown_syntax_label_code">Code</string>
     <string name="markdown_syntax_code_code">`Inline Code`\n\n```python\nprint(\'Hello World!\')\n```</string>

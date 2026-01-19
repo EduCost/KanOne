@@ -1,9 +1,14 @@
 package com.educost.kanone.presentation.util
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -25,14 +30,16 @@ import com.mikepenz.markdown.m3.elements.MarkdownCheckBox
 import com.mikepenz.markdown.m3.markdownTypography
 import com.mikepenz.markdown.model.MarkdownState
 import com.mikepenz.markdown.model.MarkdownTypography
+import com.mikepenz.markdown.model.markdownAnimations
 import dev.snipme.highlights.Highlights
 import dev.snipme.highlights.model.SyntaxThemes
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MarkdownRenderer(
     modifier: Modifier = Modifier,
     markdownState: MarkdownState,
-    typography: MarkdownTypography = markdownTypography()
+    typography: MarkdownTypography = markdownTypographyDefault()
 ) {
 
     val themeData = LocalThemeData.current
@@ -68,8 +75,28 @@ fun MarkdownRenderer(
                     showHeader = true,
                 )
             },
-            checkbox = { MarkdownCheckBox(it.content, it.node, it.typography.text) }
+            checkbox = { MarkdownCheckBox(it.content, it.node, it.typography.text) },
         ),
+        loading = {
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularWavyProgressIndicator()
+            }
+        },
+    )
+}
+
+@Composable
+fun markdownTypographyDefault(): MarkdownTypography {
+    return markdownTypography(
+        h1 = MaterialTheme.typography.displayLarge.copy(fontSize = 40.sp),
+        h2 = MaterialTheme.typography.displayMedium.copy(fontSize = 34.sp),
+        h3 = MaterialTheme.typography.displaySmall.copy(fontSize = 28.sp),
+        h4 = MaterialTheme.typography.headlineMedium.copy(fontSize = 24.sp),
+        h5 = MaterialTheme.typography.headlineSmall.copy(fontSize = 20.sp),
+        h6 = MaterialTheme.typography.titleLarge.copy(fontSize = 18.sp),
     )
 }
 

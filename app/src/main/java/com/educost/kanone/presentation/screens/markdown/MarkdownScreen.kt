@@ -7,7 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
 import androidx.compose.material3.MaterialTheme
@@ -71,6 +74,7 @@ fun MarkdownScreen(
     var textFieldValue by remember { mutableStateOf(TextFieldValue(markdown)) }
     val markdownState = rememberMarkdownState(textFieldValue.text)
     val focusRequester = remember { FocusRequester() }
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(textFieldValue.text) {
         onTextChange(textFieldValue.text)
@@ -87,17 +91,21 @@ fun MarkdownScreen(
 
             if (isEditing) MarkdownTextField(
                 modifier = modifier
+                    .verticalScroll(scrollState)
                     .focusRequester(focusRequester)
                     .imePadding(),
                 textFieldValue = textFieldValue,
                 onValueChange = { textFieldValue = it }
             )
-            else MarkdownRenderer(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize(),
-                markdownState = markdownState
-            )
+            else SelectionContainer {
+                MarkdownRenderer(
+                    modifier = Modifier
+                        .verticalScroll(scrollState)
+                        .padding(16.dp)
+                        .fillMaxSize(),
+                    markdownState = markdownState
+                )
+            }
 
             FloatingMarkdownToolbar(
                 modifier = Modifier

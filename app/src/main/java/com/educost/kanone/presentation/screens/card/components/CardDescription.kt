@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -82,6 +83,7 @@ fun CardDescription(
                         .padding(8.dp)
                 ) {
                     MarkdownRenderer(
+                        modifier = Modifier.heightIn(max = 250.dp),
                         markdownState = markdownState,
                         typography = markdownTypographySmall()
                     )

@@ -2,14 +2,12 @@
 
 package com.educost.kanone.presentation.screens.markdown
 
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.FormatListBulleted
 import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.FormatBold
 import androidx.compose.material.icons.rounded.FormatItalic
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.ModeEdit
 import androidx.compose.material.icons.rounded.Title
 import androidx.compose.material3.AppBarRow
@@ -22,13 +20,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.dp
 import com.educost.kanone.R
 import com.educost.kanone.presentation.util.UiText
 

@@ -119,7 +119,7 @@ private fun ListSyntax() {
 private fun LinkSyntax() {
     BaseSyntaxCard(
         label = stringResource(R.string.markdown_syntax_label_links),
-        labelStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.primary),
+        labelStyle = MaterialTheme.typography.bodyLarge.copy(textDecoration = TextDecoration.Underline),
         syntaxCode = stringResource(R.string.markdown_syntax_code_links)
     )
 }
