@@ -327,7 +327,7 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
                             CardItem(
                                 id = 1,
                                 title = "card test 1",
-                                description = null,
+                                description = "",
                                 position = 1,
                                 color = null,
                                 createdAt = LocalDateTime.now(),
@@ -340,7 +340,7 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
                             CardItem(
                                 id = 2,
                                 title = "card test 2",
-                                description = null,
+                                description = "",
                                 position = 1,
                                 color = null,
                                 createdAt = LocalDateTime.now(),
@@ -361,7 +361,7 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
                             CardItem(
                                 id = 3,
                                 title = "card test 3",
-                                description = null,
+                                description = "",
                                 position = 1,
                                 color = null,
                                 createdAt = LocalDateTime.now(),
@@ -403,7 +403,7 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
                             CardItem(
                                 id = 2,
                                 title = "card test 2",
-                                description = null,
+                                description = "",
                                 position = 1,
                                 color = null,
                                 createdAt = LocalDateTime.now(),
@@ -424,7 +424,7 @@ class BoardViewModelMappingTest : BoardViewModelTest() {
                             CardItem(
                                 id = 3,
                                 title = "card test 3",
-                                description = null,
+                                description = "",
                                 position = 1,
                                 color = null,
                                 createdAt = LocalDateTime.now(),

@@ -16,6 +16,9 @@
       <SelectionState runConfigName="Tests in 'com.educost.kanone.data.local'">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="BoardDaoTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

@@ -21,7 +21,7 @@ class UpdateCardUseCaseTest {
     private val testCard = CardItem(
         id = 1L,
         title = "Test Card",
-        description = null,
+        description = "",
         color = null,
         createdAt = LocalDateTime.now(),
         position = 0
