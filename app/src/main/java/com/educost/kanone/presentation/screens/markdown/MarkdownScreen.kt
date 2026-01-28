@@ -129,6 +129,18 @@ fun MarkdownScreen(
                     focusRequester.requestFocus()
                     textFieldValue = textFieldValue.addPrefixToCurrentLine("# ")
                 },
+                onStrikethroughClick = {
+                    focusRequester.requestFocus()
+                    textFieldValue = textFieldValue.wrapSelection("~~", "~~")
+                },
+                onCodeClick = {
+                    focusRequester.requestFocus()
+                    textFieldValue = textFieldValue.wrapSelection("`", "`")
+                },
+                onQuoteClick = {
+                    focusRequester.requestFocus()
+                    textFieldValue = textFieldValue.addPrefixToCurrentLine("> ")
+                },
                 onInfoClick = { isShowingMarkdownSyntax = true },
                 onEditClick = { isEditing = !isEditing }
             )

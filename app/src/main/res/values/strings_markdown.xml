@@ -5,7 +5,10 @@
     <string name="markdown_button_italic_content_description">Italic</string>
     <string name="markdown_button_unordered_list_content_description">Unordered List</string>
     <string name="markdown_button_title_content_description">Title</string>
-    <string name="markdown_button_markdown_syntax">Markdown Syntax</string>
+    <string name="markdown_button_strikethrough_content_description">Strikethrough</string>
+    <string name="markdown_button_quote_content_description">Quote</string>
+    <string name="markdown_button_code_content_description">Code</string>
+    <string name="markdown_button_markdown_syntax">Syntax</string>
     <string name="markdown_button_more_options">More Options</string>
     <!-- Markdown Buttons -->
 
