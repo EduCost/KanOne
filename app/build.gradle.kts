@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt)
@@ -27,11 +26,8 @@ android {
 
     }
 
-    ksp {
-        arg("room.schemaLocation", "$projectDir/schemas")
-    }
     sourceSets {
-        getByName("androidTest").assets.srcDirs("$projectDir/schemas")
+        getByName("androidTest").assets.directories += "$projectDir/schemas"
     }
 
     buildTypes {
@@ -51,20 +47,25 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        resValues = true
     }
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_11
-        }
-    }
+}
 
-    aboutLibraries {
-        library {
-            duplicationMode = DuplicateMode.MERGE
-            duplicationRule = DuplicateRule.SIMPLE
-        }
-    }
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
 
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_11
+    }
+}
+
+aboutLibraries {
+    library {
+        duplicationMode = DuplicateMode.MERGE
+        duplicationRule = DuplicateRule.SIMPLE
+    }
 }
 
 dependencies {
