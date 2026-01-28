@@ -9,11 +9,15 @@ plugins {
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.aboutLibraries)
+    alias(libs.plugins.room)
 }
 
 android {
     namespace = "com.educost.kanone"
-    compileSdk = 36
+
+    compileSdk {
+        version = release(36)
+    }
 
     defaultConfig {
         applicationId = "com.educost.kanone"
@@ -51,8 +55,8 @@ android {
     }
 }
 
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 kotlin {

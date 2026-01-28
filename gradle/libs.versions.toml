@@ -8,7 +8,7 @@ espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.12.2"
 composeBom = "2026.01.00"
-ksp = "2.3.2"
+ksp = "2.3.5"
 serialization = "1.10.0"
 coroutines = "1.10.2"
 daggerHilt = "2.59"
@@ -114,4 +114,5 @@ dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "daggerHilt
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin.android", version.ref = "aboutLibraries" }
+room = { id = "androidx.room", version.ref = "roomDb" }
 
